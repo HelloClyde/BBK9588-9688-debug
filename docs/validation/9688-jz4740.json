@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-01",
+  "model": "9688",
+  "firmware": "V2.32",
+  "chip": "JZ4740",
+  "bda_sha256": "fe9d5b7ef5aebd6142c4ddb79e0bc721362e49bb1ad3cd8d5349a42a12346765",
+  "resident_image_id": "49d6b0c7",
+  "scope": [
+    "identity/capabilities/status",
+    "22 live firmware CRC guards",
+    "20 sequential PINGs",
+    "512-byte self-owned heap write/read/free",
+    "64-byte USB reply/ZLP",
+    "MMIO read and resident self-write rejection",
+    "240x320 screenshot",
+    "RAM module abc=294 and full256-input=32640",
+    "module reset",
+    "same-resident DTR reconnect"
+  ],
+  "checks_passed": 14,
+  "heap_test_allocation_freed": true,
+  "module_reset": true,
+  "usb_fault": 0,
+  "last_error": 0,
+  "bad_frames": 0,
+  "service_left_running": true,
+  "not_covered": [
+    "JZ4730 physical hardware",
+    "physical cable-replug",
+    "stop/native-disk-restore",
+    "forced noncooperative module termination"
+  ],
+  "screenshot": "../assets/9688-tools.png"
+}

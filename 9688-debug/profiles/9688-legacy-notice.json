@@ -1,0 +1,29 @@
+{
+  "name": "BBK 9688 device legacy firmware (UI V2.1 / image V2.0; notice only)",
+  "runtime_base": "0x81c00000",
+  "gui_table": "0x8029bee0",
+  "firmware": {
+    "sha256": "93cf96f4ce35a46bd1ffcaedf1ffd4580e325441f5dd9167e4f7e5fb371731bf",
+    "size": 4872264
+  },
+  "notice_guards": [
+    {
+      "name": "bda_seed",
+      "address": "0x8029c700",
+      "length": "0x20",
+      "crc32": "0x45456de2"
+    },
+    {
+      "name": "gui_msgbox_slot",
+      "address": "0x8029c198",
+      "length": "0x4",
+      "crc32": "0xcfe8fe32"
+    },
+    {
+      "name": "gui_msgbox_entry",
+      "address": "0x800cf844",
+      "length": "0x80",
+      "crc32": "0xb7b8d518"
+    }
+  ]
+}

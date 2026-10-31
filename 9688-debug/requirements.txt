@@ -1,0 +1,4 @@
+pyserial>=3.5
+Pillow>=10
+pyelftools>=0.32
+unicorn>=2.1.4

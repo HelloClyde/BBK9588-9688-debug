@@ -1,0 +1,118 @@
+name: Build and release
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: debug-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      PYTHONUTF8: '1'
+      PYTHONIOENCODING: utf-8
+    steps:
+      - name: Check out fixed source and SDK
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          submodules: true
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+      - name: Require tag to match VERSION
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          $version = (Get-Content -LiteralPath VERSION -Raw).Trim()
+          if ($env:RELEASE_TAG -cne "v$version") {
+            throw "Tag $env:RELEASE_TAG does not match VERSION $version"
+          }
+      - name: Install host and model test dependencies
+        run: |
+          python -m pip install -r requirements-dev.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Cache pinned MIPS toolchain
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: sdk/.toolchain
+          key: windows-mipsel-gcc-15.2.0-8ba866e25c9826ee04ab4310365d264e3e73769e3738bb58ae38fd6740b7ee8d
+      - name: Install or validate MIPS toolchain
+        run: ./sdk/scripts/setup_toolchain.ps1
+      - name: Build available models and verify without private ROM
+        run: |
+          python build.py --models all --verify
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Package declared BDAs, clients and corresponding source
+        env:
+          RELEASE_COMMIT: ${{ github.sha }}
+        run: |
+          python package_release.py --commit $env:RELEASE_COMMIT
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Validate tagged release identity
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_COMMIT: ${{ github.sha }}
+        run: |
+          python package_release.py --verify --tag $env:RELEASE_TAG --commit $env:RELEASE_COMMIT
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Upload ordinary ZIP artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: BBK9588-9688-debug-release
+          path: dist/release/*
+          archive: true
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: ${{ github.ref_name }}
+      RELEASE_COMMIT: ${{ github.sha }}
+    steps:
+      - name: Check out source identity without private dependencies
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Download checked build assets
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: BBK9588-9688-debug-release
+          path: dist/release
+          digest-mismatch: error
+      - name: Verify assets and publish prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 package_release.py --verify --tag "$RELEASE_TAG" --commit "$RELEASE_COMMIT"
+          (cd dist/release && sha256sum -c SHA256SUMS.txt)
+          gh release create "$RELEASE_TAG" dist/release/* --verify-tag --prerelease \
+            --title "BBK 9588/9688 Debug $RELEASE_TAG" --notes-file dist/release/RELEASE-NOTES.md
