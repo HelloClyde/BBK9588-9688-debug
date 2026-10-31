@@ -16,7 +16,13 @@
 
 ## 快速开始
 
-尚未发布正式成品。当前可从源码构建，输出 `build/9688-debug/Debug9688.bda`。
+当前预发布：[v0.1.0-alpha.1](https://github.com/HelloClyde/BBK9588-9688-debug/releases/tag/v0.1.0-alpha.1)，本次仅包含 9688。
+
+- [下载 BDA 与 PC 客户端安装包](https://github.com/HelloClyde/BBK9588-9688-debug/releases/download/v0.1.0-alpha.1/BBK9588-9688-debug-v0.1.0-alpha.1.zip)：解压后将 `9688/应用/程序/Debug9688.bda` 复制到设备对应目录。
+- [仅下载 Debug9688.bda](https://github.com/HelloClyde/BBK9588-9688-debug/releases/download/v0.1.0-alpha.1/Debug9688.bda)。
+- [下载完整对应源码包](https://github.com/HelloClyde/BBK9588-9688-debug/releases/download/v0.1.0-alpha.1/BBK9588-9688-debug-v0.1.0-alpha.1-source.zip)：已展开固定 SDK；不要用 GitHub 自动生成的源码 ZIP 代替它。
+
+成品与客户端使用步骤见下方“安装 9688”。从源码构建时输出 `build/9688-debug/Debug9688.bda`。
 
 开发者命令（Windows PowerShell，Python 3.12）：
 
@@ -69,7 +75,7 @@ python 9688-debug/client.py screenshot screen.png
 - `sdk/` 固定到 `ef3bf3b7328a3a8fa9ba48593c63285300725fb7`，工具链由该 SDK 的
   校验安装脚本提供。不会自动跟随 SDK main。
 
-主仓库或源码包均包含构建、测试、GPL 许可证与 SDK 来源。正式资产将由同一次
+主仓库或源码包均包含构建、测试、GPL 许可证与 SDK 来源。本次预发布资产由同一次
 Actions 构建产生，包含 BDA、用户包、展开固定 SDK 的对应源码包与 SHA256SUMS。
 构建和发布过程不能代替未覆盖机型的真机测试。
 
