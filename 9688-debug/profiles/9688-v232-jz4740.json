@@ -66,7 +66,8 @@
     "FW_NATIVE_USB_INIT": "0x8000ec0c",
     "FW_NATIVE_USB_IRQ": "0x8000ed6c",
     "FW_NATIVE_USB_ENDPOINTS": "0x8000dbb0",
-    "FW_LCD_BASE": "0xb3050000"
+    "FW_LCD_BASE": "0xb3050000",
+    "FW_USB_IRQ_SLOT": "0x804aa264"
   },
   "guards": [
     {
@@ -213,5 +214,2451 @@
       "length": "0x80",
       "crc32": "0xe4518c30"
     }
-  ]
+  ],
+  "discovery": {
+    "version": 1,
+    "scan_start": "0x80004000",
+    "scan_end": "0x80800000",
+    "primary_count": 19,
+    "patterns": [
+      {
+        "name": "task_create_ext",
+        "address": "0x8000c0fc",
+        "length": 388,
+        "anchor_offset": 12,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x2e220040",
+        "crc32": "0xa0a54990",
+        "refs": [
+          [
+            84,
+            4294967295,
+            "0x800b12f0",
+            2
+          ],
+          [
+            96,
+            100,
+            "0x806fb950",
+            0
+          ],
+          [
+            128,
+            4294967295,
+            "0x800b1330",
+            2
+          ],
+          [
+            144,
+            4294967295,
+            "0x8000ca84",
+            2
+          ],
+          [
+            164,
+            4294967295,
+            "0x80007a40",
+            2
+          ],
+          [
+            200,
+            4294967295,
+            "0x80008394",
+            2
+          ],
+          [
+            216,
+            4294967295,
+            "0x800b12f0",
+            2
+          ],
+          [
+            228,
+            232,
+            "0x804a9a19",
+            0
+          ],
+          [
+            240,
+            244,
+            "0x804a9a19",
+            0
+          ],
+          [
+            248,
+            4294967295,
+            "0x800b1330",
+            2
+          ],
+          [
+            256,
+            260,
+            "0x804a99f9",
+            0
+          ],
+          [
+            328,
+            4294967295,
+            "0x80008130",
+            2
+          ],
+          [
+            336,
+            4294967295,
+            "0x8000c210",
+            2
+          ],
+          [
+            344,
+            4294967295,
+            "0x800b12f0",
+            2
+          ],
+          [
+            356,
+            4294967295,
+            "0x800b1330",
+            2
+          ],
+          [
+            364,
+            4294967295,
+            "0x8000c210",
+            2
+          ],
+          [
+            372,
+            4294967295,
+            "0x800b1330",
+            2
+          ],
+          [
+            380,
+            4294967295,
+            "0x8000c210",
+            2
+          ]
+        ]
+      },
+      {
+        "name": "task_delete",
+        "address": "0x8000c280",
+        "length": 576,
+        "anchor_offset": 44,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x12020070",
+        "crc32": "0xed4b6c5c",
+        "refs": [
+          [
+            0,
+            4,
+            "0x804a9a3d",
+            0
+          ],
+          [
+            72,
+            4294967295,
+            "0x800b12f0",
+            2
+          ],
+          [
+            128,
+            132,
+            "0x804a9a30",
+            0
+          ],
+          [
+            168,
+            172,
+            "0x804a9a28",
+            0
+          ],
+          [
+            184,
+            188,
+            "0x804a9a28",
+            0
+          ],
+          [
+            268,
+            4294967295,
+            "0x80009598",
+            2
+          ],
+          [
+            280,
+            284,
+            "0x804a99f8",
+            0
+          ],
+          [
+            308,
+            312,
+            "0x804a99f8",
+            0
+          ],
+          [
+            316,
+            4294967295,
+            "0x800b1330",
+            2
+          ],
+          [
+            324,
+            4294967295,
+            "0x8000896c",
+            2
+          ],
+          [
+            332,
+            4294967295,
+            "0x800b12f0",
+            2
+          ],
+          [
+            344,
+            348,
+            "0x804a99f8",
+            0
+          ],
+          [
+            360,
+            364,
+            "0x804a99f8",
+            0
+          ],
+          [
+            368,
+            4294967295,
+            "0x80007b48",
+            2
+          ],
+          [
+            376,
+            380,
+            "0x804a9a19",
+            0
+          ],
+          [
+            400,
+            404,
+            "0x804a9a19",
+            0
+          ],
+          [
+            428,
+            432,
+            "0x804a9a04",
+            0
+          ],
+          [
+            436,
+            440,
+            "0x804a9a14",
+            0
+          ],
+          [
+            444,
+            448,
+            "0x80256560",
+            0
+          ],
+          [
+            460,
+            464,
+            "0x804a9a14",
+            0
+          ],
+          [
+            468,
+            4294967295,
+            "0x80006bfc",
+            2
+          ],
+          [
+            476,
+            4294967295,
+            "0x800b1330",
+            2
+          ],
+          [
+            484,
+            4294967295,
+            "0x80008130",
+            2
+          ],
+          [
+            536,
+            4294967295,
+            "0x8000c434",
+            2
+          ],
+          [
+            544,
+            4294967295,
+            "0x800b1330",
+            2
+          ],
+          [
+            552,
+            4294967295,
+            "0x8000c470",
+            2
+          ],
+          [
+            560,
+            564,
+            "0x804a9a40",
+            0
+          ],
+          [
+            568,
+            4294967295,
+            "0x8000c2e0",
+            2
+          ]
+        ]
+      },
+      {
+        "name": "task_delay",
+        "address": "0x8000ce9c",
+        "length": 152,
+        "anchor_offset": 56,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x90e50037",
+        "crc32": "0x5f3fb1f8",
+        "refs": [
+          [
+            36,
+            4294967295,
+            "0x800b12f0",
+            2
+          ],
+          [
+            44,
+            48,
+            "0x804a9a40",
+            0
+          ],
+          [
+            64,
+            68,
+            "0x804a9a30",
+            0
+          ],
+          [
+            104,
+            108,
+            "0x804a9a28",
+            0
+          ],
+          [
+            120,
+            124,
+            "0x804a9a28",
+            0
+          ],
+          [
+            128,
+            4294967295,
+            "0x800b1330",
+            2
+          ],
+          [
+            136,
+            4294967295,
+            "0x80008130",
+            2
+          ],
+          [
+            144,
+            4294967295,
+            "0x8000ceb4",
+            2
+          ]
+        ]
+      },
+      {
+        "name": "task_resume",
+        "address": "0x8000cdb0",
+        "length": 236,
+        "anchor_offset": 56,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x8ca5b950",
+        "crc32": "0xeaa3c43e",
+        "refs": [
+          [
+            28,
+            4294967295,
+            "0x800b12f0",
+            2
+          ],
+          [
+            100,
+            104,
+            "0x804a9a28",
+            0
+          ],
+          [
+            112,
+            116,
+            "0x804a9a28",
+            0
+          ],
+          [
+            128,
+            132,
+            "0x804a9a30",
+            0
+          ],
+          [
+            148,
+            4294967295,
+            "0x800b1330",
+            2
+          ],
+          [
+            156,
+            4294967295,
+            "0x80008130",
+            2
+          ],
+          [
+            188,
+            4294967295,
+            "0x800b1330",
+            2
+          ],
+          [
+            196,
+            4294967295,
+            "0x8000ce58",
+            2
+          ],
+          [
+            204,
+            4294967295,
+            "0x800b1330",
+            2
+          ],
+          [
+            212,
+            4294967295,
+            "0x8000ce58",
+            2
+          ],
+          [
+            220,
+            4294967295,
+            "0x800b1330",
+            2
+          ],
+          [
+            228,
+            4294967295,
+            "0x8000ce58",
+            2
+          ]
+        ]
+      },
+      {
+        "name": "task_stack_init",
+        "address": "0x80007a40",
+        "length": 240,
+        "anchor_offset": 48,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0xae11fff8",
+        "crc32": "0xe3865a62",
+        "refs": [
+          [
+            0,
+            4,
+            "0x804aa764",
+            0
+          ],
+          [
+            196,
+            4294967295,
+            "0x800b1350",
+            2
+          ],
+          [
+            224,
+            228,
+            "0x804aa764",
+            0
+          ],
+          [
+            232,
+            4294967295,
+            "0x80007a70",
+            2
+          ]
+        ]
+      },
+      {
+        "name": "tcb_init",
+        "address": "0x80008394",
+        "length": 416,
+        "anchor_offset": 56,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x12000055",
+        "crc32": "0xe56ad092",
+        "refs": [
+          [
+            40,
+            4294967295,
+            "0x800b12f0",
+            2
+          ],
+          [
+            48,
+            52,
+            "0x804a9a14",
+            0
+          ],
+          [
+            72,
+            4294967295,
+            "0x800b1330",
+            2
+          ],
+          [
+            68,
+            76,
+            "0x804a9a14",
+            0
+          ],
+          [
+            156,
+            160,
+            "0x80256444",
+            0
+          ],
+          [
+            220,
+            4294967295,
+            "0x80006bfc",
+            2
+          ],
+          [
+            228,
+            4294967295,
+            "0x80007b7c",
+            2
+          ],
+          [
+            236,
+            4294967295,
+            "0x80007b40",
+            2
+          ],
+          [
+            244,
+            4294967295,
+            "0x800b12f0",
+            2
+          ],
+          [
+            252,
+            256,
+            "0x804a9a04",
+            0
+          ],
+          [
+            268,
+            272,
+            "0x804a9a28",
+            0
+          ],
+          [
+            308,
+            312,
+            "0x804a9a04",
+            0
+          ],
+          [
+            320,
+            324,
+            "0x804a9a28",
+            0
+          ],
+          [
+            336,
+            340,
+            "0x804a9a30",
+            0
+          ],
+          [
+            356,
+            4294967295,
+            "0x800b1330",
+            2
+          ],
+          [
+            400,
+            4294967295,
+            "0x800b1330",
+            2
+          ],
+          [
+            408,
+            4294967295,
+            "0x80008504",
+            2
+          ]
+        ]
+      },
+      {
+        "name": "scheduler",
+        "address": "0x80008130",
+        "length": 216,
+        "anchor_offset": 32,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x14400027",
+        "crc32": "0xbc7851ec",
+        "refs": [
+          [
+            12,
+            4294967295,
+            "0x800b12f0",
+            2
+          ],
+          [
+            24,
+            28,
+            "0x804a9a3d",
+            0
+          ],
+          [
+            40,
+            44,
+            "0x804a99f8",
+            0
+          ],
+          [
+            56,
+            60,
+            "0x804a9a28",
+            0
+          ],
+          [
+            64,
+            68,
+            "0x804a9a01",
+            0
+          ],
+          [
+            120,
+            124,
+            "0x804a9a00",
+            0
+          ],
+          [
+            148,
+            152,
+            "0x804a9a0c",
+            0
+          ],
+          [
+            164,
+            168,
+            "0x804a9a20",
+            0
+          ],
+          [
+            184,
+            4294967295,
+            "0x800b0e18",
+            2
+          ],
+          [
+            180,
+            188,
+            "0x804a9a0c",
+            0
+          ],
+          [
+            192,
+            4294967295,
+            "0x800b1330",
+            2
+          ]
+        ]
+      },
+      {
+        "name": "global_alloc",
+        "address": "0x80007688",
+        "length": 80,
+        "anchor_offset": 32,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x27a60010",
+        "crc32": "0xaea93901",
+        "refs": [
+          [
+            12,
+            16,
+            "0x804a99f0",
+            0
+          ],
+          [
+            28,
+            4294967295,
+            "0x8000ba24",
+            2
+          ],
+          [
+            36,
+            4294967295,
+            "0x80007480",
+            2
+          ],
+          [
+            44,
+            48,
+            "0x804a99f0",
+            0
+          ],
+          [
+            52,
+            4294967295,
+            "0x8000bb38",
+            2
+          ]
+        ]
+      },
+      {
+        "name": "global_free",
+        "address": "0x80006844",
+        "length": 72,
+        "anchor_offset": 32,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x27a60010",
+        "crc32": "0x78f77289",
+        "refs": [
+          [
+            12,
+            16,
+            "0x804a99f0",
+            0
+          ],
+          [
+            28,
+            4294967295,
+            "0x8000ba24",
+            2
+          ],
+          [
+            36,
+            4294967295,
+            "0x80006670",
+            2
+          ],
+          [
+            48,
+            4294967295,
+            "0x8000bb38",
+            2
+          ],
+          [
+            44,
+            52,
+            "0x804a99f0",
+            0
+          ]
+        ]
+      },
+      {
+        "name": "tick_irq",
+        "address": "0x80134d90",
+        "length": 324,
+        "anchor_offset": 40,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0xac232028",
+        "crc32": "0x8fe6837",
+        "refs": [
+          [
+            0,
+            4,
+            "0x804a9bc4",
+            0
+          ],
+          [
+            8,
+            12,
+            "0x804f5164",
+            0
+          ],
+          [
+            44,
+            48,
+            "0x804a9bc4",
+            0
+          ],
+          [
+            64,
+            68,
+            "0x804f5164",
+            0
+          ],
+          [
+            88,
+            92,
+            "0x804f5168",
+            0
+          ],
+          [
+            108,
+            112,
+            "0x804f5168",
+            0
+          ],
+          [
+            124,
+            4294967295,
+            "0x80024d2c",
+            2
+          ],
+          [
+            132,
+            136,
+            "0x804a9bc4",
+            0
+          ],
+          [
+            140,
+            144,
+            "0x804dc8a0",
+            0
+          ],
+          [
+            184,
+            188,
+            "0x804dc7a0",
+            0
+          ],
+          [
+            192,
+            196,
+            "0x804dc89c",
+            0
+          ],
+          [
+            204,
+            208,
+            "0x804dc89c",
+            0
+          ],
+          [
+            220,
+            224,
+            "0x804dc894",
+            0
+          ],
+          [
+            244,
+            248,
+            "0x804a9a58",
+            0
+          ],
+          [
+            252,
+            4294967295,
+            "0x8000b37c",
+            2
+          ],
+          [
+            260,
+            4294967295,
+            "0x80134e6c",
+            2
+          ],
+          [
+            268,
+            4294967295,
+            "0x801914b4",
+            2
+          ],
+          [
+            276,
+            4294967295,
+            "0x801925d8",
+            2
+          ],
+          [
+            284,
+            4294967295,
+            "0x80134e0c",
+            2
+          ],
+          [
+            292,
+            4294967295,
+            "0x801914a0",
+            2
+          ],
+          [
+            300,
+            4294967295,
+            "0x80134de8",
+            2
+          ],
+          [
+            308,
+            4294967295,
+            "0x801914b4",
+            2
+          ],
+          [
+            316,
+            4294967295,
+            "0x80134de8",
+            2
+          ]
+        ]
+      },
+      {
+        "name": "raw_tick",
+        "address": "0x80134fb0",
+        "length": 12,
+        "anchor_offset": 4,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x3e00008",
+        "crc32": "0x1365bdff",
+        "refs": [
+          [
+            0,
+            8,
+            "0x804a9bc4",
+            0
+          ]
+        ]
+      },
+      {
+        "name": "irq_register",
+        "address": "0x800050a8",
+        "length": 284,
+        "anchor_offset": 0,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x440c0",
+        "crc32": "0xeab4a559",
+        "refs": [
+          [
+            12,
+            16,
+            "0x804aa1a4",
+            0
+          ],
+          [
+            44,
+            48,
+            "0x800052e4",
+            0
+          ],
+          [
+            108,
+            112,
+            "0x804aa194",
+            0
+          ],
+          [
+            224,
+            228,
+            "0x804aa190",
+            0
+          ],
+          [
+            252,
+            4294967295,
+            "0x80005154",
+            2
+          ],
+          [
+            248,
+            256,
+            "0x804aa190",
+            0
+          ],
+          [
+            276,
+            4294967295,
+            "0x80005154",
+            2
+          ]
+        ]
+      },
+      {
+        "name": "usb_init",
+        "address": "0x8000ec0c",
+        "length": 92,
+        "anchor_offset": 40,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x24040018",
+        "crc32": "0x40efe94e",
+        "refs": [
+          [
+            4,
+            8,
+            "0x8000ed6c",
+            0
+          ],
+          [
+            20,
+            24,
+            "0x804a9a75",
+            0
+          ],
+          [
+            28,
+            32,
+            "0x804a9a70",
+            0
+          ],
+          [
+            36,
+            4294967295,
+            "0x800050a8",
+            2
+          ],
+          [
+            44,
+            4294967295,
+            "0x8000dbb0",
+            2
+          ],
+          [
+            56,
+            4294967295,
+            "0x800098e4",
+            2
+          ],
+          [
+            52,
+            60,
+            "0x802569a0",
+            0
+          ]
+        ]
+      },
+      {
+        "name": "usb_irq",
+        "address": "0x8000ed6c",
+        "length": 52,
+        "anchor_offset": 16,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x34421008",
+        "crc32": "0xfcd809d1",
+        "refs": [
+          [
+            0,
+            4,
+            "0x804a9a5c",
+            0
+          ],
+          [
+            32,
+            4294967295,
+            "0x8000bb38",
+            2
+          ]
+        ]
+      },
+      {
+        "name": "usb_endpoints",
+        "address": "0x8000dbb0",
+        "length": 444,
+        "anchor_offset": 8,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0xa4200006",
+        "crc32": "0xa5ce767d",
+        "refs": [
+          [
+            172,
+            176,
+            "0x804a9a78",
+            0
+          ],
+          [
+            180,
+            184,
+            "0x804a9a72",
+            0
+          ],
+          [
+            236,
+            240,
+            "0x804a9a75",
+            0
+          ],
+          [
+            252,
+            256,
+            "0x803574b0",
+            0
+          ],
+          [
+            264,
+            4294967295,
+            "0x8000d8d0",
+            2
+          ],
+          [
+            272,
+            276,
+            "0x80256820",
+            0
+          ],
+          [
+            280,
+            4294967295,
+            "0x800098e4",
+            2
+          ],
+          [
+            396,
+            400,
+            "0x803574b0",
+            0
+          ],
+          [
+            412,
+            416,
+            "0x804a9a75",
+            0
+          ],
+          [
+            424,
+            4294967295,
+            "0x8000d8d0",
+            2
+          ],
+          [
+            436,
+            4294967295,
+            "0x8000dcc8",
+            2
+          ],
+          [
+            432,
+            440,
+            "0x80256844",
+            0
+          ]
+        ]
+      },
+      {
+        "name": "bda_seed_copy",
+        "address": "0x8002d3d8",
+        "length": 52,
+        "anchor_offset": 12,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x3c0381c0",
+        "crc32": "0x1428316a",
+        "refs": [
+          [
+            4,
+            8,
+            "0x8029c8c0",
+            0
+          ]
+        ]
+      },
+      {
+        "name": "lcd_descriptor_init",
+        "address": "0x80010cf4",
+        "length": 256,
+        "anchor_offset": 20,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x38c2000f",
+        "crc32": "0x56445c8b",
+        "refs": [
+          [
+            0,
+            4,
+            "0x803575bc",
+            0
+          ],
+          [
+            12,
+            16,
+            "0x803575b4",
+            0
+          ],
+          [
+            44,
+            48,
+            "0x803575b0",
+            0
+          ],
+          [
+            52,
+            56,
+            "0x803575b8",
+            0
+          ],
+          [
+            76,
+            80,
+            "0x804ad820",
+            0
+          ],
+          [
+            84,
+            88,
+            "0x804ad830",
+            0
+          ],
+          [
+            92,
+            96,
+            "0x804ad840",
+            0
+          ],
+          [
+            172,
+            176,
+            "0x803575e8",
+            0
+          ],
+          [
+            180,
+            184,
+            "0x803575e0",
+            0
+          ]
+        ]
+      },
+      {
+        "name": "vbus_gpio_setup",
+        "address": "0x800632e0",
+        "length": 144,
+        "anchor_offset": 36,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x34630114",
+        "crc32": "0xc11352f7",
+        "refs": [
+          [
+            92,
+            96,
+            "0x80063270",
+            0
+          ],
+          [
+            124,
+            4294967295,
+            "0x800050a8",
+            2
+          ]
+        ]
+      },
+      {
+        "name": "gui_msgbox_entry",
+        "address": "0x800cf744",
+        "length": 128,
+        "anchor_offset": 56,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0xafa9001c",
+        "crc32": "0x4bbff0eb",
+        "refs": [
+          [
+            52,
+            4294967295,
+            "0x800e9de4",
+            2
+          ],
+          [
+            72,
+            76,
+            "0x804a9b6c",
+            0
+          ],
+          [
+            88,
+            92,
+            "0x804a9b6c",
+            0
+          ],
+          [
+            108,
+            116,
+            "0x804a9b6c",
+            0
+          ]
+        ]
+      },
+      {
+        "name": "direct_helper_entry_0x80006670",
+        "address": "0x80006670",
+        "length": 64,
+        "anchor_offset": 52,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x2450fff8",
+        "crc32": "0x6a9dd01d",
+        "refs": [
+          [
+            24,
+            28,
+            "0x804a99e8",
+            0
+          ],
+          [
+            32,
+            36,
+            "0x804a99dc",
+            0
+          ]
+        ],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x80006bfc",
+        "address": "0x80006bfc",
+        "length": 36,
+        "anchor_offset": 12,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x21e00",
+        "crc32": "0x7fc195d3",
+        "refs": [],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x80007480",
+        "address": "0x80007480",
+        "length": 64,
+        "anchor_offset": 24,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x10800033",
+        "crc32": "0xe3f555f1",
+        "refs": [
+          [
+            32,
+            36,
+            "0x804a99e4",
+            0
+          ],
+          [
+            40,
+            44,
+            "0x804a99ec",
+            0
+          ],
+          [
+            48,
+            52,
+            "0x804a99dc",
+            0
+          ]
+        ],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x80007b40",
+        "address": "0x80007b40",
+        "length": 8,
+        "anchor_offset": 0,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x3e00008",
+        "crc32": "0xe723a58e",
+        "refs": [],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x80007b48",
+        "address": "0x80007b48",
+        "length": 8,
+        "anchor_offset": 0,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x3e00008",
+        "crc32": "0xe723a58e",
+        "refs": [],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x80007b7c",
+        "address": "0x80007b7c",
+        "length": 8,
+        "anchor_offset": 0,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x3e00008",
+        "crc32": "0xe723a58e",
+        "refs": [],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x8000896c",
+        "address": "0x8000896c",
+        "length": 8,
+        "anchor_offset": 0,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x3e00008",
+        "crc32": "0xe723a58e",
+        "refs": [],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x80009598",
+        "address": "0x80009598",
+        "length": 36,
+        "anchor_offset": 32,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0xac400028",
+        "crc32": "0xc36e65bb",
+        "refs": [],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x800098e4",
+        "address": "0x800098e4",
+        "length": 28,
+        "anchor_offset": 16,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x27bdfbf0",
+        "crc32": "0xdbab8eca",
+        "refs": [],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x8000b37c",
+        "address": "0x8000b37c",
+        "length": 64,
+        "anchor_offset": 28,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x12000005",
+        "crc32": "0xa2e5e88b",
+        "refs": [],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x8000ba24",
+        "address": "0x8000ba24",
+        "length": 64,
+        "anchor_offset": 52,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0xa2220000",
+        "crc32": "0x10b9c276",
+        "refs": [
+          [
+            0,
+            4,
+            "0x804a9a3d",
+            0
+          ]
+        ],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x8000bb38",
+        "address": "0x8000bb38",
+        "length": 64,
+        "anchor_offset": 20,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x12000005",
+        "crc32": "0x2002a143",
+        "refs": [],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x8000ca84",
+        "address": "0x8000ca84",
+        "length": 52,
+        "anchor_offset": 8,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x30c20002",
+        "crc32": "0xc779f326",
+        "refs": [],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x8000d8d0",
+        "address": "0x8000d8d0",
+        "length": 64,
+        "anchor_offset": 16,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x30b1ffff",
+        "crc32": "0x4ec6e382",
+        "refs": [
+          [
+            20,
+            4294967295,
+            "0x8000db54",
+            2
+          ],
+          [
+            28,
+            32,
+            "0x80357488",
+            0
+          ],
+          [
+            44,
+            48,
+            "0x804aa788",
+            0
+          ],
+          [
+            52,
+            56,
+            "0x804aa784",
+            0
+          ]
+        ],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x80024d2c",
+        "address": "0x80024d2c",
+        "length": 64,
+        "anchor_offset": 52,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x3c03efff",
+        "crc32": "0x20883df7",
+        "refs": [
+          [
+            0,
+            4,
+            "0x804addec",
+            0
+          ],
+          [
+            8,
+            12,
+            "0x80381564",
+            0
+          ],
+          [
+            36,
+            40,
+            "0x804addec",
+            0
+          ],
+          [
+            44,
+            4294967295,
+            "0x80064858",
+            2
+          ]
+        ],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x800b0e18",
+        "address": "0x800b0e18",
+        "length": 64,
+        "anchor_offset": 0,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x27bdff84",
+        "crc32": "0x5edd4985",
+        "refs": [],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x800b12f0",
+        "address": "0x800b12f0",
+        "length": 64,
+        "anchor_offset": 24,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x3421fffe",
+        "crc32": "0x25d9d7a3",
+        "refs": [],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x800b1330",
+        "address": "0x800b1330",
+        "length": 32,
+        "anchor_offset": 4,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x40846000",
+        "crc32": "0x4b040c7c",
+        "refs": [],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x800b1350",
+        "address": "0x800b1350",
+        "length": 28,
+        "anchor_offset": 0,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x40026000",
+        "crc32": "0xbf653b8e",
+        "refs": [],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x800e9de4",
+        "address": "0x800e9de4",
+        "length": 64,
+        "anchor_offset": 12,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0xe04021",
+        "crc32": "0x447d2383",
+        "refs": [],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x801914a0",
+        "address": "0x801914a0",
+        "length": 20,
+        "anchor_offset": 4,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x34420314",
+        "crc32": "0x5b68299d",
+        "refs": [],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x801914b4",
+        "address": "0x801914b4",
+        "length": 52,
+        "anchor_offset": 8,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0x34420318",
+        "crc32": "0xf3b4787d",
+        "refs": [
+          [
+            20,
+            24,
+            "0x80315430",
+            0
+          ],
+          [
+            32,
+            4294967295,
+            "0x801914f8",
+            2
+          ]
+        ],
+        "scope": "entry-prefix"
+      },
+      {
+        "name": "direct_helper_entry_0x801925d8",
+        "address": "0x801925d8",
+        "length": 44,
+        "anchor_offset": 4,
+        "anchor_mask": "0xffffffff",
+        "anchor_value": "0xafbf0010",
+        "crc32": "0xe4db125a",
+        "refs": [
+          [
+            8,
+            4294967295,
+            "0x8019fb60",
+            2
+          ],
+          [
+            16,
+            4294967295,
+            "0x8019fb68",
+            2
+          ],
+          [
+            24,
+            4294967295,
+            "0x8019ef1c",
+            2
+          ]
+        ],
+        "scope": "entry-prefix"
+      }
+    ],
+    "tables": [
+      {
+        "macro": "FW_GUI_TABLE",
+        "address": "0x8029c0a0",
+        "values": [
+          "0x800dca00",
+          "0x800ddb50",
+          "0x800e4f90",
+          "0x800e5090",
+          "0x800e7890",
+          "0x800e7a30",
+          "0x800e7bf8",
+          "0x800e7d14",
+          "0x800e7e30",
+          "0x800e7ee4",
+          "0x800b13b0",
+          "0x800b1774",
+          "0x800e51d0",
+          "0x800e6438",
+          "0x800e5f6c",
+          "0x800e60d0",
+          "0x800e6580",
+          "0x800e65c0",
+          "0x800e64dc",
+          "0x800e651c",
+          "0x800e7578",
+          "0x800e66b8",
+          "0x800e5e08",
+          "0x800e5d2c",
+          "0x800d7d88",
+          "0x800d7db0",
+          "0x800d7dd8",
+          "0x80135bec",
+          "0x80135af0",
+          "0x800ddaa8",
+          "0x800ddaf4",
+          "0x800d76c8",
+          "0x800d76fc",
+          "0x800d53c8",
+          "0x800d7290",
+          "0x800d3ac0",
+          "0x800d6aa4",
+          "0x800d7350",
+          "0x800d56ec",
+          "0x800d73d4",
+          "0x800d7458",
+          "0x800d75c8",
+          "0x800d7648",
+          "0x800d7670",
+          "0x800d76a0",
+          "0x800d7730",
+          "0x800d7758",
+          "0x800d7780",
+          "0x800d77b0",
+          "0x800d77d8",
+          "0x800d7808",
+          "0x800d7844",
+          "0x800d79dc",
+          "0x800d7a04",
+          "0x800d7980",
+          "0x800d79a8",
+          "0x800d6164",
+          "0x800d7b28",
+          "0x800d7bf0",
+          "0x800d6820",
+          "0x800d68d0",
+          "0x800d746c",
+          "0x800d5864",
+          "0x800d7554",
+          "0x800d74e0",
+          "0x800d4164",
+          "0x800d6cac",
+          "0x800d6c88",
+          "0x800d6cd8",
+          "0x800d78c4",
+          "0x800d7938",
+          "0x800d6cfc",
+          "0x800d6d28",
+          "0x800d6d6c",
+          "0x800d7abc",
+          "0x800d7ae0",
+          "0x800d7b00",
+          "0x800d3f3c",
+          "0x800d6ad4",
+          "0x800d4004",
+          "0x800d4080",
+          "0x800d40cc",
+          "0x800d4030",
+          "0x800d6b04",
+          "0x800d4058",
+          "0x800d58d8",
+          "0x800d6db0",
+          "0x800d6df8",
+          "0x800d7094",
+          "0x800d70f4",
+          "0x800d4288",
+          "0x800d45a4",
+          "0x800d4cf4",
+          "0x800d4920",
+          "0x800d715c",
+          "0x800d71fc",
+          "0x800d40f4",
+          "0x800d4140",
+          "0x800ddbd0",
+          "0x800ddbf4",
+          "0x800d7cd8",
+          "0x800d7d04",
+          "0x800d7890",
+          "0x800d7d30",
+          "0x800d7d5c",
+          "0x800d61ac",
+          "0x800d661c",
+          "0x800e7350",
+          "0x800e7390",
+          "0x800e72a8",
+          "0x800e73c8",
+          "0x800e7344",
+          "0x0",
+          "0x800d7e00",
+          "0x800d7e28",
+          "0x800d7e50",
+          "0x800d7e78",
+          "0x800cdc80",
+          "0x800ce0d8",
+          "0x800ce2c0",
+          "0x800ce368",
+          "0x800ce380",
+          "0x800ce304",
+          "0x800ce3cc",
+          "0x800ce53c",
+          "0x800cdf74",
+          "0x800ce5f8",
+          "0x800ce468",
+          "0x800d0940",
+          "0x800d0988",
+          "0x800cf7c0",
+          "0x800cfa1c",
+          "0x800d0a5c",
+          "0x800d0ad4",
+          "0x800d0b4c",
+          "0x800d0c7c",
+          "0x800d0f1c",
+          "0x800d0f64",
+          "0x800d0ff0",
+          "0x800d0754",
+          "0x800d105c",
+          "0x800cfe94",
+          "0x800cffe4",
+          "0x800d0c9c",
+          "0x800cfb98",
+          "0x800d0db0",
+          "0x800d0cf4",
+          "0x800d0d24",
+          "0x800cfc04",
+          "0x800d0f90",
+          "0x800d0e8c",
+          "0x800cfda0",
+          "0x800d0ed8",
+          "0x800cfc70",
+          "0x800ce690",
+          "0x800cf28c",
+          "0x800ce854",
+          "0x800cf2ec",
+          "0x800cf254",
+          "0x800cea80",
+          "0x800cef14",
+          "0x800ceed4",
+          "0x800ceee8",
+          "0x800cf398",
+          "0x800cf4cc",
+          "0x800cf528",
+          "0x800cef70",
+          "0x800cf130",
+          "0x800cf340",
+          "0x800cf438",
+          "0x800cf5ec",
+          "0x800cf63c",
+          "0x800cf6c0",
+          "0x800cf700",
+          "0x800cf744",
+          "0x800cf78c",
+          "0x800cf7b0",
+          "0x800dc084",
+          "0x800dbee0",
+          "0x800dbfd0",
+          "0x800dc098",
+          "0x800dc468",
+          "0x800dc618",
+          "0x800dc0c0",
+          "0x800dc4a4",
+          "0x800dc4c8",
+          "0x800dc5b8",
+          "0x800dc5c4",
+          "0x800dc730",
+          "0x800dc7f0",
+          "0x800dc1e4",
+          "0x800c656c",
+          "0x800c5afc",
+          "0x800c60ec",
+          "0x800c6050",
+          "0x800c66b0",
+          "0x800c6300",
+          "0x800c6784",
+          "0x800c6454",
+          "0x800c64e0",
+          "0x800c6870",
+          "0x800c6830",
+          "0x800bbe40",
+          "0x800bbe54",
+          "0x800bbe68",
+          "0x800bbe7c",
+          "0x800bbe94",
+          "0x800bbeac",
+          "0x800bbec4",
+          "0x800bbed8",
+          "0x800bbef0",
+          "0x800bbf04",
+          "0x800bbf18",
+          "0x800bbf2c",
+          "0x800bbf40",
+          "0x800bbf58",
+          "0x800bbf70",
+          "0x800bbf88",
+          "0x800bfac0",
+          "0x800bfcf8",
+          "0x800bff60",
+          "0x800c0134",
+          "0x800c54e0",
+          "0x800c035c",
+          "0x800c5528",
+          "0x800c5540",
+          "0x800c0694",
+          "0x800c08d8",
+          "0x800c11a0",
+          "0x800c3860",
+          "0x800c3adc",
+          "0x800c0bc4",
+          "0x800c8c40",
+          "0x800c8c54",
+          "0x800c8c74",
+          "0x800c8c94",
+          "0x800c8cb4",
+          "0x800c8cd4",
+          "0x800c8ce8",
+          "0x800c8d08",
+          "0x800c8d28",
+          "0x800c8d48",
+          "0x800bf840",
+          "0x800bf8e8",
+          "0x800bfa34",
+          "0x800bf9b0",
+          "0x800bf054",
+          "0x800bf240",
+          "0x800bf460",
+          "0x800bee00",
+          "0x800bf63c",
+          "0x800bf6f0",
+          "0x800bf720",
+          "0x800bf7ac",
+          "0x800c9da8",
+          "0x800c9df0",
+          "0x800c9e90",
+          "0x800bcb50",
+          "0x800be8dc",
+          "0x800bc030",
+          "0x800bc324",
+          "0x800bc6c0",
+          "0x800bcf90",
+          "0x800bd2f4",
+          "0x800c6d50",
+          "0x800c7048",
+          "0x800c76c4",
+          "0x800c7260",
+          "0x800c9610",
+          "0x800c9628",
+          "0x800c9648",
+          "0x800c9664",
+          "0x800c968c",
+          "0x800c96d8",
+          "0x800c976c",
+          "0x800c9718",
+          "0x800c97e0",
+          "0x800c92b0",
+          "0x800c9844",
+          "0x800c949c",
+          "0x800c9958",
+          "0x800c998c",
+          "0x800c99c0",
+          "0x800c9a18",
+          "0x80132c28",
+          "0x801331c4",
+          "0x801331f4",
+          "0x80132d20",
+          "0x80133280",
+          "0x801332a4",
+          "0x801332c8",
+          "0x80132fb4",
+          "0x800c8884",
+          "0x800c8850",
+          "0x800c8928",
+          "0x800c8994",
+          "0x800c8988",
+          "0x800c8944",
+          "0x800c8958",
+          "0x80131438",
+          "0x80131440",
+          "0x80131448",
+          "0x80131450",
+          "0x800ca96c",
+          "0x800caa50",
+          "0x800cafb8",
+          "0x800cb038",
+          "0x800cac5c",
+          "0x800cae68",
+          "0x800cae80",
+          "0x800caf00",
+          "0x800bbfa0",
+          "0x800bbfcc",
+          "0x800bbfe0",
+          "0x800bbff8",
+          "0x800bc00c",
+          "0x800c9f40",
+          "0x800caf78",
+          "0x800ca1b8",
+          "0x800cb580",
+          "0x800cb810",
+          "0x800ccb88",
+          "0x800cdad4",
+          "0x800c928c",
+          "0x800c8fac",
+          "0x800bd7ec",
+          "0x800beb70",
+          "0x800bda0c",
+          "0x800bdc88",
+          "0x800be1dc",
+          "0x800be6c8",
+          "0x800b8600",
+          "0x800b8c30",
+          "0x800b8d98",
+          "0x0",
+          "0x0",
+          "0x800c4a64",
+          "0x800bb12c",
+          "0x800bbdb8",
+          "0x800ecbe4",
+          "0x80139a38",
+          "0x80139e9c",
+          "0x8013d9ac",
+          "0x80139b18",
+          "0x8013d9fc",
+          "0x8013d9a0",
+          "0x8013da08",
+          "0x8013da14",
+          "0x8013d95c",
+          "0x800ecc88",
+          "0x800ba6f4",
+          "0x800bb370",
+          "0x800bb4e0",
+          "0x800bbb0c",
+          "0x800bb6c0",
+          "0x800bb75c",
+          "0x800ba864",
+          "0x800baa14",
+          "0x800bac20",
+          "0x800bb904",
+          "0x800bbba8",
+          "0x800bbc14",
+          "0x800e4ad8",
+          "0x800ecc98",
+          "0x8002d40c",
+          "0x800bae2c",
+          "0x800bb010",
+          "0x800c4d84",
+          "0x800dd9f0",
+          "0x8001cc70",
+          "0x0",
+          "0x800bbc34",
+          "0x8001cda0",
+          "0x8001bba8",
+          "0x800bbdc4",
+          "0x8013dab4",
+          "0x8001cc88",
+          "0x800de00c",
+          "0x800de0ec",
+          "0x800de1c8",
+          "0x800de1d4",
+          "0x800d7ef0",
+          "0x8001cc90",
+          "0x8001cc98",
+          "0x800c9a70",
+          "0x800de1f0",
+          "0x800de1e0",
+          "0x8001cca0",
+          "0x800e4c84",
+          "0x800ecc40",
+          "0x8001cca8",
+          "0x800de218",
+          "0x800ecd38",
+          "0x800ecd10",
+          "0x800ecd70",
+          "0x800ecc68",
+          "0x800e3e2c",
+          "0x800ec5c4",
+          "0x800ec674",
+          "0x800eb728",
+          "0x800eb8c8",
+          "0x800eba68",
+          "0x800ebc14",
+          "0x800ec738",
+          "0x800ec7f4",
+          "0x800ec3e4",
+          "0x800ec46c",
+          "0x800ec8c4",
+          "0x800ec000",
+          "0x800eca44",
+          "0x800ec38c",
+          "0x800eaeb0",
+          "0x800eb174",
+          "0x800ec9c4",
+          "0x800ec0ec",
+          "0x8001ac90",
+          "0x80134acc",
+          "0x80134908",
+          "0x800131dc",
+          "0x800131e4",
+          "0x800e9de4",
+          "0x8013daf0",
+          "0x80045080",
+          "0x8002496c",
+          "0x800249fc",
+          "0x800249b4",
+          "0x80022d80",
+          "0x80025308",
+          "0x80010b24",
+          "0x80044fb0",
+          "0x80044f50",
+          "0x80044f34",
+          "0x8001a980",
+          "0x8001ac9c",
+          "0x80045064",
+          "0x800317fc",
+          "0x80031a00",
+          "0x80032c0c",
+          "0x80134fb0",
+          "0x80016d94",
+          "0x800648b4",
+          "0x80024cd0",
+          "0x80024ce0",
+          "0x80024d14",
+          "0x8001aca8",
+          "0x800076d8",
+          "0x80007768",
+          "0x80021350",
+          "0x80021344",
+          "0x80024b8c",
+          "0x8013dd7c",
+          "0x8013dd74",
+          "0x800200f4",
+          "0x8001f8f0",
+          "0x8001f9c0",
+          "0x8001f9f0",
+          "0x8001f9fc",
+          "0x8001acb4",
+          "0x8001cc80",
+          "0x80063424",
+          "0x800634ac",
+          "0x80062f04",
+          "0x800265c4",
+          "0x800201bc",
+          "0x800201c8",
+          "0x800e9e3c",
+          "0x800e9ed4",
+          "0x80012fd8",
+          "0x8001fa6c",
+          "0x80064948",
+          "0x80024828",
+          "0x80191490",
+          "0x8013dde8",
+          "0x80065444",
+          "0x80065454",
+          "0x8002d214",
+          "0x8006338c",
+          "0x80147344",
+          "0x8018155c",
+          "0x801819b0",
+          "0x800ef168",
+          "0x800ef1b0",
+          "0x80065628",
+          "0x80065644",
+          "0x800cc9a8",
+          "0x8013d644",
+          "0x8013ddf4",
+          "0x8001ccc0",
+          "0x8001ccc8",
+          "0x800384cc",
+          "0x800384ec",
+          "0x80038610",
+          "0x80038634",
+          "0x80035844",
+          "0x80034214",
+          "0x800343a0",
+          "0x8002d2d0",
+          "0x800267b0",
+          "0x800c81c4",
+          "0x800246e0",
+          "0x800245c4",
+          "0x800245d0",
+          "0x80032ccc",
+          "0x8013d7d4",
+          "0x800344dc",
+          "0x800346bc",
+          "0x80038a7c",
+          "0x800c50b4",
+          "0x800c5378",
+          "0x800ddb7c",
+          "0x80025594",
+          "0x8002d338",
+          "0x8002d330",
+          "0x800c854c",
+          "0x800ebf2c",
+          "0x800572e0",
+          "0x800c7df8",
+          "0x8019db24",
+          "0x8004d490",
+          "0x8004d484"
+        ]
+      },
+      {
+        "macro": "FW_FS_TABLE",
+        "address": "0x8029c010",
+        "values": [
+          "0x80179da8",
+          "0x80183b60",
+          "0x80183bb0",
+          "0x80183d64",
+          "0x8017a4e0",
+          "0x80183e50",
+          "0x80183ebc",
+          "0x80183f34",
+          "0x80183fa8",
+          "0x8017aa34",
+          "0x8017af64",
+          "0x80179058",
+          "0x8017b1cc",
+          "0x8017b760",
+          "0x8017bb48",
+          "0x8017b870",
+          "0x8018400c",
+          "0x801840c8",
+          "0x8017b994",
+          "0x801792b8",
+          "0x80179310",
+          "0x80183310",
+          "0x80182bd0",
+          "0x8018155c",
+          "0x8018ab4c",
+          "0x801841ec",
+          "0x80183438",
+          "0x80183824",
+          "0x80183c9c",
+          "0x80184308",
+          "0x80182764",
+          "0x8017982c",
+          "0x80183940",
+          "0x0",
+          "0x0",
+          "0x0"
+        ]
+      },
+      {
+        "macro": "FW_SYS_TABLE",
+        "address": "0x8029bea0",
+        "values": [
+          "0x8018e120",
+          "0x8018e804",
+          "0x8018ea18",
+          "0x8018ec04",
+          "0x8018ede0",
+          "0x8018efd0",
+          "0x8019104c",
+          "0x80191100",
+          "0x8018f124",
+          "0x801911e8",
+          "0x801911f0",
+          "0x8018f210",
+          "0x801912a4",
+          "0x80191310",
+          "0x80191378",
+          "0x80192654",
+          "0x8019260c",
+          "0x80192638",
+          "0x801929c4",
+          "0x801929cc",
+          "0x801982f4",
+          "0x801982fc",
+          "0x801980a4",
+          "0x80197d48",
+          "0x80198288",
+          "0x801982c0",
+          "0x80198208",
+          "0x8019e154",
+          "0x8019d160",
+          "0x8019eb50",
+          "0x8019de20",
+          "0x800131d4",
+          "0x800043a0",
+          "0x8001bd20",
+          "0x8001baf4",
+          "0x8001f814",
+          "0x8001f6e4",
+          "0x8001f6f0",
+          "0x8001f854",
+          "0x80024a5c",
+          "0x801925d8",
+          "0x80013f24",
+          "0x80013f2c",
+          "0x80016064",
+          "0x800161a8",
+          "0x8001627c",
+          "0x80014de4",
+          "0x80017e24",
+          "0x80017de8",
+          "0x80017b30",
+          "0x80017ddc",
+          "0x0"
+        ]
+      },
+      {
+        "macro": "FW_MEM_TABLE",
+        "address": "0x8029c8dc",
+        "values": [
+          "0x800616c4",
+          "0x80061768",
+          "0x80007688",
+          "0x80006844",
+          "0x8000660c",
+          "0x800077f0",
+          "0x8000760c",
+          "0x800616a4",
+          "0x800617dc",
+          "0x800618a0",
+          "0x80061970",
+          "0x80061a08",
+          "0x0"
+        ]
+      },
+      {
+        "macro": "FW_RES_TABLE",
+        "address": "0x8029bf70",
+        "values": [
+          "0x801471e4",
+          "0x80143cf0",
+          "0x80144d40",
+          "0x80144e10",
+          "0x80147218",
+          "0x80144f58",
+          "0x80145478",
+          "0x801461c4",
+          "0x80146534",
+          "0x80151c74",
+          "0x80151de0",
+          "0x80151cf8",
+          "0x8014fa24",
+          "0x8015bf90",
+          "0x80151760",
+          "0x8014c424",
+          "0x8014c150",
+          "0x80151448",
+          "0x801659f8",
+          "0x80165a40",
+          "0x8016ad30",
+          "0x80152948",
+          "0x8015bc5c",
+          "0x8001cc78",
+          "0x80140724",
+          "0x80151ba0",
+          "0x8014179c",
+          "0x80141378",
+          "0x8014643c",
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x80016a28",
+          "0x80017b74",
+          "0x800098e4",
+          "0x8014358c",
+          "0x0"
+        ]
+      }
+    ],
+    "bindings": {
+      "FW_TASK_TABLE": [
+        "0x806fb950",
+        0
+      ],
+      "FW_TASK_CREATE_EXT": [
+        "0x8000c0fc",
+        0
+      ],
+      "FW_TASK_DELETE": [
+        "0x8000c280",
+        0
+      ],
+      "FW_TASK_DELAY": [
+        "0x8000ce9c",
+        0
+      ],
+      "FW_TASK_RESUME": [
+        "0x8000cdb0",
+        0
+      ],
+      "FW_RAW_TICK": [
+        "0x80134fb0",
+        0
+      ],
+      "FW_TICK_IRQ_SLOT": [
+        "0x804aa1a4",
+        176
+      ],
+      "FW_TICK_IRQ_HANDLER": [
+        "0x80134d90",
+        0
+      ],
+      "FW_CURRENT_TCB": [
+        "0x804a9a40",
+        0
+      ],
+      "FW_OS_RUNNING": [
+        "0x804a99f9",
+        0
+      ],
+      "FW_SCHED_LOCK": [
+        "0x804a99f8",
+        0
+      ],
+      "FW_INT_NESTING": [
+        "0x804a9a3d",
+        0
+      ],
+      "FW_GLOBAL_ALLOC": [
+        "0x80007688",
+        0
+      ],
+      "FW_GLOBAL_FREE": [
+        "0x80006844",
+        0
+      ],
+      "FW_LCD_WIDTH": [
+        "0x803575b4",
+        0
+      ],
+      "FW_LCD_HEIGHT": [
+        "0x803575b8",
+        0
+      ],
+      "FW_LCD_BITS": [
+        "0x803575bc",
+        0
+      ],
+      "FW_GUI_TABLE": [
+        "0x8029c0a0",
+        0
+      ],
+      "FW_FS_TABLE": [
+        "0x8029c010",
+        0
+      ],
+      "FW_SYS_TABLE": [
+        "0x8029bea0",
+        0
+      ],
+      "FW_MEM_TABLE": [
+        "0x8029c8dc",
+        0
+      ],
+      "FW_RES_TABLE": [
+        "0x8029bf70",
+        0
+      ],
+      "FW_NATIVE_USB_INIT": [
+        "0x8000ec0c",
+        0
+      ],
+      "FW_NATIVE_USB_IRQ": [
+        "0x8000ed6c",
+        0
+      ],
+      "FW_NATIVE_USB_ENDPOINTS": [
+        "0x8000dbb0",
+        0
+      ],
+      "FW_USB_IRQ_SLOT": [
+        "0x804aa1a4",
+        192
+      ]
+    }
+  }
 }

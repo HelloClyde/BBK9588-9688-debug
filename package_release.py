@@ -211,6 +211,21 @@ def load_build(path, commit, sdk_commit):
     return models, artifacts
 
 
+def compatibility_lines(models, artifacts):
+    descriptions = {
+        "9588": "一个通用 BDA 支持已核对的 JZ4740/V3.30、JZ4730/V1.30、JZ4720/V3.2",
+        "9688": "V2.32 / JZ4740、JZ4730 共用一个 BDA",
+    }
+    lines = []
+    for model in models:
+        items = [item for item in artifacts if item["model"] == model]
+        accepted = bool(items) and all(item.get("hardware_verified") is True for item in items)
+        chips = sorted({chip for item in items for chip in item.get("hardware_verified_chips", [])})
+        scope = ("本次文件真机验收覆盖 " + "、".join(chips) + "，其余芯片尚未验收") if accepted and chips else "本次文件尚无真机 USB 验收，历史文件记录不自动沿用"
+        lines.append("- " + model + "：" + descriptions[model] + "；" + scope + "。")
+    return lines
+
+
 def host_files(models):
     items = []
     for name in ("README.md", "INSTALL.md", "LICENSE", "NOTICE", "NOTICE.md", "requirements.txt"):
@@ -223,6 +238,10 @@ def host_files(models):
         client = next((name for name in candidates if (ROOT/name).is_file()), None)
         require(client is not None, "No PC client for declared model "+model)
         items.append((client, project_file(client).read_bytes(), 0o644))
+        # The built-in workflow client ships alongside client.py.
+        workflow = base+"workflow.py"
+        if (ROOT/workflow).is_file():
+            items.append((workflow, project_file(workflow).read_bytes(), 0o644))
         for path in sorted((ROOT/base).rglob("*")):
             name = path.relative_to(ROOT).as_posix()
             local = path.relative_to(ROOT/base)
@@ -264,11 +283,7 @@ def package(build_path, output, expected_commit=None):
                  "构建提交：`"+commit+"`", "固定 SDK：`"+sdk_commit+"`", "",
                  "验证分层及硬件适用范围以 README、构建清单和验收记录为准。编译/控制器模型通过不等于新增真机覆盖。", "",
                  "安装包提供 PC 客户端；EXEC 编译需要另行准备固定工具链。源码包包含展开的固定 SDK，不包含固件或私有设备数据。", ""]
-        compatibility = []
-        if "9588" in models:
-            compatibility.append("- 9588：一个通用 BDA 支持已核对的 JZ4740/V3.30、JZ4730/V1.30、JZ4720/V3.2；真机尚未验收。")
-        if "9688" in models:
-            compatibility.append("- 9688：V2.32 / JZ4740、JZ4730 共用一个 BDA；真机验收覆盖 JZ4740，JZ4730 为模型验证。")
+        compatibility = compatibility_lines(models, [item for item, _ in artifacts])
         notes[6:6] = compatibility + [""]
         (stage/"RELEASE-NOTES.md").write_bytes("\n".join(notes).encode("utf-8"))
         assets = {path.name: {"sha256": digest(path.read_bytes()), "bytes": path.stat().st_size}
@@ -312,6 +327,9 @@ def verify(output, *, expected_commit=None, tag=None):
         require(path.is_file() and digest(path.read_bytes()) == expected, "Release digest mismatch: "+name)
         if name in assets:
             require(assets[name] == {"sha256": expected, "bytes": path.stat().st_size}, "Release manifest asset mismatch: "+name)
+    notes = (output/"RELEASE-NOTES.md").read_text(encoding="utf-8")
+    for line in compatibility_lines(payload["models"], payload["artifacts"]):
+        require(line in notes, "Release notes do not match exact-artifact hardware acceptance")
     source_name = f"{NAME}-v{version()}-source.zip"
     with zipfile.ZipFile(output/source_name) as archive:
         names = archive.namelist()

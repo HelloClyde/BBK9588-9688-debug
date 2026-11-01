@@ -12,6 +12,8 @@
 #endif
 /* Screen dimensions and all call limits must come from a checked 9588 profile. */
 int fw_matches(void);
+uint32_t fw_binding_id(void);
+unsigned fw_discovery_info(uint32_t *out,unsigned capacity);
 uint32_t fw_selected_soc(void);
 uint32_t fw_match_error(void);
 int fw_notice_safe(void);
