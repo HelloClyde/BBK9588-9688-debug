@@ -395,7 +395,8 @@ class WorkflowTests(unittest.TestCase):
             plan=Path(directory)/"plan.jsonl"
             plan.write_text('{"action":"deploy","files":[{"source":"app.bda","target":"A:/app.bda"}]}\n{"action":"input","kind":"tap","target":"0x9000","code":"0x1c"}\n',encoding="utf-8")
             steps=workflow.read_steps(plan)
-        self.assertEqual(Path(steps[0]["files"][0]["source"]),Path(directory)/"app.bda")
+            expected_source=(Path(directory)/"app.bda").resolve()
+        self.assertEqual(Path(steps[0]["files"][0]["source"]),expected_source)
         self.assertEqual(steps[1]["target"],0x9000)
 
     def test_session_cli_reports_a_failed_plan_with_nonzero_exit(self):
