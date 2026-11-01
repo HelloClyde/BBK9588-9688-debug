@@ -14,7 +14,7 @@
 
 ```powershell
 git submodule update --init sdk
-python -m pip install -r 9688-debug/requirements.txt
+python -m pip install -r requirements-dev.txt
 powershell -ExecutionPolicy Bypass -File sdk/scripts/setup_toolchain.ps1
 python 9688-debug/build.py
 ```
