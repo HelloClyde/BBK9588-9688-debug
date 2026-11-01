@@ -1,0 +1,390 @@
+{
+  "schema_version": 1,
+  "version": "0.2.0-alpha.1",
+  "python": "3.11.5",
+  "result": "passed",
+  "total_full_rom_models": 716,
+  "full_rom_models_zero_skip": true,
+  "targets": [
+    {
+      "target": "9588",
+      "binary": "Debug9588.bda",
+      "bytes": 290616,
+      "sha256": "a41a109ec3959b5bc7df6b2065235eb5cea8c6fbcf935c7f29abcc2a4f8ec382",
+      "compiler": "mipsel-none-elf-gcc.exe (GCC) 15.2.0",
+      "sdk_commit": "ef3bf3b7328a3a8fa9ba48593c63285300725fb7",
+      "supported_socs": [
+        "JZ4740",
+        "JZ4730",
+        "JZ4720"
+      ],
+      "full_local_rom_models": {
+        "suites": [
+          {
+            "modules": [
+              "test_build",
+              "test_client",
+              "test_device",
+              "test_runtime",
+              "test_usb",
+              "test_verify",
+              "test_discovery",
+              "test_management",
+              "test_workflow_client",
+              "test_workflow_device"
+            ],
+            "run": 136,
+            "passed": 136,
+            "skipped": 0,
+            "skipped_tests": 0,
+            "skipped_subtests": 0,
+            "success": true,
+            "log": "verify-jz4740-tests.log"
+          },
+          {
+            "modules": [
+              "test_build",
+              "test_client",
+              "test_device",
+              "test_runtime",
+              "test_usb_jz4730",
+              "test_verify",
+              "test_discovery",
+              "test_management",
+              "test_workflow_client",
+              "test_workflow_device"
+            ],
+            "run": 140,
+            "passed": 140,
+            "skipped": 0,
+            "skipped_tests": 0,
+            "skipped_subtests": 0,
+            "success": true,
+            "log": "verify-jz4730-tests.log"
+          },
+          {
+            "modules": [
+              "test_build",
+              "test_client",
+              "test_device",
+              "test_runtime",
+              "test_usb",
+              "test_verify",
+              "test_discovery",
+              "test_management",
+              "test_workflow_client",
+              "test_workflow_device"
+            ],
+            "run": 136,
+            "passed": 136,
+            "skipped": 0,
+            "skipped_tests": 0,
+            "skipped_subtests": 0,
+            "success": true,
+            "log": "verify-jz4720-tests.log"
+          },
+          {
+            "modules": [
+              "test_universal"
+            ],
+            "run": 9,
+            "passed": 9,
+            "skipped": 0,
+            "skipped_tests": 0,
+            "skipped_subtests": 0,
+            "success": true,
+            "log": "verify-universal-tests.log"
+          }
+        ],
+        "run": 421,
+        "passed": 421,
+        "skipped": 0,
+        "skipped_tests": 0,
+        "skipped_subtests": 0,
+        "success": true,
+        "log": "verify-tests.log"
+      },
+      "public_no_rom_models": {
+        "suites": [
+          {
+            "modules": [
+              "test_build",
+              "test_client",
+              "test_device",
+              "test_runtime",
+              "test_usb",
+              "test_verify",
+              "test_discovery",
+              "test_management",
+              "test_workflow_client",
+              "test_workflow_device"
+            ],
+            "run": 136,
+            "passed": 130,
+            "skipped": 10,
+            "skipped_tests": 5,
+            "skipped_subtests": 5,
+            "success": true,
+            "log": "verify-jz4740-tests.log"
+          },
+          {
+            "modules": [
+              "test_build",
+              "test_client",
+              "test_device",
+              "test_runtime",
+              "test_usb_jz4730",
+              "test_verify",
+              "test_discovery",
+              "test_management",
+              "test_workflow_client",
+              "test_workflow_device"
+            ],
+            "run": 140,
+            "passed": 134,
+            "skipped": 10,
+            "skipped_tests": 5,
+            "skipped_subtests": 5,
+            "success": true,
+            "log": "verify-jz4730-tests.log"
+          },
+          {
+            "modules": [
+              "test_build",
+              "test_client",
+              "test_device",
+              "test_runtime",
+              "test_usb",
+              "test_verify",
+              "test_discovery",
+              "test_management",
+              "test_workflow_client",
+              "test_workflow_device"
+            ],
+            "run": 136,
+            "passed": 130,
+            "skipped": 10,
+            "skipped_tests": 5,
+            "skipped_subtests": 5,
+            "success": true,
+            "log": "verify-jz4720-tests.log"
+          },
+          {
+            "modules": [
+              "test_universal"
+            ],
+            "run": 9,
+            "passed": 1,
+            "skipped": 26,
+            "skipped_tests": 2,
+            "skipped_subtests": 24,
+            "success": true,
+            "log": "verify-universal-tests.log"
+          }
+        ],
+        "run": 421,
+        "passed": 395,
+        "skipped": 56,
+        "skipped_tests": 17,
+        "skipped_subtests": 39,
+        "success": true,
+        "log": "verify-tests.log"
+      },
+      "source_manifest_matches": true,
+      "bda_header_checksum_valid": true,
+      "firmware_profile_verified": true,
+      "hardware_verified": false,
+      "components": [
+        {
+          "soc": "JZ4740",
+          "directory": "components/jz4740",
+          "image_id": "c94a1b1f",
+          "resident_image_bytes": 50752,
+          "resident_memory_bytes": 474720
+        },
+        {
+          "soc": "JZ4730",
+          "directory": "components/jz4730",
+          "image_id": "e19337a4",
+          "resident_image_bytes": 51232,
+          "resident_memory_bytes": 475232
+        },
+        {
+          "soc": "JZ4720",
+          "directory": "components/jz4720",
+          "image_id": "9e47e1eb",
+          "resident_image_bytes": 51040,
+          "resident_memory_bytes": 475008
+        }
+      ]
+    },
+    {
+      "target": "9688",
+      "binary": "Debug9688.bda",
+      "bytes": 195896,
+      "sha256": "4b46e296acb49c6d2f25d193267b080bc5e02c201e565e94fa5669b4b2a9859a",
+      "compiler": "mipsel-none-elf-gcc.exe (GCC) 15.2.0",
+      "sdk_commit": "ef3bf3b7328a3a8fa9ba48593c63285300725fb7",
+      "supported_socs": [
+        "JZ4740",
+        "JZ4730"
+      ],
+      "full_local_rom_models": {
+        "suites": [
+          {
+            "modules": [
+              "test_build",
+              "test_client",
+              "test_device",
+              "test_runtime",
+              "test_verify",
+              "test_usb",
+              "test_discovery",
+              "test_management",
+              "test_workflow_client",
+              "test_workflow_device"
+            ],
+            "run": 142,
+            "passed": 142,
+            "skipped": 0,
+            "skipped_tests": 0,
+            "skipped_subtests": 0,
+            "success": true,
+            "log": "verify-jz4740-tests.log"
+          },
+          {
+            "modules": [
+              "test_build",
+              "test_client",
+              "test_device",
+              "test_runtime",
+              "test_verify",
+              "test_usb_jz4730",
+              "test_discovery",
+              "test_management",
+              "test_workflow_client",
+              "test_workflow_device"
+            ],
+            "run": 144,
+            "passed": 144,
+            "skipped": 0,
+            "skipped_tests": 0,
+            "skipped_subtests": 0,
+            "success": true,
+            "log": "verify-jz4730-tests.log"
+          },
+          {
+            "modules": [
+              "test_universal"
+            ],
+            "run": 9,
+            "passed": 9,
+            "skipped": 0,
+            "skipped_tests": 0,
+            "skipped_subtests": 0,
+            "success": true,
+            "log": "verify-universal-tests.log"
+          }
+        ],
+        "run": 295,
+        "skipped": 0,
+        "passed": 295,
+        "skipped_tests": 0,
+        "skipped_subtests": 0,
+        "success": true,
+        "log": "verify-tests.log"
+      },
+      "public_no_rom_models": {
+        "suites": [
+          {
+            "modules": [
+              "test_build",
+              "test_client",
+              "test_device",
+              "test_runtime",
+              "test_verify",
+              "test_usb",
+              "test_discovery",
+              "test_management",
+              "test_workflow_client",
+              "test_workflow_device"
+            ],
+            "run": 142,
+            "passed": 136,
+            "skipped": 6,
+            "skipped_tests": 6,
+            "skipped_subtests": 0,
+            "success": true,
+            "log": "verify-jz4740-tests.log"
+          },
+          {
+            "modules": [
+              "test_build",
+              "test_client",
+              "test_device",
+              "test_runtime",
+              "test_verify",
+              "test_usb_jz4730",
+              "test_discovery",
+              "test_management",
+              "test_workflow_client",
+              "test_workflow_device"
+            ],
+            "run": 144,
+            "passed": 138,
+            "skipped": 6,
+            "skipped_tests": 6,
+            "skipped_subtests": 0,
+            "success": true,
+            "log": "verify-jz4730-tests.log"
+          },
+          {
+            "modules": [
+              "test_universal"
+            ],
+            "run": 9,
+            "passed": 1,
+            "skipped": 16,
+            "skipped_tests": 4,
+            "skipped_subtests": 12,
+            "success": true,
+            "log": "verify-universal-tests.log"
+          }
+        ],
+        "run": 295,
+        "skipped": 28,
+        "passed": 275,
+        "skipped_tests": 16,
+        "skipped_subtests": 12,
+        "success": true,
+        "log": "verify-tests.log"
+      },
+      "source_manifest_matches": true,
+      "bda_header_checksum_valid": true,
+      "firmware_profile_verified": true,
+      "hardware_verified": false,
+      "components": [
+        {
+          "soc": "JZ4740",
+          "directory": "components/jz4740",
+          "image_id": "139fdb49",
+          "resident_image_bytes": 47232,
+          "resident_memory_bytes": 471168
+        },
+        {
+          "soc": "JZ4730",
+          "directory": "components/jz4730",
+          "image_id": "774b4cbd",
+          "resident_image_bytes": 47168,
+          "resident_memory_bytes": 471104
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Original local ROMs are not distributed.",
+    "Source-level address-moved fixtures execute scanner code only, not transformed kernels.",
+    "No new physical device USB acceptance is claimed.",
+    "9588/JZ4740 full native kernel diagnostic is separately bound to the exact BDA in 9588-workflow-qemu.json."
+  ]
+}

@@ -35,3 +35,5 @@ Apache-2.0 OR GPL-2.0-only 双许可证；本 GPLv3 调试器组合使用选择�
 功能取得，不以其他项目或效果图冒充。
 
 本项目是独立研究工具，不代表 BBK 官方；产品名和 USB 厂商标识仍属于其各自所有者。
+
+本轮流程验证中的 `9588-debug/validation/workflow_probe.c` 改编自固定 SDK 的 `example/input/touch_crosshair`，采用 Apache-2.0；仅增加测试事件计数，独立保留该许可，不改变应用其余代码的 GPL-3.0-only。

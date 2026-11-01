@@ -223,6 +223,10 @@ def host_files(models):
         client = next((name for name in candidates if (ROOT/name).is_file()), None)
         require(client is not None, "No PC client for declared model "+model)
         items.append((client, project_file(client).read_bytes(), 0o644))
+        # The built-in workflow client ships alongside client.py.
+        workflow = base+"workflow.py"
+        if (ROOT/workflow).is_file():
+            items.append((workflow, project_file(workflow).read_bytes(), 0o644))
         for path in sorted((ROOT/base).rglob("*")):
             name = path.relative_to(ROOT).as_posix()
             local = path.relative_to(ROOT/base)

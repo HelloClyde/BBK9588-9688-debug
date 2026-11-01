@@ -147,7 +147,7 @@ class USBModel:
             self.u.reg_write(register, value)
         if len(args) > 4:
             self.put(stack + 16, struct.pack("<" + "I" * (len(args) - 4), *args[4:]))
-        self.u.emu_start(self.symbols[name], ret, count=10_000_000)
+        self.u.emu_start(self.symbols[name], ret, count=400_000_000)
         if self.u.reg_read(UC_MIPS_REG_PC) != ret:
             raise RuntimeError(f"MIPS call did not return: {name}")
         return self.u.reg_read(UC_MIPS_REG_V0)

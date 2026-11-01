@@ -36,7 +36,8 @@ int debug_usb_cable_connected(void)
 #endif
     return (int)detected;
 }
-unsigned debug_usb_frame(void){return R16(U+0x0c)&0x7ffu;}
+static int clock_active(void){return !(R32(FW_CPM_CLKGR)&FW_CPM_USB_GATE_MASK);}
+unsigned debug_usb_frame(void){return clock_active() ? R16(U+0x0c)&0x7ffu : 0u;}
 /* Outside debug_usb so open() can reset a session without losing its fault.
  * INTRUSB/INTRTX/INTRRX are deliberately omitted: reads acknowledge events. */
 static uint32_t diagnostic_opens,diagnostic_faults,last_fault_valid,last_fault_open;
@@ -49,8 +50,9 @@ static void diagnostic_snapshot(const debug_usb *u,uint32_t *v,unsigned events,u
     v[5]=R32(FW_CPM_CLKGR);v[6]=R32(FW_CPM_OPCR);v[7]=cp0;
     v[8]=R32(FW_INTC_IMR);v[9]=R32(G+0x20u);
     v[10]=R32(G);v[11]=R32(G+0x80u);
-    v[12]=R8(U+1);v[13]=R16(U+6);v[14]=R16(U+8);v[15]=R8(U+0xb);
-    v[16]=debug_usb_frame();v[17]=R8(U);v[18]=R8(U+0xe);
+    unsigned active=!(v[5]&FW_CPM_USB_GATE_MASK);
+    v[12]=active?R8(U+1):0;v[13]=active?R16(U+6):0;v[14]=active?R16(U+8):0;v[15]=active?R8(U+0xb):0;
+    v[16]=active?debug_usb_frame():0;v[17]=active?R8(U):0;v[18]=active?R8(U+0xe):0;
     v[19]=u->configured;v[20]=u->resets;v[21]=u->session_epoch;
     v[22]=u->rx_packets;v[23]=u->tx_packets;
 }
@@ -65,9 +67,10 @@ void debug_usb_diagnostics(const debug_usb *u,uint32_t out[DEBUG_USB_DIAG_WORDS]
 static void ownership_error(debug_usb *u,unsigned events,unsigned extra)
 {
     if(u->ownership_fault)return;
-    u->fault_txe=R16(U+6);u->fault_rxe=R16(U+8);u->fault_usbe=R8(U+0xb);
+    unsigned active=clock_active();
+    u->fault_txe=active?R16(U+6):0;u->fault_rxe=active?R16(U+8):0;u->fault_usbe=active?R8(U+0xb):0;
     u->fault_imr=R32(FW_INTC_IMR);u->fault_pdmask=R32(G+0x20u);
-    u->fault_pin=R32(G);u->fault_power=R8(U+1);u->fault_events=(uint8_t)events;
+    u->fault_pin=R32(G);u->fault_power=active?R8(U+1):0;u->fault_events=(uint8_t)events;
     u->fault_reason=(u->fault_txe?1:0)|(u->fault_rxe?2:0)|(u->fault_usbe?4:0)|
         (!(u->fault_imr&USB_IRQ)?8:0)|(!(u->fault_pdmask&CABLE)?16:0)|((u->fault_power&0x20)?32:0)|extra;
     u->ownership_fault=1;
@@ -207,6 +210,7 @@ int debug_usb_open(debug_usb *u)
 void debug_usb_poll(debug_usb *u)
 {
     if(!u || !u->owned || u->ownership_fault)return;
+    if(!clock_active()){ownership_error(u,0,128u);return;}
     uint8_t events=R8(U+0xa);
     uint8_t power=R8(U+1);
     unsigned reset_rechecked=0;
@@ -266,7 +270,9 @@ check_reset:
 }
 int debug_usb_read(debug_usb *u,uint8_t *data,unsigned capacity)
 {
-    if(!u || !u->owned || u->ownership_fault || !u->configured)return 0;R8(U+0xe)=1;
+    if(!u || !u->owned || u->ownership_fault || !u->configured)return 0;
+    if(!clock_active()){ownership_error(u,0,128u);return 0;}
+    R8(U+0xe)=1;
     unsigned csr=R16(U+0x16);if(!(csr&1))return 0;
     unsigned n=R16(U+0x18);if(n>64 || n>capacity)return -1;
     for(unsigned i=0;i<n;++i)data[i]=R8(U+0x24);
@@ -274,7 +280,9 @@ int debug_usb_read(debug_usb *u,uint8_t *data,unsigned capacity)
 }
 int debug_usb_write(debug_usb *u,const uint8_t *data,unsigned length)
 {
-    if(!u || !u->owned || u->ownership_fault || !u->configured || length>64)return 0;R8(U+0xe)=1;
+    if(!u || !u->owned || u->ownership_fault || !u->configured || length>64)return 0;
+    if(!clock_active()){ownership_error(u,0,128u);return 0;}
+    R8(U+0xe)=1;
     /* PM 21.4.3.15 / 21.9.1.2: InPktRdy clears when another FIFO
      * bank is writable, even while FIFONotEmpty remains set. The latter
      * means "not drained", not "cannot queue". Preserve that WZC bit
@@ -283,15 +291,28 @@ int debug_usb_write(debug_usb *u,const uint8_t *data,unsigned length)
     for(unsigned i=0;i<length;++i)R8(U+0x24)=data[i];
     R16(U+0x12)=0x2003;++u->tx_packets;return 1;
 }
-int debug_usb_tx_idle(debug_usb *u){if(!u || !u->owned)return 1;R8(U+0xe)=1;return !(R16(U+0x12)&3);}
+int debug_usb_tx_idle(debug_usb *u)
+{
+    if(!u || !u->owned || u->ownership_fault)return 1;
+    if(!clock_active()){ownership_error(u,0,128u);return 1;}
+    R8(U+0xe)=1;return !(R16(U+0x12)&3);
+}
 void debug_usb_close(debug_usb *u)
 {
-    if(!u || !u->owned)return;R8(U+1)=0;
+    if(!u || !u->owned)return;
+    /* Clock ownership loss can trigger close. Re-enable the module before
+     * the first UDC access, and again after yielding for disconnect. */
+    uint32_t disconnect_irq=lock();
+    R32(FW_CPM_CLKGR)&=~FW_CPM_USB_GATE_MASK;
+    R32(FW_CPM_OPCR)|=FW_CPM_USB_PHY_MASK;
+    R8(U+1)=0;unlock(disconnect_irq);
     /* Give the host a real disconnect before restoring its disk descriptors.
      * Scheduler IRQs stay enabled, and a stopped firmware clock is bounded. */
     uint32_t start=fw_tick();
     for(unsigned n=0;n<100u && fw_tick()-start<20u;++n)fw_delay(1);
     uint32_t irq=lock();
+    R32(FW_CPM_CLKGR)&=~FW_CPM_USB_GATE_MASK;
+    R32(FW_CPM_OPCR)|=FW_CPM_USB_PHY_MASK;
     R16(U+6)=0;R16(U+8)=0;R8(U+0xb)=0;
     for(unsigned i=0;i<3;++i){R8(U+0xe)=(uint8_t)i;
         if(i){flush_in();flush_out();R16(U+0x12)=0x40;R16(U+0x16)=0x80;}

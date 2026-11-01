@@ -85,7 +85,7 @@ static int launch(void)
     /* Never invoke an unknown GUI table on an unsupported firmware. */
     if (!fw_matches()) {
         if (fw_notice_safe())
-            notice("Unsupported firmware or runtime table mismatch.\n9688 V2.32 JZ4730/JZ4740 required.",
+            notice("Unsupported firmware: discovery could not prove unique safe bindings.\nCompatible signatures are required for this kernel.",
                    (int)fw_match_error());
         return 1;
     }
@@ -100,7 +100,7 @@ static int launch(void)
 #endif
     rd_header *control = fw_find_resident();
     if (control) {
-        if (control->size != image->memory_size || control->image_id != image->image_id)
+        if (control->size != image->memory_size || control->image_id != image->image_id || control->binding_id != fw_binding_id())
             return notice("Different resident build installed. Restart device before updating.", 2);
         if (control->state == RD_STOPPED) return start(control);
         if (control->state != RD_RUNNING && control->state != RD_STOPPING)
@@ -116,7 +116,7 @@ static int launch(void)
                           (int)(control->last_error ? control->last_error : 4u));
         return notice("Debug stopped. USB restored. Resident allocation is reused until restart.", 0);
     }
-    if (!fw_task_slot_empty()) return notice("Debug task priority is occupied.", 5);
+    if (!fw_task_slot_empty()) return notice("Debug task priority is occupied. Restart device before updating or retrying. Restart device after updating debugger.", 5);
     if (image->image_size < sizeof(rd_header) || image->image_size > image->memory_size || image->memory_size > 0x200000u)
         return notice("Invalid resident image.", 6);
     void *allocation = fw_alloc(image->memory_size + 31u);
@@ -143,6 +143,7 @@ static int launch(void)
     control->base = base;
     control->size = image->memory_size;
     control->priority = RD_PRIORITY;
+    control->binding_id = fw_binding_id();
     control->state = RD_INIT;
     control->stop_request = 0;
     control->last_error = 0;

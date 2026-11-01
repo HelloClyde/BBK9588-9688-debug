@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "target": "9588",
+  "soc": "JZ4740",
+  "version": "0.2.0-alpha.1",
+  "bda_sha256": "a41a109ec3959b5bc7df6b2065235eb5cea8c6fbcf935c7f29abcc2a4f8ec382",
+  "firmware_sha256": "02a16107b11a3281067871c6fe3d4c289c910d8dfa9924573dd87f00351d6525",
+  "sdk_commit": "ef3bf3b7328a3a8fa9ba48593c63285300725fb7",
+  "environment": {
+    "boot_mode": "unmodified C200 direct kernel",
+    "ram_mb": 32,
+    "firmware_patches": [],
+    "debug_entry": "GDB entry in native GUI event-poller task, preserving native task/stack",
+    "rpc_transport": "GDB diagnostic at the real resident worker boundary; actual compiled dispatcher and original OS/FS/GUI execute",
+    "physical_device": false,
+    "cdc_usb_host_transfer": false,
+    "independent_nand_copy": true
+  },
+  "result": "passed",
+  "checks": {
+    "resident_start": true,
+    "management_features": 63,
+    "discovery_mode": "exact-profile",
+    "program_and_gbk_resource_deployed": true,
+    "device_readback_crc32_verified": true,
+    "identical_files_skipped": true,
+    "two_refresh_jobs_completed": true,
+    "original_native_app_loader_executed": true,
+    "all_elf_executable_sections_match_ram": true,
+    "foreground_handler_belongs_to_image": true,
+    "target_guard_rejected_wrong_window": true,
+    "real_app_event_counts": {
+      "all": 18,
+      "last_message": 18,
+      "last_wparam": 28,
+      "last_lparam": 0,
+      "raw_keydown": 1,
+      "character": 1,
+      "keyup": 1,
+      "touchdown": 1,
+      "touchup": 1,
+      "x": 70,
+      "y": 100,
+      "reserved": 0
+    },
+    "event_log_read": true,
+    "event_log_truncation_reported": true,
+    "returned_to_native_desktop": true,
+    "stopped_state": 3,
+    "last_error": 0,
+    "native_irq_clock_gpio_restored": true
+  },
+  "test_app": {
+    "basis": "fixed SDK touch_crosshair example with writable event-counter instrumentation",
+    "bda_sha256": "d4167f76423a6f0113c14c73196aa3bc87a8c62b5c5935899d5229ba77d017cd",
+    "elf_sha256": "230459439040fa3ac324a717e904f19035e260ca78e619e71ee797d4421f440a",
+    "executable_sections": [
+      {
+        "address": 2176843808,
+        "bytes": 3600,
+        "expected_sha256": "912c8ad35eea1c7c9eb460019abaa8f89a80f30bbfd0b94b9cf346c14720da88",
+        "actual_sha256": "912c8ad35eea1c7c9eb460019abaa8f89a80f30bbfd0b94b9cf346c14720da88",
+        "matches": true
+      }
+    ]
+  },
+  "screenshots": [
+    {
+      "width": 240,
+      "height": 320,
+      "format": 1,
+      "framebuffer": 2717392896,
+      "tick": 1524,
+      "bytes": 153600,
+      "rotation_degrees": 180,
+      "raw_sha256": "6ef24bd8ee7f9aa5ad934d987d3897ff873f8723991d79e61fcb34f28d04692b",
+      "chunks": 308,
+      "rpc_count": 310,
+      "file": "../assets/9588-workflow-qemu/app-full.png",
+      "png_sha256": "c51d42cf43b2d188b23da81ec52ad87c16b8d776a8f070b1f7699f7f4caa74ea"
+    },
+    {
+      "width": 120,
+      "height": 140,
+      "format": 1,
+      "framebuffer": 2717392896,
+      "tick": 1328,
+      "bytes": 33600,
+      "rotation_degrees": 180,
+      "raw_sha256": "2afe6bf5bd255bac29968c35804862feeedef01e39faf1773779b2014c4bdf14",
+      "chunks": 68,
+      "rpc_count": 70,
+      "file": "../assets/9588-workflow-qemu/app-region.png",
+      "png_sha256": "3ee4bdbcb9c6f0e754511fa637d335318d0755420cac773dd5f8efb241fb7cf3"
+    }
+  ],
+  "limits": [
+    "Debug BDA entry was injected for diagnosis; its normal menu/FAT loader path is not claimed.",
+    "The application was deployed by the real resident filesystem service and started by the original native loader.",
+    "PC client reused a diagnostic GDB adapter; framing/controller models validate USB separately.",
+    "No new physical USB acceptance for any of the five targets.",
+    "Address-moved ROM fixtures validate discovery only; they are not booted as firmware."
+  ]
+}

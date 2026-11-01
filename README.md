@@ -1,6 +1,6 @@
 # BBK 9588 / 9688 Debug
 
-BBK 原生 BDA 的后台 USB 调试器，提供状态、RAM 读写、240×320 截图、SDK 服务表调用和 64 KiB 原生模块执行。两个机型的源码、客户端和 BDA 在同一个仓库管理，各自校验固件与设备身份。采用 GPL-3.0-only；来源见 [NOTICE](NOTICE.md)。
+BBK 原生 BDA 的后台 USB 调试器，提供状态、RAM 读写、240×320 截图、SDK 服务表调用和 64 KiB 原生模块执行。开发版新增启动地址发现、文件部署、桌面刷新与启动、定向窗口输入和长连接测试流程。两个机型的源码、客户端和 BDA 在同一个仓库管理，各自校验固件与设备身份。采用 GPL-3.0-only；来源见 [NOTICE](NOTICE.md)。
 
 ## 支持情况
 
@@ -14,13 +14,13 @@ BBK 原生 BDA 的后台 USB 调试器，提供状态、RAM 读写、240×320 �
 
 从 [Releases](https://github.com/HelloClyde/BBK9588-9688-debug/releases) 下载，并按发布说明确认芯片和固件范围。`0.1.0-alpha.3` 起的9588构建使用一个三芯片通用文件；早期alpha.2仅支持9588/JZ4740。新通用版也可按下方命令从源码构建。
 
-Debug依赖固件内部布局；直接使用汇编也需要正确的任务、内存和中断地址。具体机制见 [固件兼容说明](docs/FIRMWARE-COMPATIBILITY.md)。
+开发中的 `0.2.0-alpha.1` 在精确指纹快速匹配之外，增加 MIPS 地址归一特征和引用图扫描：可以发现同一内核分支中移动的函数和数据地址；代码流程、结构或板级接线改变时仍可能拒绝。已经发布的旧 BDA 不会自动获得这些功能。具体机制见 [固件兼容说明](docs/FIRMWARE-COMPATIBILITY.md)。
 
 ## 快速开始
 
 ### 从源码构建
 
-Windows PowerShell、Python 3.12：
+Windows PowerShell、Python 3.11/3.12（本地验证为 3.11.5，CI 配置为 3.12）：
 
 ```powershell
 git clone https://github.com/HelloClyde/BBK9588-9688-debug.git
@@ -56,22 +56,32 @@ python 9588-debug/client.py screenshot screen.png
 
 再次打开同一 BDA 或执行 `client.py stop` 请求停止。不同运行时版本更新前先重启；停止后磁盘恢复的真机覆盖范围见各机型说明。内存写入使用已确认自有的地址，EXEC 模块需要协作处理取消。
 
+## 部署与测试
+
+开发版客户端提供 `firmware`、`management`、`fs list/get/put/crc`、`deploy`、`apps list/refresh/launch`、`windows`、`key/click`、`jobs`、`logs`、`session` 和 `run-test`。先查询 `management`，当前固件的每项能力经过独立认证后才开放。
+
+`session` 和 `run-test` 让部署、刷新、启动、输入、截图与报告复用同一连接。部署先写同目录临时文件，设备读回计算 CRC32，通过后再保留旧文件并重命名替换；程序与资源可以组成一个有回滚记录的 bundle。对通信超时后结果不明的写入和执行，客户端保留现场且不自动重试。
+
+区域截图只传指定像素，并可与本地基准图比较；事件日志、设备/固件信息、文件 SHA-256、每步耗时和失败截图可保存到测试报告。完整参数、示例和验证边界见 [完整调试流程](docs/DEBUG-WORKFLOW.md)。
+
 ## 截图与验证
 
-下图是 **9688/JZ4740 真机**工具桌面，后台 Debug 已启动，由本项目截图命令取得。
+下图是**历史版本的 9688/JZ4740 真机**工具桌面，后台 Debug 已启动，由本项目截图命令取得；它不代表本次新文件的真机验收。
 
 ![9688 真机后台调试截图](docs/assets/9688-tools.png)
 
-下面是 **9588/JZ4740 未修改C200内核的模拟器**截图（本次通用BDA的确切文件）。后台驻留截图函数复制实际LCD像素后，经PC客户端默认180°转换为正向；此过程没有USB主机参与。
+下面是本次 `0.2.0-alpha.1` 的 **9588/JZ4740 未修改 C200 内核模拟器**截图。新版 Debug 实际部署并启动 SDK 触摸测试程序，程序收到点击 `(70,100)` 和回车后，由驻留截图函数复制真实 LCD 像素。命令诊断使用 GDB 适配器，没有 USB 主机收发参与。
 
-![9588 模拟器驻留截图](docs/assets/9588-universal-qemu/universal-lcd-display.png)
+![9588 新版部署、启动与输入流程](docs/assets/9588-workflow-qemu/app-full.png)
 
-[9588 完整内核入口诊断](9588-debug/qemu-validation.md) 与 [9688 真机记录](docs/validation/9688-jz4740.json) 均绑定确切 BDA SHA-256。9588 的模型、GDB入口诊断及真机验证分别记录。文件部署、桌面自动启动、输入注入及 GDB 单步不在当前调试协议范围。
+[本次完整流程验证](docs/WORKFLOW-VALIDATION.md) 绑定新 BDA 的确切 SHA-256，区分原厂内核、模型和真机结果。
+
+[9588 完整内核入口诊断](9588-debug/qemu-validation.md) 与 [9688 真机记录](docs/validation/9688-jz4740.json) 均绑定确切 BDA SHA-256。9588 的模型、GDB入口诊断及真机验证分别记录。这些历史验证只覆盖各记录中的确切旧文件。新开发版的地址发现和管理功能须以新的构建与验证记录为准；管理命令见 [完整调试流程](docs/DEBUG-WORKFLOW.md)。GDB 单步仍不在调试协议范围。
 
 ## 依赖
 
 - 设备：匹配的原厂固件、可运行原生 BDA 的机器；设备端无需 SDK。
-- PC：Python 3.12、pyserial、Pillow，精确版本见依赖文件。
+- PC：Python 3.11 或 3.12、pyserial、Pillow，精确版本见依赖文件。
 - 开发：MIPS little-endian GCC 15.2.0、pyelftools；Unicorn 用于 MIPS/控制器模型。
 - `sdk/` 固定到 `ef3bf3b7328a3a8fa9ba48593c63285300725fb7`，工具链由 SDK 的校验安装脚本提供。
 

@@ -2,11 +2,11 @@
 
 步步高 **9688 V2.32 / JZ4730、JZ4740** 的后台 USB 调试器，参考 H1Debug 驻留实现、9588 Native BDA SDK 和本机 9688 原厂恢复固件开发。默认只生成一个 `Debug9688.bda`，启动时识别固件并选择对应芯片的驻留程序和 USB 驱动；无需手动选芯片，也无需刷写或修改磁盘上的固件。
 
-**当前为实验版；JZ4740 基础调试功能已完成真机验收，JZ4730 仍待真机验证。** 2026-11-01 的 JZ4740 实测覆盖握手、实际 V2.32 固件指纹、自有堆块读写与释放、240×320 截图、RAM 模块执行和 DTR 重连，详见 [真机记录](hardware-validation.md)。交叉编译、MIPS 重定位和控制器模型测试另记在输出目录的 `verification.json`，不能代替未覆盖功能的实机验证。运行时检查所选芯片的代码和服务表 CRC，通过检查后才分配驻留内存并接管 USB。
+**当前为实验版；旧版 JZ4740 基础调试产物已完成真机验收，新扫描/管理构建及 JZ4730 仍待真机验证。** 2026-11-01 的 JZ4740 实测覆盖握手、实际 V2.32 固件指纹、自有堆块读写与释放、240×320 截图、RAM 模块执行和 DTR 重连，详见 [真机记录](hardware-validation.md)。交叉编译、MIPS 重定位和控制器模型测试另记在输出目录的 `verification.json`，不能代替未覆盖功能的实机验证。运行时检查所选芯片的代码和服务表 CRC，通过检查后才分配驻留内存并接管 USB。
 
 同日还经 EXEC 验证了 SDK 的 JZ4740 摄像头抓帧、RGB565 转换及原生录音、WAV 收尾和读回，见 [媒体真机记录](media-hardware-validation.md)。两个测试模块位于 `examples/camera_probe.c`、`examples/recording_probe.c`；它们有跨调用资源，必须按源码协议复用同一已加载镜像，确认清理后才能 reset 或更换模块。
 
-当前调试配置依据 **V2.32** 固件；芯片相同不代表固件内部地址相同，通用版仍会拒绝未匹配的固件。另有 `9688-legacy-notice.json`，仅为本次原机旧固件（界面报告 V2.1）的消息框建立指纹，用于显示版本不支持提示，不启用该版本的 RTOS 或 USB 调试。
+当前调试模板依据 **V2.32** 固件；启动先精确匹配，再尝试受约束的 MIPS 引用图扫描，唯一且完整通过后才启用。芯片相同不代表函数体、ABI 或板级 GPIO 相同，未匹配的结构仍被拒绝，见[固件兼容说明](../docs/FIRMWARE-COMPATIBILITY.md)。另有 `9688-legacy-notice.json`，仅为本次原机旧固件（界面报告 V2.1）的消息框建立指纹，用于显示版本不支持提示，不启用该版本的 RTOS 或 USB 调试。
 
 ## 构建
 
@@ -149,9 +149,57 @@ python 9688-debug/client.py stop
 
 通信采用独立 `96DB` 帧、序号和 CRC32，最多 512 字节载荷，一次只允许一个请求。收到超时、短写、序号错误或坏 CRC 后，客户端会废弃会话，**不会自动重发写入或执行**。错误回执和 USB 诊断可用全局 `--report PATH` 保存。
 
-DTR 变化会取消待执行或运行中的模块；因此另开一条 `exec status` 命令会先请求取消上一会话的活跃模块。`exec run` 在同一连接中轮询结果。尚未完成的模块上传不会执行，可由新的 BEGIN 覆盖。异常的原生 USB 退出若留下控制器地址，启动可能保守拒绝；正常拔线退出已在固件中确认会清零地址，实际插拔行为仍待真机验证。
+新管理版的 DTR 变化仅切换主机连接，不取消活跃 EXEC；USB 复位或取消配置仍会请求取消。`exec run` 在同一连接中轮询结果。尚未完成的模块上传不会执行，可由新的 BEGIN 覆盖。异常的原生 USB 退出若留下控制器地址，启动可能保守拒绝；正常拔线退出已在固件中确认会清零地址，实际插拔行为仍待真机验证。
 
-首版功能为后台 CDC、状态/诊断、内存读写、截图、SDK 表调用、RAM 模块执行和停止恢复。文件事务部署、桌面刷新/启动、模拟按键/触屏、GDB 断点单步和调频自动重连尚未实现；CAPS 只声明本版功能。独立 CAPS 位依次为 RAM read、RAM write、screen、EXEC、table call，不能套用 H1 的位定义。
+原有后台 CDC、RAM 读写、截图、SDK 表调用、RAM 模块执行和停止恢复继续保留；新管理协议按实际固件能力提供文件事务部署、桌面刷新/启动及窗口输入。GDB 单步及调频自动重连仍未提供。CAPS bit0..4 保持 RAM read/write、screen、EXEC、table call，bit5..8 分别为管理协议、固件扫描诊断、ROI 截图和事件日志；管理协议内再逐项查询 FS/GUI 能力，不能套用 H1 的位定义。
+
+
+## 文件、桌面与自动测试客户端
+
+`0.2.0-alpha.1` 增加正式管理协议；先运行 `firmware` 和 `management` 查看启动扫描结果及当前固件实际启用的能力。旧 BDA 或未通过相应 FS/GUI 指纹检查的固件会明确拒绝管理操作。各模型/固件的验证范围见 [完整工作流说明](../docs/DEBUG-WORKFLOW.md)，新增功能尚不能沿用旧 BDA 的真机验收记录。
+
+```powershell
+python 9688-debug/client.py firmware
+python 9688-debug/client.py management
+python 9688-debug/client.py fs list 'A:/应用/程序'
+python 9688-debug/client.py fs get 'A:/应用/程序/MyApp.bda' build/MyApp-backup.bda
+python 9688-debug/client.py deploy build/MyApp.bda 'A:/应用/程序/MyApp.bda'
+python 9688-debug/client.py apps list
+python 9688-debug/client.py apps refresh
+python 9688-debug/client.py windows
+python 9688-debug/client.py apps launch 'A:/应用/程序/MyApp.bda' --image-elf build/MyApp.elf
+python 9688-debug/client.py screenshot build/region.png --roi 10,20,100,80
+python 9688-debug/client.py screenshot build/current.png --baseline build/baseline.png
+python 9688-debug/client.py logs
+```
+
+路径使用绝对 `A:/` 或 `B:/`，客户端无损编码 GBK 中文。`fs put` 只写不存在的文件；日常更新使用 `deploy`。部署先把程序和资源写入同目录 8.3 临时文件，再异步回读 CRC32，全部成功后才替换目标。原文件保留为备份，可判定失败会逆序回滚；整个多文件包不具备掉电原子性。传输超时或回执损坏后停止，不重发、不猜测是否已替换，报告保留事务路径。新的连接可以用 `fs io` 查写入 token/offset/path、`jobs status` 查 CRC 进度，需要放弃时显式 `fs abort TOKEN` 或 `jobs cancel ID`；部分文件保留供检查。
+
+`apps refresh/launch` 默认自动查找固件认证的原厂前台桌面，拒绝同名 BDA 桌面。`windows` 返回前台、父子/兄弟窗口、handler 和 `queue_owner`；后者是原厂消息队列归属，不是应用名称。`apps list` 列出 A/B 程序目录内的 BDA 文件，不把文件列表冒充当前桌面图标表。启动结果分别报告磁盘文件 CRC、前后窗口及运行版本是否核对；给出 `--image-elf` 时才核对全部可执行节的实际 RAM SHA256，并要求前台 handler 属于该镜像。这仍不等于对正常菜单 loader 的验收。
+
+保持单连接可用 `session plan.json` 或 `session` 从 stdin 逐行读取 JSONL。Python API 支持 `with Client.connect() as client:`，RPC 在同一连接中串行化；另一条状态查询不会主动取消运行中的 EXEC。USB 复位、取消配置、显式 cancel/stop 和模块预算仍可取消模块。客户端正常退出和设备断线会释放注入输入。持键 down/up 应放在一个 session 中，`key --action hold --ticks N` 则在同一连接等待设备释放后才退出。
+
+例如把下面清单保存为 `MyApp.test.json`，与 `MyApp.bda`、`MyApp.elf` 放在一起：
+
+```json
+{
+  "files": [{"source": "MyApp.bda", "target": "A:/应用/程序/MyApp.bda"}],
+  "launch": "A:/应用/程序/MyApp.bda",
+  "image_elf": "MyApp.elf",
+  "steps": [
+    {"action": "input", "target": "$launched", "kind": "tap", "key": "enter"},
+    {"action": "screenshot", "output": "panel.png", "roi": [10, 20, 100, 80]}
+  ]
+}
+```
+
+```powershell
+python 9688-debug/client.py run-test MyApp.test.json --directory build/MyApp-test
+```
+
+该命令在一个连接中完成部署、刷新、启动、版本核对、输入、截图和日志报告。资源可以加入 `files` 数组，所有资源通过回读校验后才进入替换阶段。`$launched`/`foreground` 只引用本 session 已验证镜像的窗口；每次发送前重新核对句柄、handler、队列归属和代码字节，前台变更就拒绝发送。整数 `--target` 可用于手动诊断，设备仍检查它是否为当前前台。输入是原厂窗口消息，不修改物理按键轮询数组；仅处理 polling packet 的应用可能不响应窗口按键消息。
+
+清单相对路径按清单目录解析；stdin JSONL 的路径按当前目录解析。输出 `report.json` 保存设备身份、固件扫描模式和地址、程序 SHA256、设备回读 CRC、阶段结果与耗时、事件日志；失败时在健康连接上补取窗口和截图，CLI 返回非零。文件与截图结果还记录客户端总耗时、载荷字节/秒、分块数及 RPC 数；主机模型的计时不代表实机 USB 吞吐。ROI 按输出显示方向定义，并转换为 LCD 原生矩形，只传相应区域；`--baseline` 是本地像素差分，报告变化像素数与包围框。
 
 ## 来源与许可
 
