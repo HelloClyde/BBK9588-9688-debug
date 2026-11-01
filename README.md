@@ -11,7 +11,13 @@ BBK 原生 BDA 的后台 USB 调试器，提供状态、RAM 读写、240×320 �
 | 9688 V2.32 / JZ4740 | 已完成真机握手、RAM、截图、EXEC、重连及资源清理验证 |
 | 9688 V2.32 / JZ4730 | 同一个通用 BDA 内的独立绑定；MIPS/USB 控制器模型通过，真机未验收 |
 
-当前主干为 `0.1.0-alpha.2` 发布候选，新增 9588。已有 [alpha.1 下载](https://github.com/HelloClyde/BBK9588-9688-debug/releases/tag/v0.1.0-alpha.1) 仅包含 9688。9588 可先按下方命令构建；新的成品将在通过发布校验后提供。
+当前预发布：[v0.1.0-alpha.2](https://github.com/HelloClyde/BBK9588-9688-debug/releases/tag/v0.1.0-alpha.2)，同时提供两个机型。
+
+- [BDA 与 PC 客户端安装包](https://github.com/HelloClyde/BBK9588-9688-debug/releases/download/v0.1.0-alpha.2/BBK9588-9688-debug-v0.1.0-alpha.2.zip)。
+- 单独下载 [Debug9588.bda](https://github.com/HelloClyde/BBK9588-9688-debug/releases/download/v0.1.0-alpha.2/Debug9588.bda) 或 [Debug9688.bda](https://github.com/HelloClyde/BBK9588-9688-debug/releases/download/v0.1.0-alpha.2/Debug9688.bda)。
+- [包含固定 SDK 的完整对应源码](https://github.com/HelloClyde/BBK9588-9688-debug/releases/download/v0.1.0-alpha.2/BBK9588-9688-debug-v0.1.0-alpha.2-source.zip)。
+
+主干和标签CI、下载资产校验及完整源码包独立重建均已通过；9588真机状态仍按表中范围标明。
 
 ## 快速开始
 
