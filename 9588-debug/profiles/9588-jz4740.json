@@ -362,7 +362,7 @@
   "validation": {
     "static": "Original C200 V3.30 RTOS, heap, service exports, USB/GPIO, LCD machine code and CRC guards independently checked.",
     "hardware": "not tested",
-    "full_firmware": "pending dedicated unpatched C200 QEMU launcher test",
+    "full_firmware": "Exact BDA unpatched direct-C200 QEMU entry/lifecycle/LCD diagnosis; see qemu-validation.md. Not a normal menu/FAT load or USB host test.",
     "screen_native": {
       "width": 240,
       "height": 320,

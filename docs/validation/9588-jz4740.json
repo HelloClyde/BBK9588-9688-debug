@@ -26,7 +26,8 @@
       "log": "verify-tests.log"
     },
     "hardware_verified": false,
-    "full_system_usb_transport_verified": false
+    "full_system_usb_transport_verified": false,
+    "qemu_entry_evidence": "docs/validation/9588-jz4740-qemu.json"
   },
   "input_firmware": {
     "name": "C200.bin",

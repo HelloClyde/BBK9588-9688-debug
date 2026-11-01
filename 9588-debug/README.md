@@ -31,6 +31,8 @@
 
 本次完整模型共 58 项通过，覆盖真实驻留镜像的三个独立重链接目标、重定位、USB FIFO/描述符/复位/所有权恢复、协议和 CRC、RAM 保护、EXEC 计算模块、PC 到 MIPS 端到端、LCD DMA 格式以及 RTOS O32 调用边界。提供本地 C200 时无跳过；未提供 ROM 时，依赖原始固件的检查明确记录为跳过。生成 verification.json 和详细日志，hardware_verified 与 full_firmware_verified 保持 false。
 
+补充：最终BDA在未修改C200内核的专用QEMU中完成启动、停止、复用及实际LCD复制接口诊断，详见 [完整内核记录](qemu-validation.md)。这是明确的GDB入口诊断，没有覆盖普通菜单加载或USB主机收发；真机状态保持未验收。
+
 ## 安装
 
 确认是 9588 V3.30 / JZ4740，将 Debug9588.bda 复制到设备的 应用/程序/。
