@@ -43,6 +43,7 @@ def main(argv=None) -> int:
     parser.add_argument("--models", nargs="+", choices=("all", "9588", "9688"), default=["all"])
     parser.add_argument("--toolchain", type=Path)
     parser.add_argument("--verify", action="store_true")
+    parser.add_argument("--firmware-9588", type=Path, help="optional local 9588 V3.30 firmware; passed only to 9588")
     parser.add_argument("--firmware-jz4730", type=Path)
     parser.add_argument("--firmware-jz4740", type=Path)
     parser.add_argument("--firmware-legacy", type=Path)
@@ -89,19 +90,22 @@ def main(argv=None) -> int:
     for name in selected:
         folder = ROOT / (name + "-debug")
         command = [sys.executable, folder / "build.py", "--toolchain", toolchain]
-        for flag in ("firmware_jz4730", "firmware_jz4740"):
-            path = getattr(args, flag)
+        firmware_flags = [("firmware_9588", "--firmware")] if name == "9588" else [
+            ("firmware_jz4730", "--firmware-jz4730"), ("firmware_jz4740", "--firmware-jz4740")]
+        for argument, flag in firmware_flags:
+            path = getattr(args, argument)
             if path is not None:
-                command += ["--" + flag.replace("_", "-"), path.resolve()]
+                command += [flag, path.resolve()]
         run(command, environment)
         output = ROOT / "build" / (name + "-debug")
         built = json.loads((output / "build.json").read_text(encoding="utf-8"))
         if args.verify:
             command = [sys.executable, folder / "verify.py"]
-            for flag in ("firmware_jz4730", "firmware_jz4740", "firmware_legacy"):
-                path = getattr(args, flag)
+            verification_flags = firmware_flags + ([("firmware_legacy", "--firmware-legacy")] if name == "9688" else [])
+            for argument, flag in verification_flags:
+                path = getattr(args, argument)
                 if path is not None:
-                    command += ["--" + flag.replace("_", "-"), path.resolve()]
+                    command += [flag, path.resolve()]
             run(command, environment)
             checked = json.loads((output / "verification.json").read_text(encoding="utf-8"))
             stats = checked["tests"]
@@ -109,7 +113,7 @@ def main(argv=None) -> int:
                                 "passed": stats["passed"], "skipped": stats["skipped"],
                                 "skipped_tests": stats.get("skipped_tests", stats["skipped"]),
                                 "skipped_subtests": stats.get("skipped_subtests", 0),
-                                "scope": "host/MIPS/controller models; optional ROM checks depend on supplied local firmware"}
+                                "scope": "host/MIPS/controller models; optional ROM checks depend on supplied local firmware; physical validation is separate"}
         binary = output / built["binary"]
         digest = hashlib.sha256(binary.read_bytes()).hexdigest()
         if digest != built["sha256"]:

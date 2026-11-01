@@ -1,0 +1,394 @@
+{
+  "id": "9588-v330-jz4740",
+  "name": "BBK 9588 V3.30 JZ4740",
+  "soc": "JZ4740",
+  "firmware_version": "V3.30",
+  "load_base": "0x80004000",
+  "runtime_base": "0x81c00000",
+  "sdram_start": "0x80004000",
+  "sdram_end": "0x82000000",
+  "firmware": {
+    "format": "raw",
+    "name": "C200.bin",
+    "size": 4652744,
+    "sha256": "02a16107b11a3281067871c6fe3d4c289c910d8dfa9924573dd87f00351d6525",
+    "load_base": "0x80004000"
+  },
+  "packed_firmware": {
+    "name": "kj409588.bin",
+    "size": 4652808,
+    "sha256": "e86ceb0ab4cdf3075fc2086f59641ee12dd8de4d7fcbf2f2c0e24f20dee44321",
+    "header_size": 64,
+    "compressed": false
+  },
+  "raw_sha256": "02a16107b11a3281067871c6fe3d4c289c910d8dfa9924573dd87f00351d6525",
+  "raw_size": 4652744,
+  "macros": {
+    "FW_TASK_TABLE": "0x806c5d10",
+    "FW_TASK_CREATE_EXT": "0x8000c15c",
+    "FW_TASK_DELETE": "0x8000c2e0",
+    "FW_TASK_DELAY": "0x8000cefc",
+    "FW_TASK_RESUME": "0x8000ce10",
+    "FW_RAW_TICK": "0x8012bdb0",
+    "FW_TICK_IRQ_SLOT": "0x80474734",
+    "FW_TICK_IRQ_HANDLER": "0x8012bb90",
+    "FW_CURRENT_TCB": "0x80473f50",
+    "FW_OS_RUNNING": "0x80473f09",
+    "FW_SCHED_LOCK": "0x80473f08",
+    "FW_INT_NESTING": "0x80473f4d",
+    "FW_GLOBAL_ALLOC": "0x80007648",
+    "FW_GLOBAL_FREE": "0x800067f4",
+    "FW_RUNTIME_BASE": "0x81c00000",
+    "FW_SDRAM_START": "0x80004000",
+    "FW_SDRAM_END": "0x82000000",
+    "FW_BDA_SEED": "0x80281680",
+    "FW_GUI_TABLE": "0x80280e60",
+    "FW_FS_TABLE": "0x80280dd0",
+    "FW_SYS_TABLE": "0x80280c60",
+    "FW_MEM_TABLE": "0x8028169c",
+    "FW_RES_TABLE": "0x80280d30",
+    "FW_LCD_WIDTH": "0x8033c0b4",
+    "FW_LCD_HEIGHT": "0x8033c0b8",
+    "FW_LCD_BITS": "0x8033c0bc",
+    "FW_LCD_BASE": "0xb3050000",
+    "FW_UDC_BASE": "0xb3040000",
+    "FW_USB_IRQ_MASK": "0x1000000",
+    "FW_USB_IRQ_SLOT": "0x80474744",
+    "FW_USB_CABLE_GPIO_BASE": "0xb0010100",
+    "FW_USB_CABLE_GPIO_MASK": "0x40000",
+    "FW_USB_CABLE_AUX_GPIO_BASE": "0x0",
+    "FW_USB_CABLE_AUX_GPIO_MASK": "0x0",
+    "FW_CPM_CLKGR": "0xb0000020",
+    "FW_CPM_OPCR": "0xb0000024",
+    "FW_CPM_CPCCR": "0xb0000000",
+    "FW_CPM_CPPCR": "0xb0000010",
+    "FW_CPM_USB_GATE_MASK": "0x800",
+    "FW_CPM_USB_PHY_MASK": "0x40",
+    "FW_INTC_IMR": "0xb0001004",
+    "FW_INTC_IMSR": "0xb0001008",
+    "FW_INTC_IMCR": "0xb000100c",
+    "FW_NATIVE_USB_INIT": "0x8000ef00",
+    "FW_NATIVE_USB_IRQ": "0x8000efd0",
+    "FW_NATIVE_USB_ENDPOINTS": "0x8000db00",
+    "FW_SCREEN_WIDTH": "0xf0",
+    "FW_SCREEN_HEIGHT": "0x140",
+    "FW_GUI_CALL_LIMIT": "0x820",
+    "FW_FS_CALL_LIMIT": "0x84",
+    "FW_SYS_CALL_LIMIT": "0xcc",
+    "FW_MEM_CALL_LIMIT": "0x30",
+    "FW_RES_CALL_LIMIT": "0x9c"
+  },
+  "guards": [
+    {
+      "name": "task_create_ext",
+      "address": "0x8000c15c",
+      "length": "0x184",
+      "crc32": "0x7afaf384"
+    },
+    {
+      "name": "task_delete",
+      "address": "0x8000c2e0",
+      "length": "0x240",
+      "crc32": "0xb12431b6"
+    },
+    {
+      "name": "task_delay",
+      "address": "0x8000cefc",
+      "length": "0x98",
+      "crc32": "0x077dc860"
+    },
+    {
+      "name": "task_resume",
+      "address": "0x8000ce10",
+      "length": "0xec",
+      "crc32": "0x8f1c0b5c"
+    },
+    {
+      "name": "task_create",
+      "address": "0x8000c010",
+      "length": "0x14c",
+      "crc32": "0x98e67483"
+    },
+    {
+      "name": "task_stack_init",
+      "address": "0x80007a00",
+      "length": "0xf0",
+      "crc32": "0x1ee85d09"
+    },
+    {
+      "name": "tcb_init",
+      "address": "0x80008354",
+      "length": "0x1a0",
+      "crc32": "0x87abb8b4"
+    },
+    {
+      "name": "scheduler",
+      "address": "0x800080f0",
+      "length": "0xd8",
+      "crc32": "0x8b190b68"
+    },
+    {
+      "name": "global_alloc",
+      "address": "0x80007648",
+      "length": "0x50",
+      "crc32": "0xac6257bb"
+    },
+    {
+      "name": "global_free",
+      "address": "0x800067f4",
+      "length": "0x48",
+      "crc32": "0x12c49716"
+    },
+    {
+      "name": "tick_irq",
+      "address": "0x8012bb90",
+      "length": "0x144",
+      "crc32": "0x2b0b65be"
+    },
+    {
+      "name": "raw_tick",
+      "address": "0x8012bdb0",
+      "length": "0xc",
+      "crc32": "0x62c72d2c"
+    },
+    {
+      "name": "tick_timer_init",
+      "address": "0x8012bcd4",
+      "length": "0xdc",
+      "crc32": "0x71d587b0"
+    },
+    {
+      "name": "irq_register",
+      "address": "0x80005058",
+      "length": "0x11c",
+      "crc32": "0xc91a964b"
+    },
+    {
+      "name": "heap_init_call",
+      "address": "0x80007390",
+      "length": "0x88",
+      "crc32": "0xfb6b4450"
+    },
+    {
+      "name": "heap_bounds_init",
+      "address": "0x800075cc",
+      "length": "0x58",
+      "crc32": "0x74e3b8f8"
+    },
+    {
+      "name": "bda_seed",
+      "address": "0x80281680",
+      "length": "0x20",
+      "crc32": "0xab5f53b8"
+    },
+    {
+      "name": "lcd_geometry",
+      "address": "0x8033c0b4",
+      "length": "0xc",
+      "crc32": "0xe0abb6bd"
+    },
+    {
+      "name": "stock_task_create_7_8_9",
+      "address": "0x8000997c",
+      "length": "0x64",
+      "crc32": "0xca1c2ade"
+    },
+    {
+      "name": "stock_idle_stat_task_create",
+      "address": "0x800086c8",
+      "length": "0x70",
+      "crc32": "0x60c2f185"
+    },
+    {
+      "name": "usb_endpoints",
+      "address": "0x8000db00",
+      "length": "0x1c8",
+      "crc32": "0x0e17812d"
+    },
+    {
+      "name": "usb_reset",
+      "address": "0x8000dcc8",
+      "length": "0x1b4",
+      "crc32": "0x441b84d8"
+    },
+    {
+      "name": "usb_cable_irq",
+      "address": "0x8000e870",
+      "length": "0x190",
+      "crc32": "0x2aa356eb"
+    },
+    {
+      "name": "vbus_gpio_setup",
+      "address": "0x8000ee44",
+      "length": "0xac",
+      "crc32": "0x2c29a717"
+    },
+    {
+      "name": "usb_init",
+      "address": "0x8000ef00",
+      "length": "0x6c",
+      "crc32": "0x8b50d5b8"
+    },
+    {
+      "name": "usb_disable",
+      "address": "0x8000ef6c",
+      "length": "0x64",
+      "crc32": "0x97bd4679"
+    },
+    {
+      "name": "usb_irq",
+      "address": "0x8000efd0",
+      "length": "0x34",
+      "crc32": "0xf9887d98"
+    },
+    {
+      "name": "lcd_init",
+      "address": "0x80010dac",
+      "length": "0x1b8",
+      "crc32": "0x4ddccbfc"
+    },
+    {
+      "name": "lcd_descriptor_init",
+      "address": "0x80010f64",
+      "length": "0x158",
+      "crc32": "0x53ffb51f"
+    },
+    {
+      "name": "lcd_irq",
+      "address": "0x80011c50",
+      "length": "0x60",
+      "crc32": "0xa0a9f8bd"
+    },
+    {
+      "name": "gui_orientation",
+      "address": "0x800cecf0",
+      "length": "0x104",
+      "crc32": "0xa0fd4945"
+    },
+    {
+      "name": "gui_exports",
+      "address": "0x80280e60",
+      "length": "0x820",
+      "crc32": "0x082fb74e"
+    },
+    {
+      "name": "fs_exports",
+      "address": "0x80280dd0",
+      "length": "0x90",
+      "crc32": "0x0ac56cb3"
+    },
+    {
+      "name": "sys_exports",
+      "address": "0x80280c60",
+      "length": "0xd0",
+      "crc32": "0xc39d8d50"
+    },
+    {
+      "name": "mem_exports",
+      "address": "0x8028169c",
+      "length": "0x34",
+      "crc32": "0xae595850"
+    },
+    {
+      "name": "res_exports",
+      "address": "0x80280d30",
+      "length": "0xa0",
+      "crc32": "0xc5d60b9c"
+    }
+  ],
+  "rtos": {
+    "priority_count": 64,
+    "resident_priority_candidate": 6,
+    "static_stock_priorities": [
+      7,
+      8,
+      9,
+      62,
+      63
+    ],
+    "tcb_offsets": {
+      "stack_pointer": 0,
+      "extension_argument": 4,
+      "stack_bottom": 8,
+      "stack_words": 12,
+      "delay": 48,
+      "status_byte": 52,
+      "priority_byte": 53
+    },
+    "irq_table": "0x80474684",
+    "tick_irq_number": 22,
+    "tick_irq_argument": 0,
+    "raw_tick_counter": "0x80474094",
+    "timer_hz": 40,
+    "irq_default": "0x80005294",
+    "task_create": "0x8000c010",
+    "stack_init": "0x80007a00",
+    "tcb_init": "0x80008354",
+    "scheduler": "0x800080f0",
+    "cpu_irq_lock": "0x800a80f0",
+    "cpu_irq_unlock": "0x800a8130"
+  },
+  "memory": {
+    "raw_file_backed_end": "0x80473ec8",
+    "bss_start": "0x80473ec8",
+    "bss_end_inclusive": "0x80873bb0",
+    "global_heap_start": "0x80880000",
+    "global_heap_end_exclusive": "0x81c00000",
+    "global_heap_init": "0x80007390",
+    "global_heap_configure": "0x800075cc",
+    "heap_semaphore": "0x80473f00",
+    "physical_ram_upper_bound": "0x82000000",
+    "physical_ram_upper_bound_evidence": "Original loader DMCR=0x041a0000, JZ4740 manual register definition: 2**(12+9)*4 banks*4 bytes = 32 MiB.",
+    "physical_sdram_bytes": 33554432,
+    "bootloader_evidence": {
+      "size": 8192,
+      "sha256": "6220a556a617db932449de4465a64c3179558ffa2173228fa0cb66c32364cd07",
+      "geometry_base": "0x041a0000",
+      "geometry_builder_file_offset": "0x198",
+      "final_dmcr_store_file_offset": "0x34c",
+      "region_file_offset": "0xac",
+      "region_length": "0x2b4",
+      "region_crc32": "0x6e00baaf",
+      "manual_sha256": "2d32f629c2e6d35c592d0e002cd4edf116ab7b0e3c08cda33bbdf153f3dd90b2",
+      "manual_pdf_pages": [
+        69,
+        70
+      ],
+      "name": "loader_9588_4740.bin",
+      "manual_name": "JZ4740_pm.pdf"
+    },
+    "loader_sha256": "6220a556a617db932449de4465a64c3179558ffa2173228fa0cb66c32364cd07"
+  },
+  "validation": {
+    "static": "Original C200 V3.30 RTOS, heap, service exports, USB/GPIO, LCD machine code and CRC guards independently checked.",
+    "hardware": "not tested",
+    "full_firmware": "pending dedicated unpatched C200 QEMU launcher test",
+    "screen_native": {
+      "width": 240,
+      "height": 320,
+      "bits": 16
+    },
+    "memory_evidence": "JZ4740 loader DMCR=0x041a0000: 32-bit bus, 9 column bits, 12 row bits, four banks => 32 MiB.",
+    "usb_cable": "Native PB18 high enters UDC_CONNECT; physical board polarity and CDC ACK/retry remain untested.",
+    "unsupported_socs": [
+      "JZ4730",
+      "JZ4720"
+    ]
+  },
+  "target": "9588",
+  "verified": true,
+  "notice_guards": [
+    {
+      "name": "gui_msgbox_slot",
+      "address": "0x80281118",
+      "length": "0x4",
+      "crc32": "0x3a23d591"
+    },
+    {
+      "name": "gui_msgbox_entry",
+      "address": "0x800c6544",
+      "length": "0x80",
+      "crc32": "0x0f0590af"
+    }
+  ]
+}

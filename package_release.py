@@ -197,6 +197,7 @@ def load_build(path, commit, sdk_commit):
         require(validated.get("ok") is True, "SDK rejected BDA: "+name)
         hardware = item.get("hardware_verified", False)
         require(isinstance(hardware, bool), "hardware_verified must be a boolean")
+        require(item["model"] != "9588" or hardware is False, "9588 has no physical hardware acceptance in this release")
         match = item.get("matched_legacy_artifact_sha256")
         if hardware:
             require(match == digest(data), "Hardware acceptance is not bound to this exact BDA")

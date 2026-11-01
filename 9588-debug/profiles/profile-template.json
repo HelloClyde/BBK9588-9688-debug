@@ -1,0 +1,19 @@
+{
+  "target": "9588",
+  "soc": "JZ4740",
+  "verified": false,
+  "id": "9588-jz4740-unverified",
+  "firmware_version": null,
+  "runtime_base": "0x81c00000",
+  "sdram_start": null,
+  "sdram_end": null,
+  "load_base": null,
+  "firmware": {
+    "sha256": null,
+    "size": null,
+    "load_base": null
+  },
+  "macros": {},
+  "guards": [],
+  "notice_guards": []
+}

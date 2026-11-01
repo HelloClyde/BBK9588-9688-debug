@@ -58,9 +58,9 @@ jobs:
           key: windows-mipsel-gcc-15.2.0-8ba866e25c9826ee04ab4310365d264e3e73769e3738bb58ae38fd6740b7ee8d
       - name: Install or validate MIPS toolchain
         run: ./sdk/scripts/setup_toolchain.ps1
-      - name: Build available models and verify without private ROM
+      - name: Build both models and verify without private ROM
         run: |
-          python build.py --models all --verify
+          python build.py --models 9588 9688 --verify
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Package declared BDAs, clients and corresponding source
         env:

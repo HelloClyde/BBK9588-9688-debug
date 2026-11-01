@@ -1,6 +1,6 @@
 # 维护与发布
 
-仓库版本由根目录 `VERSION` 决定，首次预发布为 `0.1.0-alpha.1`。所有发布均从已审查、
+仓库版本由根目录 `VERSION` 决定，当前预发布为 `0.1.0-alpha.2`，新增独立的 9588 移植。所有发布均从已审查、
 干净的 Git 提交构建；SDK 固定为子模块 gitlink，不从 main 临时下载文件。
 
 ## 构建和验证
@@ -17,8 +17,20 @@ python build.py --models all --verify
 ```
 
 `all` 只构建仓库中实际存在的源码目标；`build/release-build.json` 的 `models` 是本次资产的
-唯一机型清单。尚未归档的机型不会生成替代 BDA，也不会混入其他机型产物。9688 的 JZ4730
-和 JZ4740 位于同一个 `Debug9688.bda`；单芯片开发构建不加入正式清单。
+唯一机型清单。alpha.2 同时提供 `Debug9588.bda`（9588 V3.30/JZ4740）和
+`Debug9688.bda`（9688 V2.32/JZ4730、JZ4740）。两个机型使用独立固件绑定，不共享机型身份。
+9688 的两种芯片位于同一个 BDA；9588 当前只支持 JZ4740。单芯片开发构建不加入正式清单。
+
+可选的本地私有固件通过目标专用参数提供；以下命令中的路径必须替换为自己的文件：
+
+```powershell
+python build.py --models 9588 --verify --firmware-9588 PATH/TO/9588-firmware.bin
+python build.py --models 9688 --verify --firmware-jz4730 PATH/TO/9688-4730.bin --firmware-jz4740 PATH/TO/9688-4740.bin --firmware-legacy PATH/TO/9688-legacy.bin
+```
+
+`--firmware-9588` 只转发给 9588 构建器和验证器的 `--firmware`。
+`--firmware-jz4730`、`--firmware-jz4740` 只转发给 9688；`--firmware-legacy` 只用于
+9688 的旧固件提示验证。两个机型的固件参数互不混用，也不进入发布包或公开 CI。
 
 验证分为：
 
@@ -27,8 +39,10 @@ python build.py --models all --verify
 3. 可选的本地固件机器码检查，只由拥有相应 ROM 的开发者运行；
 4. 独立的真机验收记录，以具体芯片、固件和完全相同的 BDA SHA-256 为边界。
 
-CI 只依赖公开源码和固定工具链。它通过前两层也不会扩大真机覆盖。目前 JZ4730
-只有模型验证；JZ4740 的既有实测记录仅在本次产物与记录的 SHA-256 完全一致时有效。
+CI 只依赖公开源码和固定工具链，明确要求两个机型都构建和离线验证；缺少任一源码目标即失败。
+它通过前两层也不会扩大真机覆盖。9588 V3.30/JZ4740 尚未真机验证，发布清单中的
+`hardware_verified` 固定为 `false`；不能继承 9688 的硬件记录。9688/JZ4730 只有模型验证；
+9688/JZ4740 的既有实测记录仅在本次产物与记录的 SHA-256 完全一致时有效。
 SDK 版本、编译器或源码改变后若二进制改变，应重新做真机验收，再更新记录。
 
 ## 本地打包
@@ -46,11 +60,14 @@ python package_release.py --verify --commit $releaseCommit
 首次整理、尚未提交的工作区允许不带 `--commit` 生成准备包。它明确标为
 `preparation_only: true`，不能通过官方发布验证。不把准备包手动上传为版本资产。
 
-默认输出 `dist/release/`：
+默认输出 `dist/release/`；本地保留上一个版本时，用 `--output dist/v0.1.0-alpha.2` 为打包和
+`--verify` 指定同一个新目录，避免混入旧版本资产。CI 使用干净工作区。
+
+输出包括：
 
 | 资产 | 内容 |
 |---|---|
-| `Debug9688.bda` 等清单明确声明的 BDA | 与安装 ZIP 内字节完全相同的独立 BDA |
+| `Debug9588.bda`、`Debug9688.bda` | 与安装 ZIP 内字节完全相同、按机型区分的独立 BDA |
 | `BBK9588-9688-debug-vVERSION.zip` | 按机型分开的 `应用/程序`、PC 客户端、依赖文件、说明及验证记录 |
 | `BBK9588-9688-debug-vVERSION-source.zip` | 对应提交的公开源码及完整展开的固定 SDK 源码 |
 | `release-manifest.json` | 提交、SDK、实际机型、BDA 散列、硬件证据范围及资产散列 |
@@ -81,8 +98,8 @@ Apache-2.0 许可路径与本项目组合；详见根 NOTICE。发布二进制�
 推送与版本严格相同的标签：
 
 ```powershell
-git tag v0.1.0-alpha.1
-git push origin v0.1.0-alpha.1
+git tag v0.1.0-alpha.2
+git push origin v0.1.0-alpha.2
 ```
 
 标签工作流重新构建、打包并验证标签所指提交、VERSION 和固定 SDK。独立 Linux 发布作业

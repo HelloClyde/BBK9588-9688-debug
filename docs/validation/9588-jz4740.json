@@ -1,0 +1,38 @@
+{
+  "target": "9588",
+  "soc": "JZ4740",
+  "firmware_version": "V3.30",
+  "bda_sha256": "6cdcee4bb6aafc88571338281ebf3891018f095532d9e3675565c13791710e62",
+  "bda_bytes": 64696,
+  "sdk_commit": "ef3bf3b7328a3a8fa9ba48593c63285300725fb7",
+  "resident_image_id": "34cf7d3b",
+  "validation": {
+    "real_firmware_guards": true,
+    "models": {
+      "modules": [
+        "test_build",
+        "test_client",
+        "test_device",
+        "test_runtime",
+        "test_usb",
+        "test_verify"
+      ],
+      "run": 58,
+      "passed": 58,
+      "skipped": 0,
+      "skipped_tests": 0,
+      "skipped_subtests": 0,
+      "success": true,
+      "log": "verify-tests.log"
+    },
+    "hardware_verified": false,
+    "full_system_usb_transport_verified": false
+  },
+  "input_firmware": {
+    "name": "C200.bin",
+    "size": 4652744,
+    "sha256": "02a16107b11a3281067871c6fe3d4c289c910d8dfa9924573dd87f00351d6525",
+    "load_base": "0x80004000"
+  },
+  "scope": "Model and exact local firmware code validation; physical 9588 pending. Full-system entry diagnostics, if available, are recorded separately."
+}
