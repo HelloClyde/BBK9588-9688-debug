@@ -6,18 +6,15 @@ BBK 原生 BDA 的后台 USB 调试器，提供状态、RAM 读写、240×320 �
 
 | 目标 | 当前验证范围 |
 |---|---|
-| 9588 V3.30 / JZ4740 | 新增适配；原厂代码与 38 组 CRC 核对，MIPS/USB/RTOS 模型及完整内核入口的启动/停止/复用、截图诊断通过；真机未验收 |
-| 9588 JZ4730 / JZ4720、其他固件 | 尚未启用，不能使用 JZ4740 绑定替代 |
+| 9588 / JZ4740 V3.30 | 同一个通用BDA；原厂指纹、MIPS/USB/RTOS模型；完整内核入口另记，真机未验收 |
+| 9588 / JZ4730 V1.30 | 同一个通用BDA；独立FIFO UDC、低有效GP89、PA29连接控制，真机未验收 |
+| 9588 / JZ4720 V3.2 | 同一个通用BDA；独立固件绑定、低有效PB18、MUSB，真机未验收 |
 | 9688 V2.32 / JZ4740 | 已完成真机握手、RAM、截图、EXEC、重连及资源清理验证 |
 | 9688 V2.32 / JZ4730 | 同一个通用 BDA 内的独立绑定；MIPS/USB 控制器模型通过，真机未验收 |
 
-当前预发布：[v0.1.0-alpha.2](https://github.com/HelloClyde/BBK9588-9688-debug/releases/tag/v0.1.0-alpha.2)，同时提供两个机型。
+从 [Releases](https://github.com/HelloClyde/BBK9588-9688-debug/releases) 下载，并按发布说明确认芯片和固件范围。`0.1.0-alpha.3` 起的9588构建使用一个三芯片通用文件；早期alpha.2仅支持9588/JZ4740。新通用版也可按下方命令从源码构建。
 
-- [BDA 与 PC 客户端安装包](https://github.com/HelloClyde/BBK9588-9688-debug/releases/download/v0.1.0-alpha.2/BBK9588-9688-debug-v0.1.0-alpha.2.zip)。
-- 单独下载 [Debug9588.bda](https://github.com/HelloClyde/BBK9588-9688-debug/releases/download/v0.1.0-alpha.2/Debug9588.bda) 或 [Debug9688.bda](https://github.com/HelloClyde/BBK9588-9688-debug/releases/download/v0.1.0-alpha.2/Debug9688.bda)。
-- [包含固定 SDK 的完整对应源码](https://github.com/HelloClyde/BBK9588-9688-debug/releases/download/v0.1.0-alpha.2/BBK9588-9688-debug-v0.1.0-alpha.2-source.zip)。
-
-主干和标签CI、下载资产校验及完整源码包独立重建均已通过；9588真机状态仍按表中范围标明。
+Debug依赖固件内部布局；直接使用汇编也需要正确的任务、内存和中断地址。具体机制见 [固件兼容说明](docs/FIRMWARE-COMPATIBILITY.md)。
 
 ## 快速开始
 
@@ -40,7 +37,7 @@ python build.py --models all --verify
 
 | 设备 | 构建文件 | 设备菜单 | PC 客户端 |
 |---|---|---|---|
-| 9588 V3.30 / JZ4740 | `build/9588-debug/Debug9588.bda` | 9588调试 | `9588-debug/client.py` |
+| 9588 / JZ4740、JZ4730、JZ4720（匹配上表固件） | `build/9588-debug/Debug9588.bda` | 9588调试 | `9588-debug/client.py` |
 | 9688 V2.32 / 两种芯片 | `build/9688-debug/Debug9688.bda` | 9688调试通用2 | `9688-debug/client.py` |
 
 1. 将与机型、固件匹配的 BDA 复制到设备 `应用/程序/`。安装包按 `9588/`、`9688/` 分目录，选择对应机型。
@@ -55,7 +52,7 @@ python 9588-debug/client.py screenshot screen.png
 # 9688 使用同一命令形式，将路径换为 9688-debug/client.py
 ```
 
-客户端枚举设备并核验精确握手，不要猜测 COM 号。9588 使用实验性 `07C4:A4A9`；9688 使用 `A4A7`/`A4A8`，两套客户端拒绝串用。截图默认纠正 LCD 的 180° 扫描方向，`--native-orientation` 保留原始方向；9588 的方向目前只在模拟器观察。
+客户端枚举设备并核验精确握手，不要猜测 COM 号。9588 使用实验性 `07C4:A4A9`/`A4AA`/`A4AB`；9688 使用 `A4A7`/`A4A8`，两套客户端拒绝串用。截图默认纠正 LCD 的 180° 扫描方向，`--native-orientation` 保留原始方向；9588 的方向目前只在模拟器观察。
 
 再次打开同一 BDA 或执行 `client.py stop` 请求停止。不同运行时版本更新前先重启；停止后磁盘恢复的真机覆盖范围见各机型说明。内存写入使用已确认自有的地址，EXEC 模块需要协作处理取消。
 
@@ -65,9 +62,9 @@ python 9588-debug/client.py screenshot screen.png
 
 ![9688 真机后台调试截图](docs/assets/9688-tools.png)
 
-下面是 **9588/JZ4740 未修改C200内核的模拟器**截图。后台驻留截图函数复制实际LCD像素后，经PC客户端默认180°转换为正向；此过程没有USB主机参与。
+下面是 **9588/JZ4740 未修改C200内核的模拟器**截图（本次通用BDA的确切文件）。后台驻留截图函数复制实际LCD像素后，经PC客户端默认180°转换为正向；此过程没有USB主机参与。
 
-![9588 模拟器驻留截图](docs/assets/9588-qemu/final-resident-lcd-display.png)
+![9588 模拟器驻留截图](docs/assets/9588-universal-qemu/universal-lcd-display.png)
 
 [9588 完整内核入口诊断](9588-debug/qemu-validation.md) 与 [9688 真机记录](docs/validation/9688-jz4740.json) 均绑定确切 BDA SHA-256。9588 的模型、GDB入口诊断及真机验证分别记录。文件部署、桌面自动启动、输入注入及 GDB 单步不在当前调试协议范围。
 

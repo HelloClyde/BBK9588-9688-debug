@@ -253,6 +253,26 @@ class TargetIsolationTests(unittest.TestCase):
             self.assertTrue(stream.closed)
             self.assertEqual(len(stream.writes),1)
 
+    def test_all_three_pids_require_their_matching_target_identity(self):
+        for chip,pid in client.PIDS.items():
+            for identity_chip,identity in client.IDENTITIES.items():
+                with self.subTest(chip=chip,identity=identity_chip):
+                    port=SimpleNamespace(device="COM42",vid=client.VID,pid=pid)
+                    def respond(op,seq,data):
+                        reply=identity if op==1 else struct.pack("<8I",1,31,512,0x80000000,0x2000000,240,320,1)
+                        return client.frame(op|128,seq,reply)
+                    stream=FakeSerial(respond)
+                    with patch("serial.tools.list_ports.comports",return_value=[port]),patch("serial.Serial",return_value=stream):
+                        if chip==identity_chip:
+                            connection=client.Client.connect()
+                            self.assertEqual(connection.chip,chip)
+                            connection.close()
+                        else:
+                            with self.assertRaises(client.ProtocolError):
+                                client.Client.connect()
+                            self.assertEqual(len(stream.writes),1)
+                    self.assertTrue(stream.closed)
+
     def test_screenshot_cli_defaults_display_and_supports_native_or_rotation(self):
         class Connection:
             broken=False
@@ -279,7 +299,7 @@ class TargetIsolationTests(unittest.TestCase):
         self.assertEqual(connection.handshake(),"9588DEBUG/1 JZ4740 RESIDENT")
         self.assertEqual(connection.caps[5:7],(128,96))
         with self.assertRaises(ValueError):
-            client.Client(FakeSerial(),chip="jz4730")
+            client.Client(FakeSerial(),chip="jz9999")
 
 if __name__ == "__main__":
     unittest.main()

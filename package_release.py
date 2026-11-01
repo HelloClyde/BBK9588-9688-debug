@@ -266,7 +266,7 @@ def package(build_path, output, expected_commit=None):
                  "安装包提供 PC 客户端；EXEC 编译需要另行准备固定工具链。源码包包含展开的固定 SDK，不包含固件或私有设备数据。", ""]
         compatibility = []
         if "9588" in models:
-            compatibility.append("- 9588：仅 V3.30 / JZ4740；真机尚未验收，JZ4730/JZ4720 未启用。")
+            compatibility.append("- 9588：一个通用 BDA 支持已核对的 JZ4740/V3.30、JZ4730/V1.30、JZ4720/V3.2；真机尚未验收。")
         if "9688" in models:
             compatibility.append("- 9688：V2.32 / JZ4740、JZ4730 共用一个 BDA；真机验收覆盖 JZ4740，JZ4730 为模型验证。")
         notes[6:6] = compatibility + [""]

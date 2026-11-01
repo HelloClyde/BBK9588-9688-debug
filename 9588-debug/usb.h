@@ -5,6 +5,7 @@
 #ifndef BBK9588_DEBUG_USB_H
 #define BBK9588_DEBUG_USB_H
 #include <stdint.h>
+#include "firmware.h"
 
 /* Full-speed CDC ACM on the selected JZ4730/JZ4740. The caller serializes
  * operations and provides bounded polling while this driver owns the UDC.
@@ -30,6 +31,9 @@ typedef struct {
     uint32_t soc_saved[36],soc_sba,soc_tx_pending,soc_control_busy,soc_control_zlp;
     uint32_t soc_rx_length;
     uint8_t soc_rx[64];
+#if RD_SOC_JZ4730
+    uint32_t pullup_data,pullup_dir,pullup_func,pullup_irq;
+#endif
 } debug_usb;
 
 /* 0=owned, 1=unsupported firmware, 2=external power or native USB session.

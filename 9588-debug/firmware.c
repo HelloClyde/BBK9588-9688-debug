@@ -47,7 +47,7 @@ uint32_t fw_selected_soc(void)
 #ifdef RD_UNIVERSAL_LAUNCHER
     return rd_selected_profile ? rd_selected_profile->soc : 0u;
 #else
-    return RD_SOC_JZ4730 ? 4730u : 4740u;
+    return RD_SOC_ID;
 #endif
 }
 uint32_t fw_match_error(void){return match_error;}
@@ -62,11 +62,13 @@ int fw_notice_safe(void)
         if(R32(p->fw_runtime_base+4u)==p->fw_gui_table && p->notice_guard_count &&
            !check_guards(p->notice_guards,p->notice_guard_count))return 1;
     }
+#if RD_EXTRA_NOTICE_PROFILE_COUNT
     for(unsigned i=0;i<RD_EXTRA_NOTICE_PROFILE_COUNT;i++){
         const struct rd_notice_profile *p=&rd_extra_notice_profiles[i];
         if(R32(p->runtime_base+4u)==p->gui_table && p->count &&
            !check_guards(p->guards,p->count))return 1;
     }
+#endif
     return 0;
 #else
     return R32(FW_RUNTIME_BASE+4u)==FW_GUI_TABLE && RD_NOTICE_GUARDS_COUNT &&
@@ -90,10 +92,14 @@ int fw_matches(void)
         if(failed){match_error=(p->soc<<16)|failed;continue;}
         failed=check_guards(p->notice_guards,p->notice_guard_count);
         if(failed){match_error=(p->soc<<16)|0x8000u|failed;continue;}
+        if(rd_selected_profile){
+            rd_selected_profile=0;
+            match_error=0xff02u; /* More than one complete predicate matched. */
+            return 0;
+        }
         rd_selected_profile=p;
-        match_error=0;
-        return 1;
     }
+    if(rd_selected_profile){match_error=0;return 1;}
     return 0;
 #else
     /* ROM identity does not prove that the BDA loader's live imports are

@@ -25,7 +25,11 @@ SDK_ROOT = Path(os.environ.get("BDA_SDK_ROOT", ROOT / "sdk")).resolve()
 SDK_INCLUDE = SDK_ROOT / "sdk" / "include"
 SDK_COMMIT = "ef3bf3b7328a3a8fa9ba48593c63285300725fb7"
 TARGET = "9588"
-IDENTITY = "9588DEBUG/1 JZ4740 RESIDENT"
+SOCS = ("JZ4740", "JZ4730", "JZ4720")
+IDENTITIES = {soc: f"9588DEBUG/1 {soc} RESIDENT" for soc in SOCS}
+IDENTITY = IDENTITIES["JZ4740"]
+USB_CONTROLLERS = {"JZ4740": "jz4740-musb", "JZ4730": "jz4730-fifo", "JZ4720": "jz4740-musb"}
+USB_PIDS = {"JZ4740": 0xA4A9, "JZ4730": 0xA4AA, "JZ4720": 0xA4AB}
 
 
 def configure_sdk(path: Path | None = None) -> None:
@@ -44,7 +48,7 @@ LINK_BASE = 0x81000000
 ENTRY_VA = 0x81C00020
 MAX_MEMORY = 0x200000
 DEFAULT_PROFILE = SOURCE / "profiles/9588-jz4740.json"
-SOC_PROFILES = {"JZ4740": DEFAULT_PROFILE}
+SOC_PROFILES = {soc: SOURCE / f"profiles/9588-{soc.lower()}.json" for soc in SOCS}
 LEGACY_NOTICE_PROFILE = SOURCE / "profiles/9588-legacy-notice.json"
 
 
@@ -75,38 +79,36 @@ def profile_soc(profile: dict) -> str:
 
 def configuration(chip: str | None = None, profile_path: Path | None = None,
                   output_dir: Path | None = None) -> tuple[dict, Path, Path]:
-    """Resolve the checked 9588 JZ4740 profile; no firmware addresses are inferred."""
+    """Resolve an explicit single-SoC developer build."""
     chosen = chip.upper() if chip else "JZ4740"
     if chosen not in SOC_PROFILES:
         raise ValueError(f"unsupported 9588 SoC: {chosen}")
     path = (profile_path or SOC_PROFILES[chosen]).resolve()
     if not path.is_file():
-        raise ValueError(f"checked 9588 JZ4740 firmware profile is missing: {path}; do not substitute a 9688 profile")
+        raise ValueError(f"checked 9588 {chosen} firmware profile is missing: {path}")
     profile = json.loads(path.read_text(encoding="utf-8"))
     validate_target_profile(profile)
     soc = profile_soc(profile)
     if chip and soc != chosen:
         raise ValueError(f"--chip {chip} conflicts with profile SoC {soc}")
-    folder = "9588-debug"
-    output = (output_dir or ROOT / "build" / folder).resolve()
+    output = (output_dir or ROOT / "build" / f"9588-debug-{soc.lower()}").resolve()
     return profile, path, output
 
 
 def resident_sources_for_soc(soc: str) -> list[Path]:
     if soc not in SOC_PROFILES:
         raise ValueError(f"unsupported 9588 SoC: {soc}")
-    usb = "usb.c"
-    sources = [SOURCE / name for name in ("resident.c", "firmware.c", usb, "protocol.c", "screen.c")]
-    if (SOURCE / "exec.c").exists():
-        sources.append(SOURCE / "exec.c")
-    return sources
+    usb = "usb_jz4730.c" if soc == "JZ4730" else "usb.c"
+    return [SOURCE / name for name in ("resident.c", "firmware.c", usb, "protocol.c", "screen.c", "exec.c")]
 
 
 
 def validate_target_profile(profile: dict) -> None:
     if profile.get("target") != TARGET:
         raise ValueError("profile target must be 9588; 9688 and H1 profiles are incompatible")
-    profile_soc(profile)
+    soc = profile_soc(profile)
+    if profile.get("usb_controller") != USB_CONTROLLERS[soc]:
+        raise ValueError(f"{soc} requires its independently checked USB controller {USB_CONTROLLERS[soc]}")
     if profile.get("verified") is not True:
         raise ValueError("9588 profile is incomplete: verified must be true after independent firmware checks")
     if not isinstance(profile.get("firmware_version"), str) or not profile["firmware_version"].strip():
@@ -115,11 +117,27 @@ def validate_target_profile(profile: dict) -> None:
     if not isinstance(macros, dict):
         raise ValueError("profile.macros must be an object")
     required = set()
-    for path in (*SOURCE.glob("*.c"), *SOURCE.glob("*.h")):
+    for path in (*resident_sources_for_soc(soc), SOURCE / "launcher.c", *SOURCE.glob("*.h")):
         required.update(re.findall(r"\bFW_[A-Z0-9_]+\b", path.read_text(encoding="utf-8")))
+    if not number(macros.get("FW_USB_CABLE_AUX_GPIO_MASK", 0)):
+        required.discard("FW_USB_CABLE_AUX_ACTIVE_LOW")  # No auxiliary input exists on this board.
     missing = required - macros.keys()
     if missing:
         raise ValueError("9588 profile lacks checked bindings: " + ", ".join(sorted(missing)))
+    for name in ("FW_USB_CABLE_ACTIVE_LOW", "FW_USB_CABLE_AUX_ACTIVE_LOW"):
+        if name in macros and number(macros[name]) not in (0, 1):
+            raise ValueError(f"{name} must be a checked 0/1 polarity")
+    if soc=="JZ4730" and number(macros["FW_USB_PULLUP_MASK"]):
+        mask=number(macros["FW_USB_PULLUP_MASK"])
+        if mask&(mask-1) or number(macros["FW_USB_PULLUP_ACTIVE_LOW"]) not in (0,1):
+            raise ValueError("checked dedicated pullup must identify one GPIO and explicit polarity")
+        function_mask=number(macros["FW_USB_PULLUP_FUNC_MASK"])
+        if not function_mask or number(macros["FW_USB_PULLUP_FUNC_VALUE"])&~function_mask:
+            raise ValueError("pullup function value is outside its checked mask")
+        for name in ("FW_USB_PULLUP_BASE","FW_USB_PULLUP_DIR_ADDR","FW_USB_PULLUP_FUNC_ADDR","FW_USB_PULLUP_IRQ_ADDR"):
+            address=number(macros[name])
+            if address&3 or not 0xb0010000<=address<0xb0011000:
+                raise ValueError("pullup GPIO binding must be aligned in the checked GPIO controller")
     for top, macro in (("runtime_base", "FW_RUNTIME_BASE"), ("sdram_start", "FW_SDRAM_START"),
                        ("sdram_end", "FW_SDRAM_END")):
         if top not in profile or number(profile[top]) != number(macros[macro]):
@@ -166,13 +184,18 @@ def profile_header(profile: dict) -> str:
     if number(aliases["RD_FW_SDRAM_START"]) >= number(aliases["RD_FW_SDRAM_END"]):
         raise ValueError("invalid profile SDRAM bounds")
     soc = profile_soc(profile)
-    identity = str(profile.get("identity", IDENTITY))
-    if identity != IDENTITY:
+    identity = str(profile.get("identity", IDENTITIES[soc]))
+    if identity != IDENTITIES[soc]:
         raise ValueError("profile identity must be the exact 9588 target and protocol identity")
     lines += [f"#define RD_PROFILE_NAME {json.dumps(str(profile.get('name', profile.get('id', '9588'))))}",
               f"#define RD_SOC_NAME {json.dumps(soc)}",
               f"#define RD_IDENTITY {json.dumps(identity)}",
               f"#define RD_USB_PRODUCT {json.dumps('9588 USB Debug ' + soc)}",
+              f"#define RD_SOC_ID {int(soc[2:])}u",
+              f"#define RD_SOC_JZ4720 {int(soc == 'JZ4720')}u",
+              f"#define RD_USB_CONTROLLER_MUSB {int(USB_CONTROLLERS[soc] == 'jz4740-musb')}u",
+              f"#define RD_USB_CONTROLLER_FIFO {int(USB_CONTROLLERS[soc] == 'jz4730-fifo')}u",
+              f"#define RD_USB_PID 0x{USB_PIDS[soc]:04x}u",
               f"#define RD_SOC_JZ4730 {int(soc == 'JZ4730')}u",
               f"#define RD_SOC_JZ4740 {int(soc == 'JZ4740')}u",
               "struct rd_fw_guard { uint32_t address,length,crc32; };"]
@@ -199,10 +222,42 @@ def profile_header(profile: dict) -> str:
     return "\n".join(lines)
 
 
+
+def validate_profile_set(profiles: list[dict], *, require_all: bool = True) -> None:
+    expected = set(SOCS)
+    socs = [profile_soc(profile) for profile in profiles]
+    if len(set(socs)) != len(socs) or (require_all and set(socs) != expected) or not profiles:
+        raise ValueError("universal build requires exactly one checked profile per supported SoC")
+    selectors = set()
+    hashes = set()
+    for profile in profiles:
+        profile_header(profile)
+        tables = tuple(number(profile["macros"][name]) for name in
+                       ("FW_RUNTIME_BASE", "FW_GUI_TABLE", "FW_FS_TABLE", "FW_SYS_TABLE", "FW_MEM_TABLE", "FW_RES_TABLE"))
+        guards = tuple(sorted((number(g["address"]), number(g["length"]), number(g["crc32"]))
+                              for g in [*profile["guards"], *profile.get("notice_guards", [])]))
+        selector = (tables, guards)
+        if selector in selectors or profile["firmware"]["sha256"] in hashes:
+            raise ValueError("ambiguous universal firmware profiles: duplicate selection predicate or firmware identity")
+        selectors.add(selector)
+        hashes.add(profile["firmware"]["sha256"])
+
+
+def registered_profiles() -> list[tuple[str, Path, dict]]:
+    missing = [str(path) for path in SOC_PROFILES.values() if not path.is_file()]
+    if missing:
+        raise ValueError("universal build is missing checked profiles: " + ", ".join(missing))
+    result = [(soc, path, json.loads(path.read_text(encoding="utf-8"))) for soc, path in SOC_PROFILES.items()]
+    for soc, path, profile in result:
+        if profile_soc(profile) != soc:
+            raise ValueError(f"profile file {path.name} does not match registered SoC {soc}")
+    validate_profile_set([profile for _, _, profile in result])
+    return result
+
+
 def launcher_profile_header(profiles: list[dict], extra_notice_profiles: list[dict] | None = None) -> str:
     """Runtime-only bindings; each embedded resident keeps its static profile."""
-    if not profiles or len({profile_soc(profile) for profile in profiles}) != len(profiles):
-        raise ValueError("launcher needs distinct checked SoC profiles")
+    validate_profile_set(profiles, require_all=False)
     names = sorted({name for profile in profiles for name in profile["macros"]})
     lines = ["/* Generated by 9588-debug/build.py; do not edit. */",
              "#ifndef RD_LAUNCHER_PROFILE_GENERATED_H", "#define RD_LAUNCHER_PROFILE_GENERATED_H",
@@ -248,12 +303,14 @@ def launcher_profile_header(profiles: list[dict], extra_notice_profiles: list[di
                 raise ValueError("invalid extra notice guard range")
             lines.append(f"    {{0x{address:08x}u,0x{length:x}u,0x{checksum:08x}u}},")
         lines += ["};"]
-    lines += [f"#define RD_EXTRA_NOTICE_PROFILE_COUNT {len(extra_notice_profiles)}u",
-              "static const struct rd_notice_profile rd_extra_notice_profiles[] = {"]
-    for index, profile in enumerate(extra_notice_profiles):
-        lines.append(f"    {{0x{number(profile['runtime_base']):08x}u,0x{number(profile['gui_table']):08x}u,"
-                     f"{len(profile['notice_guards'])}u,rd_extra_notice_guards_{index}}},")
-    lines += ["};", "extern const struct rd_launcher_profile *rd_selected_profile;"]
+    lines += [f"#define RD_EXTRA_NOTICE_PROFILE_COUNT {len(extra_notice_profiles)}u"]
+    if extra_notice_profiles:
+        lines += ["static const struct rd_notice_profile rd_extra_notice_profiles[] = {"]
+        for index, profile in enumerate(extra_notice_profiles):
+            lines.append(f"    {{0x{number(profile['runtime_base']):08x}u,0x{number(profile['gui_table']):08x}u,"
+                         f"{len(profile['notice_guards'])}u,rd_extra_notice_guards_{index}}},")
+        lines += ["};"]
+    lines += ["extern const struct rd_launcher_profile *rd_selected_profile;"]
     lines += [f"#define {name} (rd_selected_profile->{name.lower()})" for name in names]
     lines += ["#define RD_FW_RUNTIME_BASE FW_RUNTIME_BASE", "#define RD_FW_SDRAM_START FW_SDRAM_START",
               "#define RD_FW_SDRAM_END FW_SDRAM_END", "#endif", ""]
@@ -644,7 +701,7 @@ def build_variant(profile: dict, profile_path: Path, output: Path, gcc: Path, ob
     report = {"version": "9588-debug-v1", "image_id": f"{image_id:08x}", "sha256": digest, "size": len(bda),
               "profile": profile.get("id", profile.get("name")), "soc": soc,
               "menu_title": menu_title, "binary": destination.name, "binary_aliases": [],
-              "target": TARGET, "mode": "single", "usb_source": "usb.c",
+              "target": TARGET, "mode": "single", "usb_source": "usb_jz4730.c" if soc == "JZ4730" else "usb.c",
               "firmware": profile.get("firmware", {}), "profile_file": source_label(profile_path),
               "compiler": compiler, "entry_va": ENTRY_VA, "resident_link_base": LINK_BASE,
               "resident_image_bytes": len(resident), "resident_memory_bytes": memory_size,
@@ -687,11 +744,11 @@ def build_variant(profile: dict, profile_path: Path, output: Path, gcc: Path, ob
 
 def build_universal(output: Path, gcc: Path, objcopy: Path,
                     firmware_paths: dict[str, Path | None]) -> dict:
+    registered = registered_profiles()
     output.mkdir(parents=True, exist_ok=True)
     extra_notice_profiles = []
     components = []
-    for soc, path in SOC_PROFILES.items():
-        profile = json.loads(path.read_text(encoding="utf-8"))
+    for soc, path, profile in registered:
         component = build_variant(profile, path, output / "components" / soc.lower(), gcc, objcopy,
                                   firmware_paths.get(soc), emit_bda=False)
         components.append(component)
@@ -722,6 +779,8 @@ def build_universal(output: Path, gcc: Path, objcopy: Path,
     destination.write_bytes(bda)
     digest = hashlib.sha256(bda).hexdigest()
     component_reports = [{"soc": component["report"]["soc"],
+                          "profile_file": component["report"]["profile_file"],
+                          "usb_controller": component["profile"]["usb_controller"],
                           "directory": component["output"].relative_to(output).as_posix(),
                           "image_id": component["report"]["image_id"],
                           "resident_image_bytes": len(component["resident"]),
@@ -729,7 +788,7 @@ def build_universal(output: Path, gcc: Path, objcopy: Path,
                           "relocations": len(component["records"]),
                           "firmware_verification": component["report"]["firmware_verification"]}
                          for component in components]
-    report = {"version": "9588-debug-v1", "target": TARGET, "mode": "universal", "soc": "UNIVERSAL",
+    report = {"version": "9588-debug-v2", "target": TARGET, "mode": "universal", "soc": "UNIVERSAL",
               "supported_socs": [profile_soc(profile) for profile in profiles],
               "profile": "9588-universal", "binary": destination.name,
               "extra_notice_profiles": [profile.get("name", "legacy firmware") for profile in extra_notice_profiles],
@@ -762,25 +821,33 @@ def build_universal(output: Path, gcc: Path, objcopy: Path,
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--sdk-root", type=Path, help="fixed public SDK checkout; defaults to BDA_SDK_ROOT or ../sdk")
-    parser.add_argument("--toolchain", type=Path, help="directory containing mipsel-none-elf-gcc/objcopy")
-    parser.add_argument("--chip", choices=("jz4740",), default="jz4740")
-    parser.add_argument("--profile", type=Path, help="independently checked 9588 JZ4740 profile")
-    parser.add_argument("--firmware", type=Path, help="optional local raw/wrapped firmware, read only")
+    parser.add_argument("--sdk-root", type=Path)
+    parser.add_argument("--toolchain", type=Path)
+    parser.add_argument("--chip", choices=tuple(soc.lower() for soc in SOCS), help="explicit single-SoC developer build; default is universal")
+    parser.add_argument("--profile", type=Path, help="override a single-SoC checked profile")
+    parser.add_argument("--firmware", type=Path, help="local raw/wrapped ROM for an explicit single-SoC build")
+    for soc in SOCS:
+        parser.add_argument("--firmware-" + soc.lower(), type=Path, help="optional checked local ROM for the universal build")
     parser.add_argument("--output-dir", type=Path)
-    parser.add_argument("--universal", action="store_true", help="experimental framework; embeds only supported checked profiles")
+    parser.add_argument("--universal", action="store_true", help="default; retained for CLI compatibility")
     args = parser.parse_args()
     try:
-        profile, profile_path, output = configuration(args.chip, args.profile, args.output_dir)
-        # Missing/foreign profiles fail before resolving compiler or creating outputs.
+        single = bool(args.chip or args.profile)
+        firmware_paths = {soc: getattr(args, "firmware_" + soc.lower()) for soc in SOCS}
+        if single:
+            if args.universal or any(firmware_paths.values()):
+                parser.error("single-SoC builds use --firmware, not --universal or --firmware-jzXXXX")
+            profile, profile_path, output = configuration(args.chip, args.profile, args.output_dir)
+        else:
+            if args.firmware:
+                parser.error("universal builds use --firmware-jz4740/4730/4720; --firmware requires --chip")
+            registered_profiles()  # Reject missing/ambiguous profiles before creating outputs.
         configure_sdk(args.sdk_root)
         gcc, objcopy = find_toolchain(args.toolchain)
-        if args.universal:
-            if args.profile:
-                parser.error("--universal uses registered checked profiles, not --profile")
-            build_universal(output, gcc, objcopy, {"JZ4740": args.firmware})
-        else:
+        if single:
             build_variant(profile, profile_path, output, gcc, objcopy, args.firmware)
+        else:
+            build_universal((args.output_dir or ROOT / "build/9588-debug").resolve(), gcc, objcopy, firmware_paths)
     except ValueError as error:
         parser.error(str(error))
 

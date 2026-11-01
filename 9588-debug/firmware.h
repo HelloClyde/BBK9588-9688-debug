@@ -6,6 +6,9 @@
 #include "launcher_profile_generated.h"
 #else
 #include "profile_generated.h"
+#if RD_SOC_JZ4720 + RD_SOC_JZ4730 + RD_SOC_JZ4740 != 1
+#error "exactly one checked resident SoC is required"
+#endif
 #endif
 /* Screen dimensions and all call limits must come from a checked 9588 profile. */
 int fw_matches(void);

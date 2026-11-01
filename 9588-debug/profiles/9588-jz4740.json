@@ -76,7 +76,9 @@
     "FW_FS_CALL_LIMIT": "0x84",
     "FW_SYS_CALL_LIMIT": "0xcc",
     "FW_MEM_CALL_LIMIT": "0x30",
-    "FW_RES_CALL_LIMIT": "0x9c"
+    "FW_RES_CALL_LIMIT": "0x9c",
+    "FW_USB_CABLE_ACTIVE_LOW": "0x0",
+    "FW_USB_CABLE_AUX_ACTIVE_LOW": "0x0"
   },
   "guards": [
     {
@@ -370,10 +372,7 @@
     },
     "memory_evidence": "JZ4740 loader DMCR=0x041a0000: 32-bit bus, 9 column bits, 12 row bits, four banks => 32 MiB.",
     "usb_cable": "Native PB18 high enters UDC_CONNECT; physical board polarity and CDC ACK/retry remain untested.",
-    "unsupported_socs": [
-      "JZ4730",
-      "JZ4720"
-    ]
+    "unsupported_socs": []
   },
   "target": "9588",
   "verified": true,
@@ -390,5 +389,6 @@
       "length": "0x80",
       "crc32": "0x0f0590af"
     }
-  ]
+  ],
+  "usb_controller": "jz4740-musb"
 }

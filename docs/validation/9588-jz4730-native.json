@@ -1,0 +1,352 @@
+{
+  "raw_sha256": "c7a4ba34d5a4c006f88b7e9e0c0a991b2b1e7a1ec8896859f0cc3dfb18e44270",
+  "raw_size": 4673144,
+  "raw_crc32": "0x9d7b39c7",
+  "scope": "Native MIPS instructions on explicit register-storage MMIO. Does not emulate physical USB ACK, GPIO wiring, LCD electrical timing, or full RTOS boot.",
+  "guard_count": 48,
+  "usb_init": {
+    "entry": "0x801890e0",
+    "stubs": [
+      "printf@0x8000518c"
+    ],
+    "irq_register": "real native 0x80004a34",
+    "irq_slot": "0x80479694",
+    "irq_handler": "0x8018a04c",
+    "irq_argument": 0,
+    "writes": [
+      [
+        "0xb3040400",
+        4,
+        "0x17"
+      ],
+      [
+        "0xb3040404",
+        4,
+        "0x0"
+      ],
+      [
+        "0xb3040410",
+        4,
+        "0x70"
+      ],
+      [
+        "0xb3040418",
+        4,
+        "0x0"
+      ],
+      [
+        "0xb3040000",
+        4,
+        "0x2"
+      ],
+      [
+        "0xb3040000",
+        4,
+        "0x0"
+      ],
+      [
+        "0xb3040020",
+        4,
+        "0x32"
+      ],
+      [
+        "0xb3040020",
+        4,
+        "0x30"
+      ],
+      [
+        "0xb3040040",
+        4,
+        "0x22"
+      ],
+      [
+        "0xb3040040",
+        4,
+        "0x20"
+      ],
+      [
+        "0xb3040060",
+        4,
+        "0x22"
+      ],
+      [
+        "0xb3040060",
+        4,
+        "0x20"
+      ],
+      [
+        "0xb3040080",
+        4,
+        "0x12"
+      ],
+      [
+        "0xb3040080",
+        4,
+        "0x10"
+      ],
+      [
+        "0xb3040200",
+        4,
+        "0x0"
+      ],
+      [
+        "0xb30402a0",
+        4,
+        "0x20"
+      ],
+      [
+        "0xb30402c0",
+        4,
+        "0x20"
+      ],
+      [
+        "0xb30402e0",
+        4,
+        "0x10"
+      ],
+      [
+        "0xb3040008",
+        4,
+        "0x8"
+      ],
+      [
+        "0xb3040028",
+        4,
+        "0x10"
+      ],
+      [
+        "0xb3040048",
+        4,
+        "0x10"
+      ],
+      [
+        "0xb3040068",
+        4,
+        "0x10"
+      ],
+      [
+        "0xb3040088",
+        4,
+        "0x10"
+      ],
+      [
+        "0xb304000c",
+        4,
+        "0x20"
+      ],
+      [
+        "0xb304002c",
+        4,
+        "0x40"
+      ],
+      [
+        "0xb304004c",
+        4,
+        "0x40"
+      ],
+      [
+        "0xb304006c",
+        4,
+        "0x40"
+      ],
+      [
+        "0xb304008c",
+        4,
+        "0x40"
+      ],
+      [
+        "0xb304020c",
+        4,
+        "0x20"
+      ],
+      [
+        "0xb30402ac",
+        4,
+        "0x40"
+      ],
+      [
+        "0xb30402cc",
+        4,
+        "0x40"
+      ],
+      [
+        "0xb30402ec",
+        4,
+        "0x40"
+      ],
+      [
+        "0xb3040500",
+        4,
+        "0xffff"
+      ],
+      [
+        "0xb3040504",
+        4,
+        "0x1000080"
+      ],
+      [
+        "0xb3040508",
+        4,
+        "0x20000f1"
+      ],
+      [
+        "0xb304050c",
+        4,
+        "0x20000d2"
+      ],
+      [
+        "0xb3040510",
+        4,
+        "0x20000d3"
+      ],
+      [
+        "0xb3040514",
+        4,
+        "0x20000b4"
+      ],
+      [
+        "0xb3040518",
+        4,
+        "0x20000c5"
+      ],
+      [
+        "0xb304051c",
+        4,
+        "0x20000c6"
+      ],
+      [
+        "0xb3040520",
+        4,
+        "0x20000a7"
+      ],
+      [
+        "0xb000100c",
+        4,
+        "0x1000"
+      ]
+    ],
+    "ep5_type": "0x20",
+    "ep5_max_packet": 64
+  },
+  "gp89_polarity": [
+    {
+      "raw_gpio_bits": "0x0",
+      "query": 1,
+      "wrapper": 128
+    },
+    {
+      "raw_gpio_bits": "0x2000000",
+      "query": 0,
+      "wrapper": 0
+    }
+  ],
+  "board_setup": {
+    "entry": "0x80004310",
+    "sba": "0xffffff7f",
+    "pullup_data": "0xffffffff",
+    "pullup_dir": "0xffffffff",
+    "pullup_function": "0xf3455555",
+    "pullup_irq_enable": "0xdbffffff"
+  },
+  "pullup_native": {
+    "connect_entry": "0x8018ad10",
+    "disconnect_entry": "0x8018ad48",
+    "initial": "0xa5a55a5a",
+    "connected": "0xa5a55a5a",
+    "disconnected": "0x85a55a5a"
+  },
+  "gp89_setup": {
+    "entry": "0x80028194",
+    "irq_slot": "0x80479a7c",
+    "irq_handler": "0x800294f4",
+    "irq_argument": 89,
+    "writes": [
+      [
+        "0xb0010080",
+        4,
+        "0x0"
+      ],
+      [
+        "0xb0010064",
+        4,
+        "0x0"
+      ],
+      [
+        "0xb0010074",
+        4,
+        "0x0"
+      ],
+      [
+        "0xb001007c",
+        4,
+        "0x80000"
+      ],
+      [
+        "0xb0010080",
+        4,
+        "0x2000000"
+      ],
+      [
+        "0xb0010080",
+        4,
+        "0x2000000"
+      ],
+      [
+        "0xb000100c",
+        4,
+        "0x4000000"
+      ]
+    ]
+  },
+  "lcd_init": {
+    "entry": "0x8000727c",
+    "descriptor_entry": "0x80007414",
+    "stubs": [
+      "clock utility@0x80004150",
+      "panel clock/setup@0x8000755c"
+    ],
+    "memset": "real native 0x80006410",
+    "irq_register": "real native 0x80004a34",
+    "width": 240,
+    "height": 320,
+    "bits": 16,
+    "descriptors": [
+      "0x479ff0",
+      "0x1f81000",
+      "0xdeadbeaf",
+      "0x10000080",
+      "0x479ff0",
+      "0x1f82000",
+      "0xbeafbeaf",
+      "0xc0009600",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0"
+    ],
+    "dma_da0": "0x479ff0",
+    "irq_slot": "0x80479724",
+    "irq_handler": "0x80007e28"
+  },
+  "gui_orientation": {
+    "entry": "0x800d0eb0",
+    "stubs": [
+      "GUI backend callback",
+      "clip/setup@0x800d59c0"
+    ],
+    "geometry": [
+      {
+        "logical_rotation": 0,
+        "width": 240,
+        "height": 320
+      },
+      {
+        "logical_rotation": 1,
+        "width": 320,
+        "height": 240
+      }
+    ],
+    "panel_getter": "0x8001923c",
+    "panel_orientation_code": "0x130"
+  }
+}

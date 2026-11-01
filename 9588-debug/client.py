@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-only
-"""9588 JZ4740 debug client. Never retries an RPC automatically."""
+"""9588 JZ4740/JZ4730/JZ4720 debug client. Never retries an RPC automatically."""
 from __future__ import annotations
 
 import argparse
@@ -16,8 +16,8 @@ import zlib
 
 MAGIC = b"96DB"
 TARGET = "9588"
-IDENTITIES = {"jz4740": b"9588DEBUG/1 JZ4740 RESIDENT"}
-PIDS = {"jz4740": 0xA4A9}  # Experimental local debugger PID, separate from 9688.
+IDENTITIES = {soc: f"9588DEBUG/1 {soc.upper()} RESIDENT".encode("ascii") for soc in ("jz4740", "jz4730", "jz4720")}
+PIDS = {"jz4740": 0xA4A9, "jz4730": 0xA4AA, "jz4720": 0xA4AB}  # Experimental local debugger PID, separate from 9688.
 IDENTITY = IDENTITIES["jz4740"]
 VID, PID = 0x07C4, PIDS["jz4740"]
 HEADER = struct.Struct("<4sBBHHH")
@@ -73,7 +73,7 @@ class Client:
         found = ports(chip)
         selected = [p for p in found if port is None or p.device.lower() == port.lower()]
         if len(selected) != 1:
-            raise RuntimeError("expected one 9588 debug device (07C4:A4A9); use list, --chip or --port to select")
+            raise RuntimeError("expected one 9588 debug device (07C4:A4A9/A4AA/A4AB); use list, --chip or --port to select")
         stream = serial.Serial(selected[0].device, baudrate=115200, timeout=min(timeout, 0.25), write_timeout=timeout)
         selected_chip = next(name for name, pid in PIDS.items() if pid == selected[0].pid)
         client = cls(stream, timeout, chip=selected_chip)
@@ -296,7 +296,7 @@ def number(s):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--port")
-    parser.add_argument("--chip", choices=("auto", "jz4740"), default="auto")
+    parser.add_argument("--chip", choices=("auto", "jz4740", "jz4730", "jz4720"), default="auto")
     parser.add_argument("--timeout", type=float, default=5)
     parser.add_argument("--report", type=Path)
     commands = parser.add_subparsers(dest="command", required=True)

@@ -1,0 +1,635 @@
+{
+  "id": "9588-v130-jz4730",
+  "name": "BBK 9588 V1.30 JZ4730",
+  "soc": "JZ4730",
+  "firmware_version": "V1.30",
+  "load_base": "0x80004000",
+  "runtime_base": "0x81c00000",
+  "sdram_start": "0x80004000",
+  "sdram_end": "0x82000000",
+  "firmware": {
+    "format": "raw",
+    "name": "C200knl.raw.bin",
+    "size": 4673144,
+    "sha256": "c7a4ba34d5a4c006f88b7e9e0c0a991b2b1e7a1ec8896859f0cc3dfb18e44270",
+    "load_base": "0x80004000",
+    "source_payload_offset": 64,
+    "crc32": "0x9d7b39c7"
+  },
+  "packed_firmware": {
+    "name": "C200knl.bin",
+    "size": 4673208,
+    "sha256": "dc41701442176ba81bf1b8041b2f9dac449e04f2adf6532993e7c55471de9bea",
+    "header_size": 64,
+    "compressed": false
+  },
+  "raw_sha256": "c7a4ba34d5a4c006f88b7e9e0c0a991b2b1e7a1ec8896859f0cc3dfb18e44270",
+  "raw_size": 4673144,
+  "macros": {
+    "FW_SOC_JZ4730": "0x1",
+    "FW_TASK_TABLE": "0x8087eb90",
+    "FW_TASK_CREATE_EXT": "0x8000f5ec",
+    "FW_TASK_DELETE": "0x8000f770",
+    "FW_TASK_DELAY": "0x8001038c",
+    "FW_TASK_RESUME": "0x800102a0",
+    "FW_RAW_TICK": "0x8012de98",
+    "FW_TICK_IRQ_SLOT": "0x804796ec",
+    "FW_TICK_IRQ_HANDLER": "0x8012dd5c",
+    "FW_CURRENT_TCB": "0x80478f08",
+    "FW_OS_RUNNING": "0x80478ec1",
+    "FW_SCHED_LOCK": "0x80478ec0",
+    "FW_INT_NESTING": "0x80478f05",
+    "FW_GLOBAL_ALLOC": "0x80006e88",
+    "FW_GLOBAL_FREE": "0x80006034",
+    "FW_RUNTIME_BASE": "0x81c00000",
+    "FW_SDRAM_START": "0x80004000",
+    "FW_SDRAM_END": "0x82000000",
+    "FW_BDA_SEED": "0x802547b0",
+    "FW_GUI_TABLE": "0x80253f90",
+    "FW_FS_TABLE": "0x80253f00",
+    "FW_SYS_TABLE": "0x80253d90",
+    "FW_MEM_TABLE": "0x802547cc",
+    "FW_RES_TABLE": "0x80253e60",
+    "FW_LCD_WIDTH": "0x80366814",
+    "FW_LCD_HEIGHT": "0x80366818",
+    "FW_LCD_BITS": "0x8036681c",
+    "FW_LCD_BASE": "0xb3050000",
+    "FW_SCREEN_WIDTH": "0xf0",
+    "FW_SCREEN_HEIGHT": "0x140",
+    "FW_UDC_BASE": "0xb3040000",
+    "FW_USB_IRQ_MASK": "0x1000",
+    "FW_USB_IRQ_SLOT": "0x80479694",
+    "FW_NATIVE_USB_INIT": "0x801890e0",
+    "FW_NATIVE_USB_IRQ": "0x8018a04c",
+    "FW_INTC_IMR": "0xb0001004",
+    "FW_INTC_IMSR": "0xb0001008",
+    "FW_INTC_IMCR": "0xb000100c",
+    "FW_CPM_CLKGR": "0xb0000020",
+    "FW_CPM_USB_GATE_MASK": "0x1000000",
+    "FW_CPM_OPCR": "0xb000001c",
+    "FW_CPM_USB_PHY_MASK": "0x40",
+    "FW_CPM_CPCCR": "0xb0000000",
+    "FW_CPM_CPPCR": "0xb0000010",
+    "FW_USB_SBA_CTRL": "0xb3000000",
+    "FW_USB_SBA_MASK": "0x80",
+    "FW_USB_SBA_DEVICE_VALUE": "0x0",
+    "FW_USB_CABLE_GPIO_BASE": "0xb0010060",
+    "FW_USB_CABLE_GPIO_MASK": "0x2000000",
+    "FW_USB_CABLE_ACTIVE_LOW": "0x1",
+    "FW_USB_CABLE_AUX_GPIO_BASE": "0x0",
+    "FW_USB_CABLE_AUX_GPIO_MASK": "0x0",
+    "FW_USB_CABLE_AUX_ACTIVE_LOW": "0x0",
+    "FW_USB_PULLUP_BASE": "0xb0010000",
+    "FW_USB_PULLUP_MASK": "0x20000000",
+    "FW_USB_PULLUP_ACTIVE_LOW": "0x0",
+    "FW_USB_PULLUP_DIR_ADDR": "0xb0010004",
+    "FW_USB_PULLUP_FUNC_ADDR": "0xb0010014",
+    "FW_USB_PULLUP_FUNC_MASK": "0xc000000",
+    "FW_USB_PULLUP_FUNC_VALUE": "0x0",
+    "FW_USB_PULLUP_IRQ_ADDR": "0xb0010020",
+    "FW_GUI_CALL_LIMIT": "0x820",
+    "FW_FS_CALL_LIMIT": "0x84",
+    "FW_SYS_CALL_LIMIT": "0xcc",
+    "FW_MEM_CALL_LIMIT": "0x30",
+    "FW_RES_CALL_LIMIT": "0x9c"
+  },
+  "guards": [
+    {
+      "name": "task_create_ext",
+      "address": "0x8000f5ec",
+      "length": "0x184",
+      "crc32": "0xa45b16c3"
+    },
+    {
+      "name": "task_delete",
+      "address": "0x8000f770",
+      "length": "0x240",
+      "crc32": "0x0716f26b"
+    },
+    {
+      "name": "task_delay",
+      "address": "0x8001038c",
+      "length": "0x98",
+      "crc32": "0x8efcbc6a"
+    },
+    {
+      "name": "task_resume",
+      "address": "0x800102a0",
+      "length": "0xec",
+      "crc32": "0x547fe427"
+    },
+    {
+      "name": "task_create",
+      "address": "0x8000f4a0",
+      "length": "0x14c",
+      "crc32": "0x61a9481f"
+    },
+    {
+      "name": "task_stack_init",
+      "address": "0x8000aca0",
+      "length": "0xf0",
+      "crc32": "0xe2ac9b5b"
+    },
+    {
+      "name": "tcb_init",
+      "address": "0x8000b5f4",
+      "length": "0x1a0",
+      "crc32": "0xf1b63a2b"
+    },
+    {
+      "name": "scheduler",
+      "address": "0x8000b390",
+      "length": "0xd8",
+      "crc32": "0x65ff5d63"
+    },
+    {
+      "name": "global_alloc",
+      "address": "0x80006e88",
+      "length": "0x50",
+      "crc32": "0x86c0b2ca"
+    },
+    {
+      "name": "global_free",
+      "address": "0x80006034",
+      "length": "0x48",
+      "crc32": "0x80bf7a15"
+    },
+    {
+      "name": "tick_irq",
+      "address": "0x8012dd5c",
+      "length": "0xa8",
+      "crc32": "0x5c81eb16"
+    },
+    {
+      "name": "raw_tick",
+      "address": "0x8012de98",
+      "length": "0xc",
+      "crc32": "0x1bbc91ca"
+    },
+    {
+      "name": "tick_timer_init",
+      "address": "0x8012de04",
+      "length": "0x94",
+      "crc32": "0xfa8537a7"
+    },
+    {
+      "name": "irq_register",
+      "address": "0x80004a34",
+      "length": "0x130",
+      "crc32": "0x16133b5e"
+    },
+    {
+      "name": "heap_init_call",
+      "address": "0x80006bd0",
+      "length": "0x88",
+      "crc32": "0x6d48fe88"
+    },
+    {
+      "name": "heap_bounds_init",
+      "address": "0x80006e0c",
+      "length": "0x58",
+      "crc32": "0xd9d4bc46"
+    },
+    {
+      "name": "bda_seed",
+      "address": "0x802547b0",
+      "length": "0x20",
+      "crc32": "0x638d904f"
+    },
+    {
+      "name": "bda_seed_copy",
+      "address": "0x8001fe38",
+      "length": "0x34",
+      "crc32": "0x59766d29"
+    },
+    {
+      "name": "bss_clear",
+      "address": "0x80004f60",
+      "length": "0x28",
+      "crc32": "0x1eae7959"
+    },
+    {
+      "name": "stock_task_create_7_8_9",
+      "address": "0x8000cbcc",
+      "length": "0x54",
+      "crc32": "0x22d6b007"
+    },
+    {
+      "name": "stock_idle_stat_task_create",
+      "address": "0x8000b968",
+      "length": "0x70",
+      "crc32": "0xf176435d"
+    },
+    {
+      "name": "usb_init",
+      "address": "0x801890e0",
+      "length": "0x38c",
+      "crc32": "0xc902cf93"
+    },
+    {
+      "name": "usb_irq",
+      "address": "0x8018a04c",
+      "length": "0x40",
+      "crc32": "0x7495cceb"
+    },
+    {
+      "name": "board_gpio_setup",
+      "address": "0x80004310",
+      "length": "0x418",
+      "crc32": "0x4ade1073"
+    },
+    {
+      "name": "external_power_gpio_setup",
+      "address": "0x80028194",
+      "length": "0xa8",
+      "crc32": "0xe1552384"
+    },
+    {
+      "name": "external_power_gpio_query",
+      "address": "0x8002917c",
+      "length": "0x18",
+      "crc32": "0x131ba81a"
+    },
+    {
+      "name": "external_power_query_wrapper",
+      "address": "0x8002abf4",
+      "length": "0x28",
+      "crc32": "0x43e72600"
+    },
+    {
+      "name": "usb_native_connect",
+      "address": "0x8018ad10",
+      "length": "0x38",
+      "crc32": "0xcc25b02c"
+    },
+    {
+      "name": "usb_native_disconnect",
+      "address": "0x8018ad48",
+      "length": "0x1c",
+      "crc32": "0x8ce40c2d"
+    },
+    {
+      "name": "usb_connected_entry_call",
+      "address": "0x8001d86c",
+      "length": "0x18",
+      "crc32": "0x418fd6d0"
+    },
+    {
+      "name": "usb_disconnect_polarity",
+      "address": "0x80018608",
+      "length": "0x24",
+      "crc32": "0x7d879101"
+    },
+    {
+      "name": "usb_clock_sleep",
+      "address": "0x8002b0dc",
+      "length": "0x11c",
+      "crc32": "0xfca954e5"
+    },
+    {
+      "name": "lcd_geometry",
+      "address": "0x80366814",
+      "length": "0xc",
+      "crc32": "0xe0abb6bd"
+    },
+    {
+      "name": "lcd_init",
+      "address": "0x8000727c",
+      "length": "0x198",
+      "crc32": "0x9010d466"
+    },
+    {
+      "name": "lcd_descriptor_init",
+      "address": "0x80007414",
+      "length": "0x148",
+      "crc32": "0x69b67e8d"
+    },
+    {
+      "name": "lcd_irq",
+      "address": "0x80007e28",
+      "length": "0x60",
+      "crc32": "0xa0a9f8bd"
+    },
+    {
+      "name": "gui_exports",
+      "address": "0x80253f90",
+      "length": "0x820",
+      "crc32": "0x6c9983ce"
+    },
+    {
+      "name": "fs_exports",
+      "address": "0x80253f00",
+      "length": "0x90",
+      "crc32": "0xec64208b"
+    },
+    {
+      "name": "sys_exports",
+      "address": "0x80253d90",
+      "length": "0xd0",
+      "crc32": "0xf4b7c3dd"
+    },
+    {
+      "name": "mem_exports",
+      "address": "0x802547cc",
+      "length": "0x34",
+      "crc32": "0x29f7feb5"
+    },
+    {
+      "name": "res_exports",
+      "address": "0x80253e60",
+      "length": "0xa0",
+      "crc32": "0x10f8e3aa"
+    },
+    {
+      "name": "sdram_geometry_template",
+      "address": "0x8002caa0",
+      "length": "0x24",
+      "crc32": "0xb0ec30bc"
+    },
+    {
+      "name": "gui_version_draw",
+      "address": "0x800190c0",
+      "length": "0x1c",
+      "crc32": "0x979993ea"
+    },
+    {
+      "name": "gui_version_text",
+      "address": "0x80253888",
+      "length": "0x10",
+      "crc32": "0x42d6cb5d"
+    },
+    {
+      "name": "gui_orientation",
+      "address": "0x800d0eb0",
+      "length": "0x104",
+      "crc32": "0x88497bc8"
+    },
+    {
+      "name": "panel_orientation_getter",
+      "address": "0x8001923c",
+      "length": "0x8",
+      "crc32": "0x18ffb14b"
+    }
+  ],
+  "rtos": {
+    "priority_count": 64,
+    "resident_priority_candidate": 6,
+    "static_stock_priorities": [
+      7,
+      8,
+      9,
+      62,
+      63
+    ],
+    "static_creation_calls": {
+      "7": "0x8000cbe0",
+      "8": "0x8000cbfc",
+      "9": "0x8000cc18",
+      "62": "0x8000b9d0",
+      "63": "0x8000b998"
+    },
+    "tcb_offsets": {
+      "stack_pointer": 0,
+      "extension_argument": 4,
+      "stack_bottom": 8,
+      "stack_words": 12,
+      "delay": 48,
+      "status_byte": 52,
+      "priority_byte": 53
+    },
+    "irq_table": "0x80479634",
+    "tick_irq_number": 23,
+    "tick_irq_argument": 0,
+    "raw_tick_counter": "0x80479064",
+    "timer_hz": 40,
+    "irq_default": "0x80004d74",
+    "task_create": "0x8000f4a0",
+    "stack_init": "0x8000aca0",
+    "tcb_init": "0x8000b5f4",
+    "scheduler": "0x8000b390",
+    "cpu_irq_lock": "0x800a9f80",
+    "cpu_irq_unlock": "0x800a9fc0"
+  },
+  "memory": {
+    "raw_file_backed_end": "0x80478e78",
+    "bss_start": "0x80478e78",
+    "bss_end_exclusive": "0x80a3c790",
+    "bss_clear": "0x80004f60",
+    "global_heap_start": "0x80a4c000",
+    "global_heap_end_exclusive": "0x81c00000",
+    "global_heap_init": "0x80006bd0",
+    "global_heap_configure": "0x80006e0c",
+    "heap_semaphore": "0x80478eb0",
+    "physical_ram_upper_bound": "0x82000000",
+    "physical_ram_upper_bound_evidence": "Native ROM helper 0x8002caa0 constructs DMCR=0x059a0a0d and writes 0xb3010080 at 0x8002cab0. JZ4730 EMC primary manual pp.31-32 decodes BW=0,CA=1,RA=1,BA=1 => 32-bit,9 column,12 row,4 internal banks =>32MiB per populated chip select. No direct caller of this helper, bootloader, DMAR bank population, or hardware measurement established. 0x82000000 is the supported restricted address-window upper bound, not a claim that no other memory is populated.",
+    "physical_sdram_bytes": null,
+    "native_geometry": {
+      "entry": "0x8002caa0",
+      "dmcr": "0x059a0a0d",
+      "store": "0x8002cab0",
+      "bus_bits": 32,
+      "column_bits": 9,
+      "row_bits": 12,
+      "internal_banks": 4,
+      "bytes_per_chip_select": 33554432,
+      "direct_call_found": false
+    },
+    "configured_bytes_per_chip_select": 33554432
+  },
+  "validation": {
+    "static": "Exact raw C200knl payload: independently checked RTOS/heap seed, five exports and limits, old FIFO UDC/IRQ12, MSCR/OCR/SBA, active-low GP89, active-high PA29 output, LCD native geometry/descriptors. verified means static firmware binding; no hardware support claim.",
+    "hardware": "not tested",
+    "qemu": "No JZ4730 board boot or USB host test in this task.",
+    "firmware_version": "GUI native draw at 0x800190cc references GBK version string at 0x80253888: V1.30; release string at 0x80253828 also identifies 9588v1.30. Recovery folder/package version is not used.",
+    "screen_native": {
+      "width": 240,
+      "height": 320,
+      "bits": 16
+    },
+    "usb_cable": "GP89 bit25 of 0xb0010060 is active-low. Query 0x8002917c returns 1 for raw=0; wrapper 0x8002abf4 returns0x80; GUIUSB callers0x8001d86c/0x8001e3a8 invoke0x800189d8 only on nonzero. Board wiring was not physically measured.",
+    "usb_pullup": "Native connect0x8018ad10 sets PA29 DATA bit0x20000000; disconnect0x8018ad48 clears it. Board0x80004668..94 disables its IRQ, sets output, selectsGPIOfunction0, raisesDATA.",
+    "usb_gpio_layout": "JZ4730 GP89 DATA=b0010060, MASK(+24)=b0010084, W1CFLAG(+28)=b0010088. No 0x100 per-bank spacing or JZ4740 IMS/IMC aliases.",
+    "usb_aux": "None independently identified; disabled. PA24 in neighboring native code is SD-card-detect, not USB.",
+    "limitations": [
+      "No physical USB enumeration, VBUS wiring, packet ACK timing, mass-storage recovery, or LCD color/orientation validation.",
+      "32MiB address window supported by native memory layout and SDRAM geometry helper; exact physical chip-select population/DMAR configuration not measured."
+    ],
+    "native_mips_model": {
+      "script": "jz4730-native-model.py",
+      "report": "jz4730-native-model.json",
+      "result": "passed",
+      "scope": "Native UDC init/IRQ12, active-low GP89 query and wrapper, PA29 board setup/connect/disconnect plus SBA, GP89 IRQ137 setup, actual LCD init/memset/descriptor/IRQ30 with two explicit clock/panel helper stubs."
+    }
+  },
+  "target": "9588",
+  "usb_controller": "jz4730-fifo",
+  "verified": true,
+  "notice_guards": [
+    {
+      "name": "gui_msgbox_slot",
+      "address": "0x80254248",
+      "length": "0x4",
+      "crc32": "0x0b518962"
+    },
+    {
+      "name": "gui_msgbox_entry",
+      "address": "0x800c8704",
+      "length": "0x80",
+      "crc32": "0xa1c38c7a"
+    }
+  ],
+  "usb": {
+    "irq": 12,
+    "irq_slot": "0x80479694",
+    "native_init": "0x801890e0",
+    "native_irq": "0x8018a04c",
+    "register_width": 32,
+    "endpoints": {
+      "control": 0,
+      "notification_in": 129,
+      "bulk_in": 130,
+      "bulk_out": 5
+    },
+    "native_ep5_type_store": "0x801892dc",
+    "native_ep5_max_packet_store": "0x8018935c",
+    "gpio_query": "0x8002917c",
+    "external_power_irq": 137,
+    "external_power_handler": "0x800294f4",
+    "gp89_level_when_connected": 0,
+    "sba_native_clear_store": "0x800045d8"
+  },
+  "lcd": {
+    "physical_width": 240,
+    "physical_height": 320,
+    "bits": 16,
+    "stride_bytes": 480,
+    "frame_bytes": 153600,
+    "cached_frame": "0x81f82000",
+    "uncached_frame": "0xa1f82000",
+    "descriptor_physical": "0x00479ff0",
+    "descriptor_command": "0xc0009600",
+    "descriptor_source_physical": "0x01f82000",
+    "irq": 30,
+    "irq_slot": "0x80479724",
+    "irq_handler": "0x80007e28",
+    "orientation": "Native LCD physical portrait; GUI can rotate independently. Snapshot uses LCD DMA source and physical width/height, not GUI logical geometry.",
+    "gui_orientation_function": "0x800d0eb0",
+    "gui_orientation_global": "0x804a8e84",
+    "gui_width_global": "0x804a8e88",
+    "gui_height_global": "0x804a8e8c",
+    "panel_orientation_getter": "0x8001923c",
+    "panel_orientation_code": "0x130"
+  },
+  "service_tables": {
+    "gui": {
+      "base": "0x80253f90",
+      "guard_bytes": "0x820",
+      "call_limit": "0x820",
+      "trailing_null_offsets": []
+    },
+    "fs": {
+      "base": "0x80253f00",
+      "guard_bytes": "0x90",
+      "call_limit": "0x84",
+      "trailing_null_offsets": [
+        "0x84",
+        "0x88",
+        "0x8c"
+      ]
+    },
+    "sys": {
+      "base": "0x80253d90",
+      "guard_bytes": "0xd0",
+      "call_limit": "0xcc",
+      "trailing_null_offsets": [
+        "0xcc"
+      ]
+    },
+    "mem": {
+      "base": "0x802547cc",
+      "guard_bytes": "0x34",
+      "call_limit": "0x30",
+      "trailing_null_offsets": [
+        "0x30"
+      ]
+    },
+    "res": {
+      "base": "0x80253e60",
+      "guard_bytes": "0xa0",
+      "call_limit": "0x9c",
+      "trailing_null_offsets": [
+        "0x9c"
+      ]
+    }
+  },
+  "manuals": [
+    {
+      "name": "Jz4730_21_udc_spec.pdf",
+      "sha256": "4670cbed3f0d93a95d46fd9e7059decc72980341fd04cbe068f9e2903d2f823f",
+      "pages": [
+        1,
+        2,
+        3,
+        11,
+        14,
+        15
+      ],
+      "role": "dedicated UDC map, endpoint direction/max size, hardware setup handling, word FIFO"
+    },
+    {
+      "name": "Jz4730_05_cpm_spec.pdf",
+      "sha256": "a61c980c2e68395b9d4d699231fffeaa8dd492d13d19d715959b1a1c8eac6946",
+      "pages": [
+        10,
+        11,
+        18,
+        19
+      ],
+      "role": "OCR SPEND0 bit6, MSCR UDC clock gate bit24"
+    },
+    {
+      "name": "Jz4730_03_emc_spec.pdf",
+      "sha256": "6c94a954317531ecc3fb40659e946a13e6719eddcf5f7238a9fdd266a3d15b8f",
+      "pages": [
+        31,
+        32,
+        66
+      ],
+      "role": "DMCR geometry decode; template helper is not physical measurement"
+    },
+    {
+      "name": "Jz4730_11_gpio_spec.pdf",
+      "sha256": "1d8bf813d32a912ef4329db0b2ceee34ff59cb44114ee286c1f3a4c12be04fbc",
+      "pages": [
+        2,
+        3,
+        5,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "role": "JZ4730 GPIO DATA, DIR, FUNC, IRQMASK and FLAG offsets"
+    },
+    {
+      "name": "Jz4730_12_lcdc_spec.pdf",
+      "sha256": "6b4d48ebbc3c9f5857c0c536e26d3a755c844950db8813b1264260c6053b34da",
+      "pages": [
+        6,
+        7,
+        8
+      ],
+      "role": "LCDC DMA descriptor source/command"
+    },
+    {
+      "name": "Jz4730_24_memory-registers_spec.pdf",
+      "sha256": "acfc883db4d94fa861b9f56924eeae683780d84a01ea33f5000fdb72f9a1dd6a",
+      "pages": [
+        6,
+        7
+      ],
+      "role": "HARB/SBA and EMC register addresses"
+    }
+  ]
+}

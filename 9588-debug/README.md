@@ -1,62 +1,80 @@
-# 9588 Debug BDA
+# 9588 Debug 通用 BDA
 
-这是从 GPL-3.0-only 的 9688 Debug 移植而来的 **9588 / JZ4740** 后台 USB 调试器。已完成独立源码、PC 客户端、交叉构建和 MIPS/USB/RTOS 模型验证。当前仅支持已核对的 V3.30 C200 固件；JZ4730、JZ4720 和其他固件尚未启用。
+从同仓库的 GPL-3.0-only 9688 Debug 移植，默认只生成一个 `Debug9588.bda`。启动时根据五张服务表和原厂代码CRC，自动选择唯一匹配的固件绑定，仅装载对应芯片的一份驻留程序。
 
-**尚未完成 9588 真机验收。** 模型通过、静态固件指纹匹配和完整固件启动分别记录，不能互相替代。原厂固件、其他项目的构建产物、相机图像和录音均未包含在此目录。
+## 已核对的绑定
+
+| 芯片 | 内核显示版本 | 原厂输入 | USB |
+|---|---|---|---|
+| JZ4740 | V3.30 | C200.bin / kj409588.bin | MUSB，PB18高有效 |
+| JZ4730 | V1.30 | C200knl.bin | 独立FIFO UDC，GP89低有效、PA29控制连接 |
+| JZ4720 | V3.2 | 4720knl.bin | MUSB，PB18低有效 |
+
+这是不同内核分支，不能仅凭版本数字比较兼容性。匹配的raw SHA256、地址与守卫见 `profiles/9588-jz4740.json`、`9588-jz4730.json`、`9588-jz4720.json`。`verified=true` 指静态核对，不能代替真机验收。
+
+**三种芯片都尚未完成9588真机USB验收。** MIPS/控制器模型、原始固件检查和完整内核入口诊断分别记录。JZ4730/JZ4720没有用其他机器的截图或完整系统结果代替。
 
 ## 构建
 
-从工程根目录运行：
+在独立仓库根目录运行：
 
-    python -m pip install -r 9588-debug/requirements.txt
-    python 9588-debug/build.py --sdk-root PATH/TO/SDK --toolchain PATH/TO/bin
+```powershell
+git submodule update --init sdk
+python -m pip install -r requirements-dev.txt
+.\sdk\scripts\setup_toolchain.ps1
+python build.py --models 9588 --verify
+```
 
-使用公开 SDK 固定版本 ef3bf3b7328a3a8fa9ba48593c63285300725fb7。集成仓库默认寻找根目录 sdk 子模块；独立开发目录可用 --sdk-root 或环境变量 BDA_SDK_ROOT 指向同一 SDK checkout。SDK 内的头文件目录是 sdk/include，编译器可由 BDA_TOOLCHAIN_PREFIX、SDK/.toolchain/bin 或 PATH 指定。
+固定SDK为 `ef3bf3b7328a3a8fa9ba48593c63285300725fb7`。默认产物 `build/9588-debug/Debug9588.bda`，菜单名“9588调试”。不需要原厂BDA模板或固件即可构建；已有工具链可在根构建命令传 `--toolchain PATH/TO/bin`。独立开发目录可向内层构建器传 `--sdk-root PATH/TO/SDK`。
 
-默认生成 build/9588-debug/Debug9588.bda，菜单名为“9588调试”；--output-dir 可修改输出目录。SDK 给出的 BDA entry file offset 是 0x95f8，入口运行地址是 0x81c00020，动态服务表头基址是 0x81c00000，菜单 category=9；打包及图标由 SDK 生成，不依赖原厂 BDA 模板。
+可选本地ROM核对，分别提供三份原厂输入，仅读取、不分发：
 
-固件配置位于 profiles/9588-jz4740.json，原始 C200 SHA256 为：
+```powershell
+python build.py --models 9588 --verify --firmware-9588-jz4740 PATH/TO/kj409588.bin --firmware-9588-jz4730 PATH/TO/C200knl.bin --firmware-9588-jz4720 PATH/TO/4720knl.bin
+```
 
-    02a16107b11a3281067871c6fe3d4c289c910d8dfa9924573dd87f00351d6525
+内层 `9588-debug/build.py` 与 `verify.py` 对应参数为 `--firmware-jz4740/4730/4720`。仅开发比较时才用 `--chip jz4740`、`jz4730` 或 `jz4720` 生成单芯片目录；该模式用 `--firmware`，验证时也要明确 `--chip`。正常安装使用默认通用文件。
 
-配置的 verified=true 仅表示静态地址、代码 CRC 和文件身份已独立核对，不代表真机通过。构建器会拒绝缺失、未核对、字段不全或目标为 9688/H1 的配置，不会从其他设备配置推断地址。所有屏幕尺寸、服务表调用范围、RTOS 与 USB 绑定都必须显式提供。
+模型执行真实重定位resident、USB寄存器/FIFO、协议与CRC、RAM保护、EXEC、PC客户端到MIPS端到端、LCD DMA、RTOS O32与通用启动器。通用启动器验证三种固件选择、跨芯片拒绝、每段守卫、导入表污染、歧义与重复分配。USB模型还覆盖停钟后的frame/poll/收发/停止清理边界，4730另覆盖PA29连接顺序、相关位恢复和所有权丢失。未提供ROM时，原厂代码检查明确跳过。
 
-## 验证
+本次完整ROM模型共211项通过；完整原始C200内核中的启动/停止/复用和实际截图诊断仅覆盖JZ4740，见 [确切通用BDA记录](qemu-validation.md)。真机USB状态仍为未验收。
 
-    python 9588-debug/verify.py --sdk-root PATH/TO/SDK
-    python 9588-debug/verify.py --sdk-root PATH/TO/SDK --firmware PATH/TO/C200.bin
-    python 9588-debug/verify.py --sdk-root PATH/TO/SDK --firmware PATH/TO/C200.bin --foreign-firmware PATH/TO/OTHER.bin
+[4730依据](firmware-jz4730-notes.md)、[4720依据](firmware-jz4720-notes.md) 与 [4740依据](firmware-notes.md) 分别记录地址来源。可选原生4730指令验证：
 
---build-dir 可指定待验收输出目录。--firmware 只读核对本地原始或带 64 字节包装头的固件；--foreign-firmware 确认其他固件被当前 9588 SHA256/CRC 配置拒绝。
+```powershell
+python 9588-debug/validation/native_jz4730.py PATH/TO/C200knl.bin --output build/9588-native-jz4730.json
+```
 
-本次完整模型共 58 项通过，覆盖真实驻留镜像的三个独立重链接目标、重定位、USB FIFO/描述符/复位/所有权恢复、协议和 CRC、RAM 保护、EXEC 计算模块、PC 到 MIPS 端到端、LCD DMA 格式以及 RTOS O32 调用边界。提供本地 C200 时无跳过；未提供 ROM 时，依赖原始固件的检查明确记录为跳过。生成 verification.json 和详细日志，hardware_verified 与 full_firmware_verified 保持 false。
+该脚本执行原ROM的USB/IRQ/GPIO/LCD初始化及版本相关函数，外部边界stub在输出中列明。它不模拟物理USB ACK或完整OS。
 
-补充：最终BDA在未修改C200内核的专用QEMU中完成启动、停止、复用及实际LCD复制接口诊断，详见 [完整内核记录](qemu-validation.md)。这是明确的GDB入口诊断，没有覆盖普通菜单加载或USB主机收发；真机状态保持未验收。
+## 安装与客户端
 
-## 安装
+将通用BDA复制到设备 `应用/程序/Debug9588.bda`。安全移除并拔掉USB，运行“9588调试”，按提示启动并返回菜单，再接USB。
 
-确认是 9588 V3.30 / JZ4740，将 Debug9588.bda 复制到设备的 应用/程序/。
-安全移除并拔掉 USB 后运行“9588调试”，看到后台启动提示后返回菜单，再接 USB。
-运行客户端 status 检查握手；不支持的固件会在指纹检查阶段拒绝。
-再次打开同一 BDA 或运行 client.py stop 请求停止。更换构建前重启，驻留堆块在停止后保留供同版复用。
+| 芯片 | 实验性VID:PID | 精确握手 |
+|---|---|---|
+| JZ4740 | 07C4:A4A9 | 9588DEBUG/1 JZ4740 RESIDENT |
+| JZ4730 | 07C4:A4AA | 9588DEBUG/1 JZ4730 RESIDENT |
+| JZ4720 | 07C4:A4AB | 9588DEBUG/1 JZ4720 RESIDENT |
 
-## PC 客户端
+同一个PC客户端自动枚举这三种设备，PID与握手交叉检查；不会选择9688的A4A7/A4A8。超时、短写或坏CRC后会废弃会话，不自动重发写入或执行。
 
-使用实验性 VID:PID **07C4:A4A9**，精确握手为：
+```powershell
+python 9588-debug/client.py list
+python 9588-debug/client.py status
+python 9588-debug/client.py --chip jz4730 status
+python 9588-debug/client.py screenshot build/9588-screen.png
+python 9588-debug/client.py screenshot build/native.png --native-orientation
+python 9588-debug/client.py exec run 9588-debug/examples/compute.c --directory build/9588-compute --args-hex 616263
+python 9588-debug/client.py stop
+```
 
-    9588DEBUG/1 JZ4740 RESIDENT
+三个芯片的LCD扫描尺寸都为240×320。客户端默认180°显示方向，`--native-orientation`保留扫描方向，`--rotate`显式覆盖；真机方向仍待核对。RAM模块ABI字段保持v1，入口为 `debug9588_entry`；固件专用API仍需相应绑定，不能因此混用9688媒体模块。
 
-客户端只枚举这个 PID，不能选择 9688 的 A4A7/A4A8；握手不符时立即关闭，超时或坏 CRC 后不自动重发写入或执行请求。启动调试器前须断开 USB，避免接管已有原生磁盘会话。
+再次打开同一BDA或执行stop请求停止。相同resident构建复用原堆块和休眠任务；替换版本前重启。未匹配或歧义固件不会启用调试；只有已确认GUI可安全调用时才显示诊断。
 
-    python 9588-debug/client.py list
-    python 9588-debug/client.py ping
-    python 9588-debug/client.py screenshot build/9588-screen.png
-    python 9588-debug/client.py screenshot build/9588-native.png --native-orientation
+## 固件依赖与许可
 
-屏幕尺寸从设备 CAPS 获取。未修改 C200 的 QEMU 原始桌面像素被观察为倒置 180°，客户端默认旋转 180° 显示；--native-orientation 保留原始扫描方向，--rotate 0/90/180/270 可显式覆盖。9588 真机方向仍待验证。
+汇编也必须拿到正确的函数、结构和寄存器地址。当前后台模式调用原厂调度器、全局堆与中断服务，相关布局随固件分支变化；通用文件负责自动选取已核对的绑定。详见 [固件兼容说明](../docs/FIRMWARE-COMPATIBILITY.md)。
 
-96DB 协议帧格式及 EXEC ABI v1 的字段布局沿用原实现，原生模块类型及入口改名为 debug9588_*。这不保证固件专用模块跨设备可用；只提供独立的 compute 算术示例，不包含 9688 媒体探针。
-
-## 来源与许可
-
-本目录使用 GPL-3.0-only，保留 H1Debug 与 9688 Debug 的实现来源。原 9688 源码和发布目录不受此移植修改。新的驻留身份由带 9588 目标域的运行时代码指纹派生，不复用 9688 已实测镜像 ID。
+代码采用GPL-3.0-only，保留H1Debug及9688实现来源，SDK选择兼容的Apache-2.0许可路径。原厂固件、NAND、手册、用户文件及私有媒体不分发。

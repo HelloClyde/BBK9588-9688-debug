@@ -87,7 +87,7 @@ class USBModel:
         self.device_in_toggle = {1: 0, 2: 0}
         self.device_out_toggle = {1: 0, 2: 0}
         self.bulk_csr_writes = []
-        self.gated_udc_reads = 0
+        self.gated_udc_reads = self.gated_udc_writes = 0
         self.packet_sizes = []
         self.pending, self.available, self.held = bytearray(), bytearray(), bytearray()
         self.closed = False
@@ -158,7 +158,7 @@ class USBModel:
     def mmio_read(self, uc, access, address, size, value, _):
         gpio = self._physical("FW_USB_CABLE_GPIO_BASE")
         values = {self._physical("FW_INTC_IMR"): self.imr,
-                  gpio: self.macros["FW_USB_CABLE_GPIO_MASK"] if self.cable else 0,
+                  gpio: self.macros["FW_USB_CABLE_GPIO_MASK"] if self.cable != bool(self.macros.get("FW_USB_CABLE_ACTIVE_LOW", 0)) else 0,
                   gpio + 0x20: self.gpio_mask, gpio + 0x80: self.gpio_flags}
         if address in values:
             self.put(address, values[address].to_bytes(size, "little"))
@@ -192,6 +192,8 @@ class USBModel:
         self.put(address, value.to_bytes(size, "little"))
 
     def usb_write(self, uc, access, address, size, value, _):
+        if self.word(self.macros["FW_CPM_CLKGR"]) & self.macros["FW_CPM_USB_GATE_MASK"]:
+            self.gated_udc_writes += 1
         offset = address - self._physical("FW_UDC_BASE")
         if offset in (0x20, 0x24, 0x28):
             self.tx[(offset - 0x20) // 4].append(value & 255)
@@ -327,13 +329,21 @@ class USBTests(unittest.TestCase):
         self.assertEqual(model.gated_udc_reads, 0)
 
 
+    def test_checked_cable_polarity_controls_open_rejection(self):
+        model=USBModel(start=False)
+        for connected in (False,True):
+            model.cable=connected
+            self.assertEqual(model.call("debug_usb_cable_connected"),int(connected))
+        self.assertIn(model.macros["FW_USB_CABLE_ACTIVE_LOW"],(0,1))
+
     def test_descriptor_identity(self):
         model = USBModel()
         model.control(0x80, 6, 0x100, length=18)
         descriptor = model.finish_control()
         self.assertEqual(len(descriptor), 18)
-        self.assertEqual(descriptor[8:12], bytes.fromhex("c4 07 a9 a4"))
-        for index, expected in ((2, "9588 USB Debug"), (3, "9588DBG-JZ4740")):
+        self.assertEqual(descriptor[8:12], bytes.fromhex("c4 07") + struct.pack("<H", {"JZ4740":0xa4a9,"JZ4720":0xa4ab}[model.report["soc"]]))
+        soc=model.report["soc"]
+        for index, expected in ((2, "9588 USB Debug" if soc=="JZ4740" else "9588 USB Debug JZ4720"), (3, "9588DBG-"+soc)):
             model.control(0x80, 6, 0x300 + index, length=128)
             self.assertEqual(model.finish_control()[2:].decode("utf-16le"), expected)
 

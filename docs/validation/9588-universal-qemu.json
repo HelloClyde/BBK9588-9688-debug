@@ -1,0 +1,208 @@
+{
+  "artifact": {
+    "name": "Debug9588.bda",
+    "sha256": "3db418d93ae7ce09e41f1030967609d6ebce91972cf3226b6de009cc9105a054",
+    "bytes": 113048
+  },
+  "selected_soc": "JZ4740",
+  "selected_component_image_id": "0xcf2137f9",
+  "firmware_sha256": "02a16107b11a3281067871c6fe3d4c289c910d8dfa9924573dd87f00351d6525",
+  "sdk_commit": "ef3bf3b7328a3a8fa9ba48593c63285300725fb7",
+  "qemu_executable_sha256": "a9920e0e34f8f8d8eb55323d5ae9994a8064f4a4ae1d2b3f6f0c3da225c54fab",
+  "qemu_machine": "bbk9588",
+  "cpu_model": "24Kf",
+  "ram_mb": 32,
+  "firmware_patches": [],
+  "mode": "Original full C200 direct boot with isolated per-run NAND copy; GDB entry diagnosis in native GUI task9. Not a desktop/FAT BDA load.",
+  "context_saved": "MIPS registers1..34+PC37; native GUI TCB/SP checked before restoration",
+  "no_tcb_semaphore_gpio_or_firmware_patches": true,
+  "lifecycle": [
+    {
+      "bda_sha256": "3db418d93ae7ce09e41f1030967609d6ebce91972cf3226b6de009cc9105a054",
+      "returned": true,
+      "same_task": true,
+      "stack_restored": true,
+      "return_value": 0,
+      "tick": 593,
+      "tick_irq": [
+        "0x80df1b20",
+        "0x0"
+      ],
+      "usb_irq": [
+        "0x8000efd0",
+        "0x0"
+      ],
+      "intc_mask": "0xb1bf6fff",
+      "cpm_clkgr": "0x0",
+      "cpm_opcr": "0x1540",
+      "pb_gpio": "0x78000000",
+      "control_address": "0x80df0a80",
+      "control": [
+        "0x42443835",
+        "0x1",
+        "0x80df0a78",
+        "0x80df0a80",
+        "0x67720",
+        "0x6",
+        "0x1",
+        "0x0",
+        "0x0",
+        "0x80df0e14",
+        "0x80df1054",
+        "0x80df0af4",
+        "0x80e47ddc",
+        "0x80e3fde0",
+        "0x80280e60",
+        "0x80280dd0",
+        "0x80280c60",
+        "0x8028169c",
+        "0x80280d30",
+        "0xcf2137f9"
+      ],
+      "file": "docs/assets/9588-universal-qemu/universal-running.png",
+      "sha256": "3ba5f2c66e5c2b7f92cf4e4aa16ce3b9a1af655de35628a42c59ff9484f34d99"
+    },
+    {
+      "bda_sha256": "3db418d93ae7ce09e41f1030967609d6ebce91972cf3226b6de009cc9105a054",
+      "returned": true,
+      "same_task": true,
+      "stack_restored": true,
+      "return_value": 0,
+      "tick": 708,
+      "tick_irq": [
+        "0x8012bb90",
+        "0x0"
+      ],
+      "usb_irq": [
+        "0x8000efd0",
+        "0x0"
+      ],
+      "intc_mask": "0xb0bf6fff",
+      "cpm_clkgr": "0x0",
+      "cpm_opcr": "0x1500",
+      "pb_gpio": "0x78000000",
+      "control_address": "0x80df0a80",
+      "control": [
+        "0x42443835",
+        "0x1",
+        "0x80df0a78",
+        "0x80df0a80",
+        "0x67720",
+        "0x6",
+        "0x3",
+        "0x1",
+        "0x0",
+        "0x80df0e14",
+        "0x80df1054",
+        "0x80df0af4",
+        "0x80e47ddc",
+        "0x80e3fde0",
+        "0x80280e60",
+        "0x80280dd0",
+        "0x80280c60",
+        "0x8028169c",
+        "0x80280d30",
+        "0xcf2137f9"
+      ],
+      "file": "docs/assets/9588-universal-qemu/universal-stopped.png",
+      "sha256": "02322e73e84e37e7685108bc12f7f1267f30f69919a4ecfa9664b288876de9f4"
+    },
+    {
+      "bda_sha256": "3db418d93ae7ce09e41f1030967609d6ebce91972cf3226b6de009cc9105a054",
+      "returned": true,
+      "same_task": true,
+      "stack_restored": true,
+      "return_value": 0,
+      "tick": 821,
+      "tick_irq": [
+        "0x80df1b20",
+        "0x0"
+      ],
+      "usb_irq": [
+        "0x8000efd0",
+        "0x0"
+      ],
+      "intc_mask": "0xb1bf6fff",
+      "cpm_clkgr": "0x0",
+      "cpm_opcr": "0x1540",
+      "pb_gpio": "0x78000000",
+      "control_address": "0x80df0a80",
+      "control": [
+        "0x42443835",
+        "0x1",
+        "0x80df0a78",
+        "0x80df0a80",
+        "0x67720",
+        "0x6",
+        "0x1",
+        "0x0",
+        "0x0",
+        "0x80df0e14",
+        "0x80df1054",
+        "0x80df0af4",
+        "0x80e47ddc",
+        "0x80e3fde0",
+        "0x80280e60",
+        "0x80280dd0",
+        "0x80280c60",
+        "0x8028169c",
+        "0x80280d30",
+        "0xcf2137f9"
+      ],
+      "file": "docs/assets/9588-universal-qemu/universal-reused.png",
+      "sha256": "32b2f87eb51fe9c54427874899dec89dac3bffaedf334994a4f1f2151b307b25"
+    }
+  ],
+  "state_sequence": [
+    "RUNNING",
+    "STOPPED",
+    "RUNNING"
+  ],
+  "same_control_tcb_and_allocation": true,
+  "stop_restored_native_irq_clock_gpio": true,
+  "native_lcd_snapshot": {
+    "mode": "GDB direct relocated rd_screen_capture API; no CDC host",
+    "control": "0x80df0a80",
+    "entry": "0x80df3a60",
+    "interrupted_tcb": "0x806c5370",
+    "interrupted_priority": "3f",
+    "stop": "T05thread:01;",
+    "returned": true,
+    "result": 0,
+    "same_task": true,
+    "stack_restored": true,
+    "metadata": [
+      "0xf0",
+      "0x140",
+      "0x1e0",
+      "0x1",
+      "0x25800",
+      "0xa1f82000"
+    ],
+    "file": "docs/assets/9588-universal-qemu/universal-lcd-native.png",
+    "pixel_sha256": "3ba5f2c66e5c2b7f92cf4e4aa16ce3b9a1af655de35628a42c59ff9484f34d99"
+  },
+  "client_display": {
+    "output": "docs/assets/9588-universal-qemu/universal-lcd-display.png",
+    "width": 240,
+    "height": 320,
+    "format": 1,
+    "framebuffer": 2717392896,
+    "tick": 0,
+    "bytes": 153600,
+    "rotation_degrees": 180,
+    "orientation": "display",
+    "raw_sha256": "3ba5f2c66e5c2b7f92cf4e4aa16ce3b9a1af655de35628a42c59ff9484f34d99",
+    "synthetic_adapter_tick": 0
+  },
+  "client_adapter_scope": "Actual Client.screenshot RGB565 decoding and integer180 rotation; adapter serves pixels from the real resident LCD copy. No USB host traffic.",
+  "owned_vm_stopped": true,
+  "not_verified": [
+    "JZ4730/JZ4720 full native OS boot",
+    "physical9588",
+    "CDC enumeration/ACK/retry/traffic",
+    "native disk recovery",
+    "cold NAND boot",
+    "normal menu/FAT BDA loader"
+  ]
+}

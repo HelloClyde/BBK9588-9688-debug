@@ -1,0 +1,16 @@
+{
+  "profile": "9588-v32-jz4720",
+  "raw_sha256": "469a833e8984e8c4c531a411955edc38f5fb57c6089b8694f522f995dbe66c49",
+  "packed_sha256": "5bfef4a614e2a519c3957aa056564521ae7c8cb006ccc7a95e4b00ab1bf80e4f",
+  "rom_guards_checked": 46,
+  "all_crc_pass": true,
+  "raw_recovery_copy_byte_equal": true,
+  "export_order_and_bounds_pass": true,
+  "native_irq_and_low_active_pin_instructions_pass": true,
+  "bootloader_ram_window_pass": true,
+  "absolute_paths_in_profile": false,
+  "hardware": false,
+  "full_firmware": false,
+  "usb_host": false,
+  "profile_sha256": "1fe6f863eeaab25158a0dcd95639358de8f9a19822affae0330d3112fd32dd61"
+}

@@ -43,7 +43,10 @@ def main(argv=None) -> int:
     parser.add_argument("--models", nargs="+", choices=("all", "9588", "9688"), default=["all"])
     parser.add_argument("--toolchain", type=Path)
     parser.add_argument("--verify", action="store_true")
-    parser.add_argument("--firmware-9588", type=Path, help="optional local 9588 V3.30 firmware; passed only to 9588")
+    parser.add_argument("--firmware-9588", "--firmware-9588-jz4740", dest="firmware_9588_jz4740", type=Path,
+                        help="optional local 9588 JZ4740 firmware; --firmware-9588 is a compatibility alias")
+    parser.add_argument("--firmware-9588-jz4730", type=Path)
+    parser.add_argument("--firmware-9588-jz4720", type=Path)
     parser.add_argument("--firmware-jz4730", type=Path)
     parser.add_argument("--firmware-jz4740", type=Path)
     parser.add_argument("--firmware-legacy", type=Path)
@@ -90,7 +93,8 @@ def main(argv=None) -> int:
     for name in selected:
         folder = ROOT / (name + "-debug")
         command = [sys.executable, folder / "build.py", "--toolchain", toolchain]
-        firmware_flags = [("firmware_9588", "--firmware")] if name == "9588" else [
+        firmware_flags = [("firmware_9588_" + chip, "--firmware-" + chip)
+                          for chip in ("jz4740", "jz4730", "jz4720")] if name == "9588" else [
             ("firmware_jz4730", "--firmware-jz4730"), ("firmware_jz4740", "--firmware-jz4740")]
         for argument, flag in firmware_flags:
             path = getattr(args, argument)

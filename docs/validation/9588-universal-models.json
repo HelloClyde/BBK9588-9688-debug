@@ -1,0 +1,1086 @@
+{
+  "target": "9588",
+  "soc": "UNIVERSAL",
+  "bda_sha256": "3db418d93ae7ce09e41f1030967609d6ebce91972cf3226b6de009cc9105a054",
+  "bda_bytes": 113048,
+  "source_manifest_matches": true,
+  "bda_header_checksum_valid": true,
+  "tests": {
+    "suites": [
+      {
+        "modules": [
+          "test_build",
+          "test_client",
+          "test_device",
+          "test_runtime",
+          "test_usb",
+          "test_verify"
+        ],
+        "run": 66,
+        "passed": 66,
+        "skipped": 0,
+        "skipped_tests": 0,
+        "skipped_subtests": 0,
+        "success": true,
+        "log": "local-firmware-logs/verify-jz4740-tests.log"
+      },
+      {
+        "modules": [
+          "test_build",
+          "test_client",
+          "test_device",
+          "test_runtime",
+          "test_usb_jz4730",
+          "test_verify"
+        ],
+        "run": 70,
+        "passed": 70,
+        "skipped": 0,
+        "skipped_tests": 0,
+        "skipped_subtests": 0,
+        "success": true,
+        "log": "local-firmware-logs/verify-jz4730-tests.log"
+      },
+      {
+        "modules": [
+          "test_build",
+          "test_client",
+          "test_device",
+          "test_runtime",
+          "test_usb",
+          "test_verify"
+        ],
+        "run": 66,
+        "passed": 66,
+        "skipped": 0,
+        "skipped_tests": 0,
+        "skipped_subtests": 0,
+        "success": true,
+        "log": "local-firmware-logs/verify-jz4720-tests.log"
+      },
+      {
+        "modules": [
+          "test_universal"
+        ],
+        "run": 9,
+        "passed": 9,
+        "skipped": 0,
+        "skipped_tests": 0,
+        "skipped_subtests": 0,
+        "success": true,
+        "log": "local-firmware-logs/verify-universal-tests.log"
+      }
+    ],
+    "run": 211,
+    "passed": 211,
+    "skipped": 0,
+    "skipped_tests": 0,
+    "skipped_subtests": 0,
+    "success": true,
+    "log": "local-firmware-logs/verify-tests.log"
+  },
+  "firmware_profile_verified": true,
+  "firmware_verification": {
+    "JZ4740": {
+      "format": "raw",
+      "supplied_sha256": "02a16107b11a3281067871c6fe3d4c289c910d8dfa9924573dd87f00351d6525",
+      "supplied_size": 4652744,
+      "raw_sha256": "02a16107b11a3281067871c6fe3d4c289c910d8dfa9924573dd87f00351d6525",
+      "raw_size": 4652744,
+      "guard_count": 36,
+      "guards": [
+        {
+          "name": "task_create_ext",
+          "address": 2147533148,
+          "length": 388,
+          "crc32": "7afaf384",
+          "matched": true
+        },
+        {
+          "name": "task_delete",
+          "address": 2147533536,
+          "length": 576,
+          "crc32": "b12431b6",
+          "matched": true
+        },
+        {
+          "name": "task_delay",
+          "address": 2147536636,
+          "length": 152,
+          "crc32": "077dc860",
+          "matched": true
+        },
+        {
+          "name": "task_resume",
+          "address": 2147536400,
+          "length": 236,
+          "crc32": "8f1c0b5c",
+          "matched": true
+        },
+        {
+          "name": "task_create",
+          "address": 2147532816,
+          "length": 332,
+          "crc32": "98e67483",
+          "matched": true
+        },
+        {
+          "name": "task_stack_init",
+          "address": 2147514880,
+          "length": 240,
+          "crc32": "1ee85d09",
+          "matched": true
+        },
+        {
+          "name": "tcb_init",
+          "address": 2147517268,
+          "length": 416,
+          "crc32": "87abb8b4",
+          "matched": true
+        },
+        {
+          "name": "scheduler",
+          "address": 2147516656,
+          "length": 216,
+          "crc32": "8b190b68",
+          "matched": true
+        },
+        {
+          "name": "global_alloc",
+          "address": 2147513928,
+          "length": 80,
+          "crc32": "ac6257bb",
+          "matched": true
+        },
+        {
+          "name": "global_free",
+          "address": 2147510260,
+          "length": 72,
+          "crc32": "12c49716",
+          "matched": true
+        },
+        {
+          "name": "tick_irq",
+          "address": 2148711312,
+          "length": 324,
+          "crc32": "2b0b65be",
+          "matched": true
+        },
+        {
+          "name": "raw_tick",
+          "address": 2148711856,
+          "length": 12,
+          "crc32": "62c72d2c",
+          "matched": true
+        },
+        {
+          "name": "tick_timer_init",
+          "address": 2148711636,
+          "length": 220,
+          "crc32": "71d587b0",
+          "matched": true
+        },
+        {
+          "name": "irq_register",
+          "address": 2147504216,
+          "length": 284,
+          "crc32": "c91a964b",
+          "matched": true
+        },
+        {
+          "name": "heap_init_call",
+          "address": 2147513232,
+          "length": 136,
+          "crc32": "fb6b4450",
+          "matched": true
+        },
+        {
+          "name": "heap_bounds_init",
+          "address": 2147513804,
+          "length": 88,
+          "crc32": "74e3b8f8",
+          "matched": true
+        },
+        {
+          "name": "bda_seed",
+          "address": 2150110848,
+          "length": 32,
+          "crc32": "ab5f53b8",
+          "matched": true
+        },
+        {
+          "name": "lcd_geometry",
+          "address": 2150875316,
+          "length": 12,
+          "crc32": "e0abb6bd",
+          "matched": true
+        },
+        {
+          "name": "stock_task_create_7_8_9",
+          "address": 2147522940,
+          "length": 100,
+          "crc32": "ca1c2ade",
+          "matched": true
+        },
+        {
+          "name": "stock_idle_stat_task_create",
+          "address": 2147518152,
+          "length": 112,
+          "crc32": "60c2f185",
+          "matched": true
+        },
+        {
+          "name": "usb_endpoints",
+          "address": 2147539712,
+          "length": 456,
+          "crc32": "0e17812d",
+          "matched": true
+        },
+        {
+          "name": "usb_reset",
+          "address": 2147540168,
+          "length": 436,
+          "crc32": "441b84d8",
+          "matched": true
+        },
+        {
+          "name": "usb_cable_irq",
+          "address": 2147543152,
+          "length": 400,
+          "crc32": "2aa356eb",
+          "matched": true
+        },
+        {
+          "name": "vbus_gpio_setup",
+          "address": 2147544644,
+          "length": 172,
+          "crc32": "2c29a717",
+          "matched": true
+        },
+        {
+          "name": "usb_init",
+          "address": 2147544832,
+          "length": 108,
+          "crc32": "8b50d5b8",
+          "matched": true
+        },
+        {
+          "name": "usb_disable",
+          "address": 2147544940,
+          "length": 100,
+          "crc32": "97bd4679",
+          "matched": true
+        },
+        {
+          "name": "usb_irq",
+          "address": 2147545040,
+          "length": 52,
+          "crc32": "f9887d98",
+          "matched": true
+        },
+        {
+          "name": "lcd_init",
+          "address": 2147552684,
+          "length": 440,
+          "crc32": "4ddccbfc",
+          "matched": true
+        },
+        {
+          "name": "lcd_descriptor_init",
+          "address": 2147553124,
+          "length": 344,
+          "crc32": "53ffb51f",
+          "matched": true
+        },
+        {
+          "name": "lcd_irq",
+          "address": 2147556432,
+          "length": 96,
+          "crc32": "a0a9f8bd",
+          "matched": true
+        },
+        {
+          "name": "gui_orientation",
+          "address": 2148330736,
+          "length": 260,
+          "crc32": "a0fd4945",
+          "matched": true
+        },
+        {
+          "name": "gui_exports",
+          "address": 2150108768,
+          "length": 2080,
+          "crc32": "082fb74e",
+          "matched": true
+        },
+        {
+          "name": "fs_exports",
+          "address": 2150108624,
+          "length": 144,
+          "crc32": "0ac56cb3",
+          "matched": true
+        },
+        {
+          "name": "sys_exports",
+          "address": 2150108256,
+          "length": 208,
+          "crc32": "c39d8d50",
+          "matched": true
+        },
+        {
+          "name": "mem_exports",
+          "address": 2150110876,
+          "length": 52,
+          "crc32": "ae595850",
+          "matched": true
+        },
+        {
+          "name": "res_exports",
+          "address": 2150108464,
+          "length": 160,
+          "crc32": "c5d60b9c",
+          "matched": true
+        }
+      ],
+      "notice_guard_count": 2,
+      "notice_guards": [
+        {
+          "name": "gui_msgbox_slot",
+          "address": 2150109464,
+          "length": 4,
+          "crc32": "3a23d591",
+          "matched": true
+        },
+        {
+          "name": "gui_msgbox_entry",
+          "address": 2148296004,
+          "length": 128,
+          "crc32": "0f0590af",
+          "matched": true
+        }
+      ]
+    },
+    "JZ4730": {
+      "format": "64-byte-wrapper",
+      "supplied_sha256": "dc41701442176ba81bf1b8041b2f9dac449e04f2adf6532993e7c55471de9bea",
+      "supplied_size": 4673208,
+      "raw_sha256": "c7a4ba34d5a4c006f88b7e9e0c0a991b2b1e7a1ec8896859f0cc3dfb18e44270",
+      "raw_size": 4673144,
+      "guard_count": 46,
+      "guards": [
+        {
+          "name": "task_create_ext",
+          "address": 2147546604,
+          "length": 388,
+          "crc32": "a45b16c3",
+          "matched": true
+        },
+        {
+          "name": "task_delete",
+          "address": 2147546992,
+          "length": 576,
+          "crc32": "0716f26b",
+          "matched": true
+        },
+        {
+          "name": "task_delay",
+          "address": 2147550092,
+          "length": 152,
+          "crc32": "8efcbc6a",
+          "matched": true
+        },
+        {
+          "name": "task_resume",
+          "address": 2147549856,
+          "length": 236,
+          "crc32": "547fe427",
+          "matched": true
+        },
+        {
+          "name": "task_create",
+          "address": 2147546272,
+          "length": 332,
+          "crc32": "61a9481f",
+          "matched": true
+        },
+        {
+          "name": "task_stack_init",
+          "address": 2147527840,
+          "length": 240,
+          "crc32": "e2ac9b5b",
+          "matched": true
+        },
+        {
+          "name": "tcb_init",
+          "address": 2147530228,
+          "length": 416,
+          "crc32": "f1b63a2b",
+          "matched": true
+        },
+        {
+          "name": "scheduler",
+          "address": 2147529616,
+          "length": 216,
+          "crc32": "65ff5d63",
+          "matched": true
+        },
+        {
+          "name": "global_alloc",
+          "address": 2147511944,
+          "length": 80,
+          "crc32": "86c0b2ca",
+          "matched": true
+        },
+        {
+          "name": "global_free",
+          "address": 2147508276,
+          "length": 72,
+          "crc32": "80bf7a15",
+          "matched": true
+        },
+        {
+          "name": "tick_irq",
+          "address": 2148719964,
+          "length": 168,
+          "crc32": "5c81eb16",
+          "matched": true
+        },
+        {
+          "name": "raw_tick",
+          "address": 2148720280,
+          "length": 12,
+          "crc32": "1bbc91ca",
+          "matched": true
+        },
+        {
+          "name": "tick_timer_init",
+          "address": 2148720132,
+          "length": 148,
+          "crc32": "fa8537a7",
+          "matched": true
+        },
+        {
+          "name": "irq_register",
+          "address": 2147502644,
+          "length": 304,
+          "crc32": "16133b5e",
+          "matched": true
+        },
+        {
+          "name": "heap_init_call",
+          "address": 2147511248,
+          "length": 136,
+          "crc32": "6d48fe88",
+          "matched": true
+        },
+        {
+          "name": "heap_bounds_init",
+          "address": 2147511820,
+          "length": 88,
+          "crc32": "d9d4bc46",
+          "matched": true
+        },
+        {
+          "name": "bda_seed",
+          "address": 2149926832,
+          "length": 32,
+          "crc32": "638d904f",
+          "matched": true
+        },
+        {
+          "name": "bda_seed_copy",
+          "address": 2147614264,
+          "length": 52,
+          "crc32": "59766d29",
+          "matched": true
+        },
+        {
+          "name": "bss_clear",
+          "address": 2147503968,
+          "length": 40,
+          "crc32": "1eae7959",
+          "matched": true
+        },
+        {
+          "name": "stock_task_create_7_8_9",
+          "address": 2147535820,
+          "length": 84,
+          "crc32": "22d6b007",
+          "matched": true
+        },
+        {
+          "name": "stock_idle_stat_task_create",
+          "address": 2147531112,
+          "length": 112,
+          "crc32": "f176435d",
+          "matched": true
+        },
+        {
+          "name": "usb_init",
+          "address": 2149093600,
+          "length": 908,
+          "crc32": "c902cf93",
+          "matched": true
+        },
+        {
+          "name": "usb_irq",
+          "address": 2149097548,
+          "length": 64,
+          "crc32": "7495cceb",
+          "matched": true
+        },
+        {
+          "name": "board_gpio_setup",
+          "address": 2147500816,
+          "length": 1048,
+          "crc32": "4ade1073",
+          "matched": true
+        },
+        {
+          "name": "external_power_gpio_setup",
+          "address": 2147647892,
+          "length": 168,
+          "crc32": "e1552384",
+          "matched": true
+        },
+        {
+          "name": "external_power_gpio_query",
+          "address": 2147651964,
+          "length": 24,
+          "crc32": "131ba81a",
+          "matched": true
+        },
+        {
+          "name": "external_power_query_wrapper",
+          "address": 2147658740,
+          "length": 40,
+          "crc32": "43e72600",
+          "matched": true
+        },
+        {
+          "name": "usb_native_connect",
+          "address": 2149100816,
+          "length": 56,
+          "crc32": "cc25b02c",
+          "matched": true
+        },
+        {
+          "name": "usb_native_disconnect",
+          "address": 2149100872,
+          "length": 28,
+          "crc32": "8ce40c2d",
+          "matched": true
+        },
+        {
+          "name": "usb_connected_entry_call",
+          "address": 2147604588,
+          "length": 24,
+          "crc32": "418fd6d0",
+          "matched": true
+        },
+        {
+          "name": "usb_disconnect_polarity",
+          "address": 2147583496,
+          "length": 36,
+          "crc32": "7d879101",
+          "matched": true
+        },
+        {
+          "name": "usb_clock_sleep",
+          "address": 2147659996,
+          "length": 284,
+          "crc32": "fca954e5",
+          "matched": true
+        },
+        {
+          "name": "lcd_geometry",
+          "address": 2151049236,
+          "length": 12,
+          "crc32": "e0abb6bd",
+          "matched": true
+        },
+        {
+          "name": "lcd_init",
+          "address": 2147512956,
+          "length": 408,
+          "crc32": "9010d466",
+          "matched": true
+        },
+        {
+          "name": "lcd_descriptor_init",
+          "address": 2147513364,
+          "length": 328,
+          "crc32": "69b67e8d",
+          "matched": true
+        },
+        {
+          "name": "lcd_irq",
+          "address": 2147515944,
+          "length": 96,
+          "crc32": "a0a9f8bd",
+          "matched": true
+        },
+        {
+          "name": "gui_exports",
+          "address": 2149924752,
+          "length": 2080,
+          "crc32": "6c9983ce",
+          "matched": true
+        },
+        {
+          "name": "fs_exports",
+          "address": 2149924608,
+          "length": 144,
+          "crc32": "ec64208b",
+          "matched": true
+        },
+        {
+          "name": "sys_exports",
+          "address": 2149924240,
+          "length": 208,
+          "crc32": "f4b7c3dd",
+          "matched": true
+        },
+        {
+          "name": "mem_exports",
+          "address": 2149926860,
+          "length": 52,
+          "crc32": "29f7feb5",
+          "matched": true
+        },
+        {
+          "name": "res_exports",
+          "address": 2149924448,
+          "length": 160,
+          "crc32": "10f8e3aa",
+          "matched": true
+        },
+        {
+          "name": "sdram_geometry_template",
+          "address": 2147666592,
+          "length": 36,
+          "crc32": "b0ec30bc",
+          "matched": true
+        },
+        {
+          "name": "gui_version_draw",
+          "address": 2147586240,
+          "length": 28,
+          "crc32": "979993ea",
+          "matched": true
+        },
+        {
+          "name": "gui_version_text",
+          "address": 2149922952,
+          "length": 16,
+          "crc32": "42d6cb5d",
+          "matched": true
+        },
+        {
+          "name": "gui_orientation",
+          "address": 2148339376,
+          "length": 260,
+          "crc32": "88497bc8",
+          "matched": true
+        },
+        {
+          "name": "panel_orientation_getter",
+          "address": 2147586620,
+          "length": 8,
+          "crc32": "18ffb14b",
+          "matched": true
+        }
+      ],
+      "notice_guard_count": 2,
+      "notice_guards": [
+        {
+          "name": "gui_msgbox_slot",
+          "address": 2149925448,
+          "length": 4,
+          "crc32": "0b518962",
+          "matched": true
+        },
+        {
+          "name": "gui_msgbox_entry",
+          "address": 2148304644,
+          "length": 128,
+          "crc32": "a1c38c7a",
+          "matched": true
+        }
+      ]
+    },
+    "JZ4720": {
+      "format": "64-byte-wrapper",
+      "supplied_sha256": "5bfef4a614e2a519c3957aa056564521ae7c8cb006ccc7a95e4b00ab1bf80e4f",
+      "supplied_size": 4662456,
+      "raw_sha256": "469a833e8984e8c4c531a411955edc38f5fb57c6089b8694f522f995dbe66c49",
+      "raw_size": 4662392,
+      "guard_count": 44,
+      "guards": [
+        {
+          "name": "task_create_ext",
+          "address": 2147533212,
+          "length": 388,
+          "crc32": "95f6e293",
+          "matched": true
+        },
+        {
+          "name": "task_delete",
+          "address": 2147533600,
+          "length": 576,
+          "crc32": "b7e66bfc",
+          "matched": true
+        },
+        {
+          "name": "task_delay",
+          "address": 2147536700,
+          "length": 152,
+          "crc32": "72f7fe91",
+          "matched": true
+        },
+        {
+          "name": "task_resume",
+          "address": 2147536464,
+          "length": 236,
+          "crc32": "8bef030d",
+          "matched": true
+        },
+        {
+          "name": "task_create",
+          "address": 2147532880,
+          "length": 332,
+          "crc32": "a47d51ef",
+          "matched": true
+        },
+        {
+          "name": "task_stack_init",
+          "address": 2147515072,
+          "length": 240,
+          "crc32": "2165dade",
+          "matched": true
+        },
+        {
+          "name": "tcb_init",
+          "address": 2147517460,
+          "length": 416,
+          "crc32": "135aac1e",
+          "matched": true
+        },
+        {
+          "name": "scheduler",
+          "address": 2147516848,
+          "length": 216,
+          "crc32": "3d9ca4ab",
+          "matched": true
+        },
+        {
+          "name": "global_alloc",
+          "address": 2147514120,
+          "length": 80,
+          "crc32": "fe04ee1d",
+          "matched": true
+        },
+        {
+          "name": "global_free",
+          "address": 2147510452,
+          "length": 72,
+          "crc32": "250b3ec5",
+          "matched": true
+        },
+        {
+          "name": "tick_irq",
+          "address": 2148718608,
+          "length": 324,
+          "crc32": "c9dfc9a7",
+          "matched": true
+        },
+        {
+          "name": "raw_tick",
+          "address": 2148719152,
+          "length": 12,
+          "crc32": "136c0e7b",
+          "matched": true
+        },
+        {
+          "name": "tick_timer_init",
+          "address": 2148718932,
+          "length": 220,
+          "crc32": "5484decb",
+          "matched": true
+        },
+        {
+          "name": "irq_register",
+          "address": 2147504408,
+          "length": 284,
+          "crc32": "8fe0f94e",
+          "matched": true
+        },
+        {
+          "name": "heap_init_call",
+          "address": 2147513424,
+          "length": 136,
+          "crc32": "1b2e3ef8",
+          "matched": true
+        },
+        {
+          "name": "heap_bounds_init",
+          "address": 2147513996,
+          "length": 88,
+          "crc32": "73f86502",
+          "matched": true
+        },
+        {
+          "name": "bda_seed",
+          "address": 2150119776,
+          "length": 32,
+          "crc32": "932ff826",
+          "matched": true
+        },
+        {
+          "name": "bda_seed_copy",
+          "address": 2147667704,
+          "length": 52,
+          "crc32": "d3c67ed4",
+          "matched": true
+        },
+        {
+          "name": "lcd_geometry",
+          "address": 2150884420,
+          "length": 12,
+          "crc32": "e0abb6bd",
+          "matched": true
+        },
+        {
+          "name": "stock_task_create_7_8_9",
+          "address": 2147523008,
+          "length": 100,
+          "crc32": "ed42858c",
+          "matched": true
+        },
+        {
+          "name": "stock_idle_stat_task_create",
+          "address": 2147518344,
+          "length": 112,
+          "crc32": "78df2a79",
+          "matched": true
+        },
+        {
+          "name": "usb_endpoints",
+          "address": 2147540016,
+          "length": 444,
+          "crc32": "6be43543",
+          "matched": true
+        },
+        {
+          "name": "usb_irq_register",
+          "address": 2147544204,
+          "length": 92,
+          "crc32": "8ec3e6d5",
+          "matched": true
+        },
+        {
+          "name": "usb_init",
+          "address": 2147544312,
+          "length": 128,
+          "crc32": "45992fd0",
+          "matched": true
+        },
+        {
+          "name": "usb_disable",
+          "address": 2147544440,
+          "length": 100,
+          "crc32": "f8dad9d8",
+          "matched": true
+        },
+        {
+          "name": "usb_irq",
+          "address": 2147544540,
+          "length": 52,
+          "crc32": "d299a821",
+          "matched": true
+        },
+        {
+          "name": "power_cable_query",
+          "address": 2147859528,
+          "length": 24,
+          "crc32": "974a2549",
+          "matched": true
+        },
+        {
+          "name": "power_cable_flag",
+          "address": 2147865812,
+          "length": 40,
+          "crc32": "1c9963c5",
+          "matched": true
+        },
+        {
+          "name": "power_cable_irq",
+          "address": 2147859968,
+          "length": 112,
+          "crc32": "aa951d78",
+          "matched": true
+        },
+        {
+          "name": "vbus_gpio_setup",
+          "address": 2147860080,
+          "length": 144,
+          "crc32": "6ae68708",
+          "matched": true
+        },
+        {
+          "name": "usb_close_power_check",
+          "address": 2147635776,
+          "length": 80,
+          "crc32": "bc57055c",
+          "matched": true
+        },
+        {
+          "name": "lcd_init",
+          "address": 2147552172,
+          "length": 440,
+          "crc32": "3e0e000b",
+          "matched": true
+        },
+        {
+          "name": "lcd_descriptor_init",
+          "address": 2147552612,
+          "length": 344,
+          "crc32": "5c6508ae",
+          "matched": true
+        },
+        {
+          "name": "lcd_irq",
+          "address": 2147555920,
+          "length": 96,
+          "crc32": "a0a9f8bd",
+          "matched": true
+        },
+        {
+          "name": "gui_orientation",
+          "address": 2148338160,
+          "length": 260,
+          "crc32": "7375f992",
+          "matched": true
+        },
+        {
+          "name": "gui_exports",
+          "address": 2150117680,
+          "length": 2096,
+          "crc32": "7453af8e",
+          "matched": true
+        },
+        {
+          "name": "fs_exports",
+          "address": 2150117536,
+          "length": 144,
+          "crc32": "e5d27fc2",
+          "matched": true
+        },
+        {
+          "name": "sys_exports",
+          "address": 2150117168,
+          "length": 208,
+          "crc32": "a9f207e7",
+          "matched": true
+        },
+        {
+          "name": "mem_exports",
+          "address": 2150119804,
+          "length": 52,
+          "crc32": "885188f7",
+          "matched": true
+        },
+        {
+          "name": "res_exports",
+          "address": 2150117376,
+          "length": 160,
+          "crc32": "69ec7179",
+          "matched": true
+        },
+        {
+          "name": "version_page",
+          "address": 2147639032,
+          "length": 60,
+          "crc32": "4e526ba0",
+          "matched": true
+        },
+        {
+          "name": "embedded_version",
+          "address": 2150096756,
+          "length": 13,
+          "crc32": "a9859a74",
+          "matched": true
+        },
+        {
+          "name": "cpu_irq_lock",
+          "address": 2148179440,
+          "length": 64,
+          "crc32": "25d9d7a3",
+          "matched": true
+        },
+        {
+          "name": "cpu_irq_unlock",
+          "address": 2148179504,
+          "length": 32,
+          "crc32": "4b040c7c",
+          "matched": true
+        }
+      ],
+      "notice_guard_count": 2,
+      "notice_guards": [
+        {
+          "name": "gui_msgbox_slot",
+          "address": 2150118376,
+          "length": 4,
+          "crc32": "968e13b4",
+          "matched": true
+        },
+        {
+          "name": "gui_msgbox_entry",
+          "address": 2148303428,
+          "length": 128,
+          "crc32": "7a680c88",
+          "matched": true
+        }
+      ]
+    }
+  },
+  "cross_firmware_rejections": [
+    {
+      "profile": "JZ4740",
+      "firmware": "JZ4730",
+      "rejected": true
+    },
+    {
+      "profile": "JZ4740",
+      "firmware": "JZ4720",
+      "rejected": true
+    },
+    {
+      "profile": "JZ4730",
+      "firmware": "JZ4740",
+      "rejected": true
+    },
+    {
+      "profile": "JZ4730",
+      "firmware": "JZ4720",
+      "rejected": true
+    },
+    {
+      "profile": "JZ4720",
+      "firmware": "JZ4740",
+      "rejected": true
+    },
+    {
+      "profile": "JZ4720",
+      "firmware": "JZ4730",
+      "rejected": true
+    }
+  ],
+  "foreign_firmware_rejected": true,
+  "hardware_verified": false,
+  "full_firmware_verified": false,
+  "hardware_modified": false,
+  "status": "passed MIPS/controller model verification; physical 9588 verification pending",
+  "scope": "Exact universal BDA, real local ROM identities and MIPS/controller models. No physical 9588 hardware or USB host validation."
+}

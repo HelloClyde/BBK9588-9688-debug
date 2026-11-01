@@ -1,6 +1,6 @@
 # 维护与发布
 
-仓库版本由根目录 `VERSION` 决定，当前预发布为 `0.1.0-alpha.2`，新增独立的 9588 移植。所有发布均从已审查、
+仓库版本由根目录 `VERSION` 决定，当前版本为 `0.1.0-alpha.3`，9588 默认构建三芯片通用 BDA。所有发布均从已审查、
 干净的 Git 提交构建；SDK 固定为子模块 gitlink，不从 main 临时下载文件。
 
 ## 构建和验证
@@ -17,18 +17,18 @@ python build.py --models all --verify
 ```
 
 `all` 只构建仓库中实际存在的源码目标；`build/release-build.json` 的 `models` 是本次资产的
-唯一机型清单。alpha.2 同时提供 `Debug9588.bda`（9588 V3.30/JZ4740）和
+唯一机型清单。alpha.3 同时提供 `Debug9588.bda`（9588 JZ4740/V3.30、JZ4730/V1.30、JZ4720/V3.2）和
 `Debug9688.bda`（9688 V2.32/JZ4730、JZ4740）。两个机型使用独立固件绑定，不共享机型身份。
-9688 的两种芯片位于同一个 BDA；9588 当前只支持 JZ4740。单芯片开发构建不加入正式清单。
+9588 的三种芯片位于同一个BDA，启动只分配对应的一份resident；9688两种芯片也共用一个BDA。单芯片开发构建不加入正式清单。
 
 可选的本地私有固件通过目标专用参数提供；以下命令中的路径必须替换为自己的文件：
 
 ```powershell
-python build.py --models 9588 --verify --firmware-9588 PATH/TO/9588-firmware.bin
+python build.py --models 9588 --verify --firmware-9588-jz4740 PATH/TO/kj409588.bin --firmware-9588-jz4730 PATH/TO/C200knl.bin --firmware-9588-jz4720 PATH/TO/4720knl.bin
 python build.py --models 9688 --verify --firmware-jz4730 PATH/TO/9688-4730.bin --firmware-jz4740 PATH/TO/9688-4740.bin --firmware-legacy PATH/TO/9688-legacy.bin
 ```
 
-`--firmware-9588` 只转发给 9588 构建器和验证器的 `--firmware`。
+`--firmware-9588-jz4740/4730/4720` 分别转发给9588的同芯片参数；旧 `--firmware-9588` 是4740参数别名。
 `--firmware-jz4730`、`--firmware-jz4740` 只转发给 9688；`--firmware-legacy` 只用于
 9688 的旧固件提示验证。两个机型的固件参数互不混用，也不进入发布包或公开 CI。
 
@@ -40,7 +40,7 @@ python build.py --models 9688 --verify --firmware-jz4730 PATH/TO/9688-4730.bin -
 4. 独立的真机验收记录，以具体芯片、固件和完全相同的 BDA SHA-256 为边界。
 
 CI 只依赖公开源码和固定工具链，明确要求两个机型都构建和离线验证；缺少任一源码目标即失败。
-它通过前两层也不会扩大真机覆盖。9588 V3.30/JZ4740 尚未真机验证，发布清单中的
+它通过前两层也不会扩大真机覆盖。9588三芯片尚未真机USB验证，发布清单中的
 `hardware_verified` 固定为 `false`；不能继承 9688 的硬件记录。9688/JZ4730 只有模型验证；
 9688/JZ4740 的既有实测记录仅在本次产物与记录的 SHA-256 完全一致时有效。
 SDK 版本、编译器或源码改变后若二进制改变，应重新做真机验收，再更新记录。
@@ -60,7 +60,7 @@ python package_release.py --verify --commit $releaseCommit
 首次整理、尚未提交的工作区允许不带 `--commit` 生成准备包。它明确标为
 `preparation_only: true`，不能通过官方发布验证。不把准备包手动上传为版本资产。
 
-默认输出 `dist/release/`；本地保留上一个版本时，用 `--output dist/v0.1.0-alpha.2` 为打包和
+默认输出 `dist/release/`；本地保留上一个版本时，用 `--output dist/v0.1.0-alpha.3` 为打包和
 `--verify` 指定同一个新目录，避免混入旧版本资产。CI 使用干净工作区。
 
 输出包括：
@@ -98,8 +98,8 @@ Apache-2.0 许可路径与本项目组合；详见根 NOTICE。发布二进制�
 推送与版本严格相同的标签：
 
 ```powershell
-git tag v0.1.0-alpha.2
-git push origin v0.1.0-alpha.2
+git tag v0.1.0-alpha.3
+git push origin v0.1.0-alpha.3
 ```
 
 标签工作流重新构建、打包并验证标签所指提交、VERSION 和固定 SDK。独立 Linux 发布作业

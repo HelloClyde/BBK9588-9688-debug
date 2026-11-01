@@ -85,7 +85,7 @@ static int launch(void)
     /* Never invoke an unknown GUI table on an unsupported firmware. */
     if (!fw_matches()) {
         if (fw_notice_safe())
-            notice("Unsupported firmware or runtime table mismatch.\nA matching checked 9588 JZ4740 profile is required.",
+            notice("Unsupported firmware or runtime table mismatch.\nA matching checked 9588 JZ4740/JZ4730/JZ4720 profile is required.",
                    (int)fw_match_error());
         return 1;
     }
@@ -94,9 +94,10 @@ static int launch(void)
         if(rd_images[i].soc==fw_selected_soc()){image=&rd_images[i];break;}
     if(!image)return notice("No resident image for detected chip.",11);
 #ifdef RD_UNIVERSAL_LAUNCHER
-    notice(fw_selected_soc()==4730u ?
-           "9588 Debug Universal 2\nDetected JZ4730. Preparing debugger." :
-           "9588 Debug Universal 2\nDetected JZ4740. Preparing debugger.",0);
+    const char *detected=fw_selected_soc()==4720u ? "Detected JZ4720. Preparing debugger." :
+                         fw_selected_soc()==4730u ? "Detected JZ4730. Preparing debugger." :
+                                                   "Detected JZ4740. Preparing debugger.";
+    notice(detected,0);
 #endif
     rd_header *control = fw_find_resident();
     if (control) {

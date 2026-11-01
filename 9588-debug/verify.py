@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-only
-"""Verify a checked 9588 JZ4740 build using MIPS/controller models.
+"""Verify one universal 9588 BDA, or an explicit single-SoC developer build.
 
-No USB port or physical device is accessed. Local ROM checks are optional.
+No serial ports or physical devices are accessed. Original ROMs are optional,
+local, read-only inputs and are never bundled with source or verification logs.
 """
 from __future__ import annotations
 import argparse
@@ -16,19 +17,31 @@ import sys
 
 SOURCE=Path(__file__).resolve().parent
 ROOT=SOURCE.parent
+SOCS=("JZ4740","JZ4730","JZ4720")
 
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sdk-root",type=Path)
+    parser.add_argument("--chip",choices=tuple(soc.lower() for soc in SOCS))
     parser.add_argument("--build-dir",type=Path)
-    parser.add_argument("--firmware",type=Path,help="optional checked local raw/wrapped 9588 firmware")
-    parser.add_argument("--foreign-firmware",type=Path,help="optional 9688/other ROM that must fail 9588 SHA256 guards")
+    parser.add_argument("--firmware",type=Path,help="optional local ROM for explicit --chip verification")
+    for soc in SOCS:
+        parser.add_argument("--firmware-"+soc.lower(),type=Path,help="optional local ROM for universal verification")
+    parser.add_argument("--foreign-firmware",type=Path,help="optional other-target ROM that every selected profile must reject")
     args=parser.parse_args()
-    folder=(args.build_dir or ROOT/"build/9588-debug").resolve()
+    folder=(args.build_dir or ROOT/"build"/("9588-debug-"+args.chip if args.chip else "9588-debug")).resolve()
     report=json.loads((folder/"build.json").read_text(encoding="utf-8"))
-    if report.get("target")!="9588" or report.get("soc")!="JZ4740" or report.get("mode")!="single":
-        raise ValueError("verification only supports a checked 9588 JZ4740 single build")
+    universal=report.get("mode")=="universal"
+    if report.get("target")!="9588":
+        raise ValueError("selected manifest does not describe 9588 Debug")
+    if universal:
+        if args.chip or args.firmware:
+            parser.error("universal verification uses --firmware-jz4740/4730/4720, not --chip or --firmware")
+        if set(report.get("supported_socs",[]))!=set(SOCS):
+            raise ValueError("universal build does not contain all three checked SoCs")
+    elif not args.chip or report.get("soc","").lower()!=args.chip:
+        parser.error("single-SoC verification requires its matching explicit --chip")
     artifact=folder/report["binary"]
     digest=hashlib.sha256(artifact.read_bytes()).hexdigest()
     if digest!=report["sha256"]:
@@ -46,35 +59,77 @@ def main():
     checked=verify(artifact.read_bytes())
     if not checked["checksum_ok"] or checked["category"]!=9 or checked["title"]!=report["menu_title"]:
         raise ValueError("BDA header/checksum verification failed")
-    profile=json.loads((ROOT/report["profile_file"]).read_text(encoding="utf-8"))
-    builder.validate_target_profile(profile)
+    selected=([item["soc"] for item in report["components"]] if universal else [report["soc"]])
+    if universal:
+        registered=builder.registered_profiles()
+        profiles={soc:profile for soc,path,profile in registered}
+        targets=[(item["soc"],folder/item["directory"]) for item in report["components"]]
+    else:
+        profiles={report["soc"]:json.loads((ROOT/report["profile_file"]).read_text(encoding="utf-8"))}
+        builder.validate_target_profile(profiles[report["soc"]])
+        targets=[(report["soc"],folder)]
     environment=os.environ.copy()
     environment["BDA_SDK_ROOT"]=str(builder.SDK_ROOT)
-    environment["BBK9588_BUILD_DIR"]=str(folder)
-    firmware_check=None
-    if args.firmware:
-        firmware_check=builder.verify_firmware(args.firmware,profile)
-        environment["BBK9588_FIRMWARE"]=str(args.firmware.resolve())
-    else:
-        environment.pop("BBK9588_FIRMWARE",None)
+    environment["BBK9588_UNIVERSAL_BUILD_DIR"]=str(folder)
+    firmware_paths={soc:getattr(args,"firmware_"+soc.lower()) for soc in SOCS}
+    if not universal:
+        if any(firmware_paths.values()):
+            parser.error("single-SoC verification uses --firmware")
+        firmware_paths[report["soc"]]=args.firmware
+    firmware_checks={}
+    for soc in SOCS:
+        path=firmware_paths[soc]
+        key="BBK9588_FIRMWARE_"+soc
+        environment.pop(key,None)
+        if path and soc in profiles:
+            firmware_checks[soc]=builder.verify_firmware(path,profiles[soc])
+            environment[key]=str(path.resolve())
+    cross_rejections=[]
+    for soc,profile in profiles.items():
+        for other,path in firmware_paths.items():
+            if other==soc or not path:
+                continue
+            try:
+                builder.verify_firmware(path,profile)
+            except ValueError:
+                cross_rejections.append({"profile":soc,"firmware":other,"rejected":True})
+            else:
+                raise ValueError("cross-SoC ROM unexpectedly matched "+soc)
     foreign_rejected=None
     if args.foreign_firmware:
-        try:
-            builder.verify_firmware(args.foreign_firmware,profile)
-        except ValueError:
-            foreign_rejected=True
-        else:
-            raise ValueError("foreign firmware unexpectedly matched the selected 9588 profile")
-    result=run_suite(["test_build","test_client","test_device","test_runtime","test_usb","test_verify"],
-                     environment,folder,"verify-tests.log")
-    evidence={"target":"9588","soc":"JZ4740","bda_sha256":digest,"bda_bytes":artifact.stat().st_size,
-        "source_manifest_matches":True,"bda_header_checksum_valid":True,"tests":result,
-        "firmware_profile_verified":firmware_check is not None,"firmware_verification":firmware_check,
+        for profile in profiles.values():
+            try:
+                builder.verify_firmware(args.foreign_firmware,profile)
+            except ValueError:
+                continue
+            raise ValueError("foreign firmware unexpectedly matched a 9588 profile")
+        foreign_rejected=True
+    suites=[]
+    for soc,target in targets:
+        environment["BBK9588_BUILD_DIR"]=str(target)
+        environment.pop("BBK9588_FIRMWARE",None)
+        if soc in firmware_checks:
+            environment["BBK9588_FIRMWARE"]=str(firmware_paths[soc].resolve())
+        usb_test="test_usb_jz4730" if soc=="JZ4730" else "test_usb"
+        suites.append(run_suite(["test_build","test_client","test_device","test_runtime",usb_test,"test_verify"],
+                                environment,folder,"verify-"+soc.lower()+"-tests.log"))
+    if universal:
+        suites.append(run_suite(["test_universal"],environment,folder,"verify-universal-tests.log"))
+    success=all(suite["success"] for suite in suites)
+    log="\n".join((folder/suite["log"]).read_text(encoding="utf-8") for suite in suites)
+    (folder/"verify-tests.log").write_text(log,encoding="utf-8")
+    evidence={"target":"9588","soc":report["soc"],"bda_sha256":digest,"bda_bytes":artifact.stat().st_size,
+        "source_manifest_matches":True,"bda_header_checksum_valid":True,
+        "tests":{"suites":suites,"run":sum(s["run"] for s in suites),"passed":sum(s["passed"] for s in suites),
+                 "skipped":sum(s["skipped"] for s in suites),"skipped_tests":sum(s["skipped_tests"] for s in suites),
+                 "skipped_subtests":sum(s["skipped_subtests"] for s in suites),"success":success,"log":"verify-tests.log"},
+        "firmware_profile_verified":all(soc in firmware_checks for soc in selected),
+        "firmware_verification":firmware_checks,"cross_firmware_rejections":cross_rejections,
         "foreign_firmware_rejected":foreign_rejected,"hardware_verified":False,
         "full_firmware_verified":False,"hardware_modified":False,
-        "status":"passed MIPS/controller model verification; physical 9588 verification pending" if result["success"] else "model tests failed"}
+        "status":"passed MIPS/controller model verification; physical 9588 verification pending" if success else "model tests failed"}
     (folder/"verification.json").write_text(json.dumps(evidence,indent=2)+"\n",encoding="utf-8")
-    return 0 if result["success"] else 1
+    return 0 if success else 1
 
 
 def run_suite(modules, environment, folder, name):

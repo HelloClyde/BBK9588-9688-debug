@@ -32,11 +32,17 @@ BUILD = test_usb.BUILD
 
 
 def USBModel(build=None, base=0x80807FE0, *, start=True):
-    return MUSBModel(Path(build) if build is not None else BUILD, base, start=start)
+    folder=Path(build) if build is not None else BUILD
+    report=json.loads((folder/"build.json").read_text(encoding="utf-8"))
+    if report["soc"]=="JZ4730":
+        from test_usb_jz4730 import USBModel as Model
+    else:
+        Model=MUSBModel
+    return Model(folder,base,start=start)
 
 
 def expected_identity(model):
-    return b"9588DEBUG/1 JZ4740 RESIDENT"
+    return f"9588DEBUG/1 {model.report['soc']} RESIDENT".encode("ascii")
 
 
 def packet(opcode, sequence, payload=b"", status=0, version=1):
@@ -320,7 +326,7 @@ class DeviceTests(unittest.TestCase):
                 # resident fw_matches stub. The exact error distinguishes
                 # live-import rejection from a later missing-ROM CRC failure.
                 self.assertEqual(model.call("fw_matches"), 0)
-                self.assertEqual(model.call("fw_match_error"), (4740 << 16) | 0xFF01)
+                self.assertEqual(model.call("fw_match_error"), (int(model.report["soc"][2:]) << 16) | 0xFF01)
                 self.assertEqual(model.call("bda_main"), 1)
 
     def test_real_rom_launcher_rejects_each_runtime_table_before_private_services(self):
@@ -337,7 +343,7 @@ class DeviceTests(unittest.TestCase):
                 model.put(model.macros["FW_RUNTIME_BASE"] + 4 + 4 * index,
                           struct.pack("<I", tables[index] ^ 4))
                 self.assertEqual(model.call("fw_matches"), 0)
-                self.assertEqual(model.call("fw_match_error"), (4740 << 16) | 0xFF01)
+                self.assertEqual(model.call("fw_match_error"), (int(model.report["soc"][2:]) << 16) | 0xFF01)
                 self.assertEqual(model.call("fw_notice_safe"), int(index != 0))
 
                 notices, private_calls = [], []
@@ -361,11 +367,101 @@ class DeviceTests(unittest.TestCase):
                 controller_before = (model.imr, model.gpio_mask, dict(model.ui),
                                      model.get(model.macros["FW_CPM_CLKGR"], 8))
                 self.assertEqual(model.call("bda_main"), 1)
-                self.assertEqual(notices, [] if index == 0 else [(4740 << 16) | 0xFF01])
+                self.assertEqual(notices, [] if index == 0 else [(int(model.report["soc"][2:]) << 16) | 0xFF01])
                 self.assertEqual(private_calls, [])
                 self.assertEqual((model.imr, model.gpio_mask, dict(model.ui),
                                   model.get(model.macros["FW_CPM_CLKGR"], 8)), controller_before)
 
+
+    def test_transport_service_detects_clock_loss_without_any_gated_udc_access(self):
+        model=USBModel()
+        clock=model.macros["FW_CPM_CLKGR"]
+        model.put(clock,struct.pack("<I",model.word(clock)|model.macros["FW_CPM_USB_GATE_MASK"]))
+        # Includes the frame read before transport_poll, fault snapshots,
+        # and real stop/cancel propagation through the compiled service.
+        model.call("transport_service")
+        self.assertEqual(model.word(model.symbols["usb"]+216),1)
+        self.assertEqual(model.word(model.base+28),1)
+        self.assertEqual((model.gated_udc_reads,model.gated_udc_writes),(0,0))
+
+    def test_gated_frame_idle_diagnostics_and_close_are_safe(self):
+        # Fresh ownership for each entry matters: a fault raised by an earlier
+        # API must not hide an unsafe direct call in a later one.
+        for operation in ("debug_usb_frame","debug_usb_tx_idle","debug_usb_read","debug_usb_write",
+                          "debug_usb_diagnostics","debug_usb_close"):
+            with self.subTest(operation=operation):
+                model=USBModel()
+                scratch=model.macros["FW_RUNTIME_BASE"]+0x8000
+                usb=model.symbols["usb"]
+                model.put(scratch,b"x")
+                self.assertEqual(model.call("debug_usb_write",usb,scratch,1),1)
+                clock=model.macros["FW_CPM_CLKGR"]
+                model.put(clock,struct.pack("<I",model.word(clock)|model.macros["FW_CPM_USB_GATE_MASK"]))
+                if operation=="debug_usb_frame":
+                    self.assertEqual(model.call(operation),0)
+                elif operation=="debug_usb_tx_idle":
+                    self.assertEqual(model.call(operation,usb),1)
+                elif operation in ("debug_usb_read","debug_usb_write"):
+                    self.assertEqual(model.call(operation,usb,scratch,1),0)
+                elif operation=="debug_usb_diagnostics":
+                    model.call(operation,usb,scratch)
+                else:
+                    model.call(operation,usb)
+                self.assertEqual((model.gated_udc_reads,model.gated_udc_writes),(0,0))
+
+    def test_worker_stop_with_pending_tx_cleans_up_after_clock_loss(self):
+        from unicorn.mips_const import (UC_MIPS_REG_A0,UC_MIPS_REG_CP0_STATUS,
+                                       UC_MIPS_REG_SP,UC_MIPS_REG_RA)
+        for pending_protocol in (False,True):
+            with self.subTest(pending_protocol=pending_protocol):
+                model=USBModel()
+                scratch=model.macros["FW_RUNTIME_BASE"]+0x8000
+                model.put(scratch,b"x")
+                self.assertEqual(model.call("debug_usb_write",model.symbols["usb"],scratch,1),1)
+                if pending_protocol:
+                    model.put(model.symbols["protocol"]+1060,struct.pack("<II",64,64))
+                clock=model.macros["FW_CPM_CLKGR"]
+                model.put(clock,struct.pack("<I",model.word(clock)|model.macros["FW_CPM_USB_GATE_MASK"]))
+                model.put(model.base+28,struct.pack("<I",1))  # Request stop before worker enters service.
+                reached=[]
+                def stopped(uc,address,size,_):
+                    if model.word(model.base+24)==3:
+                        reached.append(address)
+                        uc.emu_stop()
+                model.u.hook_add(UC_HOOK_CODE,stopped,begin=model.symbols["fw_delay"],end=model.symbols["fw_delay"])
+                stack=model.macros["FW_RUNTIME_BASE"]-0x20000
+                model.u.reg_write(UC_MIPS_REG_CP0_STATUS,0x10000000)
+                model.u.reg_write(UC_MIPS_REG_SP,stack)
+                model.u.reg_write(UC_MIPS_REG_RA,stack+0x1000)
+                model.u.reg_write(UC_MIPS_REG_A0,model.base)
+                model.u.emu_start(model.symbols["resident_worker"],stack+0x1000,count=10000000)
+                self.assertTrue(reached,"worker must finish bounded shutdown")
+                self.assertEqual(model.word(model.base+24),3)
+                self.assertNotEqual(model.word(model.base+32),0)
+                self.assertEqual((model.gated_udc_reads,model.gated_udc_writes),(0,0))
+
+    def test_other_checked_soc_rom_is_rejected_with_current_live_tables(self):
+        current=USBModel(start=False)
+        others=[soc for soc in ("JZ4740","JZ4730","JZ4720")
+                if soc!=current.report["soc"] and os.environ.get("BBK9588_FIRMWARE_"+soc)]
+        if not others:
+            self.skipTest("supply another checked SoC ROM for cross-target matcher rejection")
+        for soc in others:
+            with self.subTest(other=soc):
+                model=USBModel(start=False)
+                profile=json.loads((SOURCE/"profiles"/("9588-"+soc.lower()+".json")).read_text(encoding="utf-8"))
+                raw=Path(os.environ["BBK9588_FIRMWARE_"+soc]).read_bytes()
+                if hashlib.sha256(raw).hexdigest()!=profile["firmware"]["sha256"]:
+                    raw=raw[64:]
+                self.assertEqual(hashlib.sha256(raw).hexdigest(),profile["firmware"]["sha256"])
+                model.put(test_usb.integer(profile["firmware"]["load_base"]),raw)
+                model.put(model.report["entry_va"],(model.build/"launcher.bin").read_bytes())
+                model.symbols=model.report["launcher_symbols"]
+                seed_runtime_tables(model)  # Correct current imports: wrong ROM must fail CRC, not just pointer checks.
+                model.put(model.symbols["notice"],struct.pack("<2I",0x03e00008,0x00a01021))
+                self.assertEqual(model.call("fw_matches"),0)
+                self.assertNotEqual(model.call("fw_match_error"),(int(model.report["soc"][2:])<<16)|0xff01)
+                self.assertEqual(model.call("bda_main"),1)
 
     def test_launcher_rejects_unknown_priority6_task(self):
         model = USBModel(start=False)

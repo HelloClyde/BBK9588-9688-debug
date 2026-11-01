@@ -160,6 +160,35 @@ class TargetAndFirmwareTests(unittest.TestCase):
             with self.subTest(profile=profile),self.assertRaises(ValueError):
                 build.profile_header(profile)
 
+    def test_profile_set_rejects_missing_duplicate_and_ambiguous_selectors(self):
+        profiles=[p for _,_,p in build.registered_profiles()]
+        with self.assertRaises(ValueError):
+            build.validate_profile_set(profiles[:-1])
+        with self.assertRaises(ValueError):
+            build.validate_profile_set([profiles[0],profiles[0],profiles[2]])
+        copied=json.loads(json.dumps(profiles))
+        for name in ("FW_RUNTIME_BASE","FW_GUI_TABLE","FW_FS_TABLE","FW_SYS_TABLE","FW_MEM_TABLE","FW_RES_TABLE"):
+            copied[1]["macros"][name]=copied[0]["macros"][name]
+        copied[1]["guards"]=copied[0]["guards"]
+        copied[1]["notice_guards"]=copied[0].get("notice_guards",[])
+        with self.assertRaisesRegex(ValueError,"ambiguous"):
+            build.validate_profile_set(copied)
+        for p in profiles:
+            wrong=json.loads(json.dumps(p))
+            wrong["usb_controller"]="wrong-controller"
+            with self.assertRaisesRegex(ValueError,"USB controller"):
+                build.profile_header(wrong)
+
+    def test_each_soc_has_its_own_identity_pid_and_controller(self):
+        for soc,path,profile in build.registered_profiles():
+            with self.subTest(soc=soc):
+                header=build.profile_header(profile)
+                self.assertIn(f'#define RD_SOC_ID {soc[2:]}u',header)
+                self.assertIn(f'#define RD_IDENTITY "9588DEBUG/1 {soc} RESIDENT"',header)
+                self.assertIn(f'#define RD_SOC_{soc} 1u',header)
+                self.assertEqual(build.resident_sources_for_soc(soc)[2].name,
+                                 "usb_jz4730.c" if soc=="JZ4730" else "usb.c")
+
     def test_public_sdk_bda_header_checksum_and_entry(self):
         build.configure_sdk()
         payload=bytes.fromhex("0800e00300000000")
