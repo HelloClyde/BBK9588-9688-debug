@@ -111,7 +111,7 @@ def main():
         if soc in firmware_checks:
             environment["BBK9588_FIRMWARE"]=str(firmware_paths[soc].resolve())
         usb_test="test_usb_jz4730" if soc=="JZ4730" else "test_usb"
-        suites.append(run_suite(["test_build","test_client","test_device","test_runtime",usb_test,"test_verify"],
+        suites.append(run_suite(["test_build","test_client","test_device","test_runtime",usb_test,"test_verify","test_discovery","test_management","test_workflow_client","test_workflow_device"],
                                 environment,folder,"verify-"+soc.lower()+"-tests.log"))
     if universal:
         suites.append(run_suite(["test_universal"],environment,folder,"verify-universal-tests.log"))

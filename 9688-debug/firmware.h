@@ -21,6 +21,8 @@
 #define FW_RES_CALL_LIMIT 0x9cu
 #endif
 int fw_matches(void);
+uint32_t fw_binding_id(void);
+unsigned fw_discovery_info(uint32_t *out,unsigned capacity);
 uint32_t fw_selected_soc(void);
 uint32_t fw_match_error(void);
 int fw_notice_safe(void);

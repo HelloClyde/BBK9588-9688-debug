@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import math
 import os
@@ -12,9 +13,11 @@ from pathlib import Path
 import struct
 import subprocess
 import time
+import threading
 import zlib
 
 MAGIC = b"96DB"
+TARGET = "9688"
 IDENTITIES = {
     "jz4740": b"9688DEBUG/1 V2.32 JZ4740 RESIDENT",
     "jz4730": b"9688DEBUG/1 V2.32 JZ4730 RESIDENT",
@@ -59,7 +62,14 @@ def ports(chip: str | None = None) -> list:
     return [p for p in list_ports.comports() if p.vid == VID and p.pid in allowed]
 
 
-class Client:
+_workflow_spec = importlib.util.spec_from_file_location("debug9688_workflow", Path(__file__).with_name("workflow.py"))
+_workflow = importlib.util.module_from_spec(_workflow_spec)
+_workflow_spec.loader.exec_module(_workflow)
+WorkflowClient = _workflow.WorkflowClient
+FeatureUnavailable = _workflow.FeatureUnavailable
+
+
+class Client(WorkflowClient):
     def __init__(self, serial, timeout: float = 5, chip: str | None = None):
         if not math.isfinite(timeout) or timeout <= 0:
             raise ValueError("timeout must be finite and positive")
@@ -67,6 +77,9 @@ class Client:
             raise ValueError("unsupported chip")
         self.serial, self.timeout, self.sequence, self.broken = serial, timeout, 0, False
         self.caps, self.chip, self.expected_chip = None, None, chip
+        self._rpc_lock = threading.RLock()
+        self.rpc_count = 0
+        self.target = TARGET
 
     @classmethod
     def connect(cls, port: str | None = None, timeout: float = 5, chip: str | None = None) -> "Client":
@@ -89,7 +102,12 @@ class Client:
         return client
 
     def close(self):
-        self.serial.close()
+        try:
+            self.release_input()
+        except Exception as exc:
+            self.cleanup_error = str(exc)
+        finally:
+            self.serial.close()
 
     def exact(self, count: int, deadline: float) -> bytes:
         data = bytearray()
@@ -103,12 +121,17 @@ class Client:
         return bytes(data)
 
     def rpc(self, opcode: int, payload: bytes = b"") -> bytes:
+        with self._rpc_lock:
+            return self._rpc(opcode, payload)
+
+    def _rpc(self, opcode: int, payload: bytes = b"") -> bytes:
         if self.broken:
             raise ProtocolError("session lost; open a new connection before further commands")
         if not 0 < opcode < 128:
             raise ValueError("invalid request opcode")
         self.sequence = (self.sequence + 1) & 0xFFFF
         packet = frame(opcode, self.sequence, payload)
+        self.rpc_count += 1
         try:
             if self.serial.write(packet) != len(packet):
                 raise ProtocolError("short USB write; command outcome may be unknown")
@@ -167,12 +190,37 @@ class Client:
             self.rpc(4, struct.pack("<I", address + offset) + data[offset:offset + 508])
         return {"address": address, "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
 
-    def screenshot(self, output: Path, *, native_orientation: bool = False):
+    def screenshot(self, output: Path, *, native_orientation: bool = False, rotation_degrees: int | None = None, region=None):
         from PIL import Image
-        token, width, height, stride, fmt, size, address, tick = words(self.rpc(6), 8)
+        started, initial_rpc = time.perf_counter(), self.rpc_count
+        if rotation_degrees not in (None, 0, 90, 180, 270):
+            raise ValueError("rotation must be 0, 90, 180 or 270 degrees")
+        rotation = (0 if native_orientation else 180) if rotation_degrees is None else rotation_degrees
+        if self.caps is None:
+            raise ProtocolError("handshake required")
+        full_width, full_height = self.caps[5:7]
+        expected_size = (full_width, full_height)
+        request = b""
+        native_region = None
+        if region is not None:
+            if not self.caps[1] & _workflow.ROI_BIT:
+                raise FeatureUnavailable("this BDA cannot transfer screenshot regions")
+            if len(region) != 4 or any(not isinstance(v, int) or isinstance(v, bool) for v in region):
+                raise ValueError("region must contain four integer display coordinates x,y,width,height")
+            x,y,w,h=region
+            display_width,display_height=(full_height,full_width) if rotation in (90,270) else (full_width,full_height)
+            if x < 0 or y < 0 or w <= 0 or h <= 0 or x+w > display_width or y+h > display_height:
+                raise ValueError("screenshot region is outside the display")
+            native_region = ((x,y,w,h) if rotation == 0 else
+                             (full_width-x-w,full_height-y-h,w,h) if rotation == 180 else
+                             (full_width-y-h,x,h,w) if rotation == 90 else
+                             (y,full_height-x-w,h,w))
+            request=struct.pack("<4I",*native_region)
+            expected_size=native_region[2:]
+        token, width, height, stride, fmt, size, address, tick = words(self.rpc(6,request), 8)
         try:
             pixel_bytes = 2 if fmt == 1 else 4 if fmt == 2 else 0
-            if (width, height) != tuple(self.caps[5:7]) or not pixel_bytes or stride != width * pixel_bytes or size != stride * height:
+            if (width, height) != tuple(expected_size) or not pixel_bytes or stride != width * pixel_bytes or size != stride * height:
                 raise ProtocolError("invalid screen metadata")
             data = bytearray()
             while len(data) < size:
@@ -192,15 +240,17 @@ class Client:
             img = Image.frombytes("RGB", (width, height), bytes(rgb))
         else:
             img = Image.frombytes("RGB", (width, height), bytes(data), "raw", "BGRX")
-        # The 9688 LCD scans this portrait framebuffer in the opposite
-        # direction to the desktop's viewing orientation. Rotate whole pixels
-        # without resampling; keep the wire-data hash for transport checks.
-        rotation = 0 if native_orientation else 180
+        # Rotate complete pixels; region requests use display coordinates and
+        # are transformed to native LCD coordinates before the transfer.
         if rotation:
-            img = img.transpose(Image.Transpose.ROTATE_180)
-        output.parent.mkdir(parents=True, exist_ok=True)
+            img = img.transpose({90: Image.Transpose.ROTATE_90,180: Image.Transpose.ROTATE_180,270: Image.Transpose.ROTATE_270}[rotation])
+        output=Path(output);output.parent.mkdir(parents=True, exist_ok=True)
         img.save(output, format="PNG")
-        return {"output": str(output), "width": width, "height": height, "format": fmt, "framebuffer": address, "tick": tick, "bytes": size, "rotation_degrees": rotation, "orientation": "native" if native_orientation else "display", "raw_sha256": hashlib.sha256(data).hexdigest()}
+        result={"output": str(output), "width": img.width, "height": img.height, "format": fmt, "framebuffer": address, "tick": tick, "bytes": size, "rotation_degrees": rotation, "orientation": "native" if not rotation else "display" if rotation==180 else "rotated", "raw_sha256": hashlib.sha256(data).hexdigest()}
+        if region is not None:
+            result.update({"region":tuple(region),"native_region":native_region,"full_screen_bytes":full_width*full_height*pixel_bytes})
+        result.update(_workflow.transfer_metrics(started,size,(size+499)//500,self.rpc_count-initial_rpc))
+        return result
 
     def exec_info(self):
         names = ("version", "base", "capacity", "state", "image_bytes", "memory_bytes", "entry_offset", "args_capacity", "output_capacity", "stack_bytes")
@@ -304,12 +354,13 @@ def main(argv=None):
         commands.add_parser(name)
     p = commands.add_parser("read");p.add_argument("address", type=number);p.add_argument("size", type=number);p.add_argument("--output", type=Path, required=True)
     p = commands.add_parser("write");p.add_argument("address", type=number);group=p.add_mutually_exclusive_group(required=True);group.add_argument("--file", type=Path);group.add_argument("--hex")
-    p = commands.add_parser("screenshot");p.add_argument("output", type=Path);p.add_argument("--native-orientation", action="store_true", help="keep the LCD's original upside-down framebuffer orientation")
+    p = commands.add_parser("screenshot");p.add_argument("output", type=Path);p.add_argument("--native-orientation", action="store_true", help="keep the LCD's original upside-down framebuffer orientation");p.add_argument("--rotate",type=int,choices=(0,90,180,270),default=None);p.add_argument("--roi",type=_workflow.roi_value,help="display coordinates x,y,width,height; transfers only this rectangle");p.add_argument("--baseline",type=Path)
     p = commands.add_parser("call");p.add_argument("table", choices=("gui", "fs", "sys", "mem", "res"));p.add_argument("offset", type=number);p.add_argument("args", type=number, nargs="*", default=[])
     p = commands.add_parser("exec");sub=p.add_subparsers(dest="action", required=True)
     for name in ("info", "status", "cancel", "reset"):
         sub.add_parser(name)
     p=sub.add_parser("run");p.add_argument("source", type=Path);p.add_argument("--directory", type=Path, default=Path("build/9688-debug-module"));p.add_argument("--opcode", type=number, default=0);p.add_argument("--args-hex", default="");p.add_argument("--budget-ticks", type=int, default=80);p.add_argument("--wait-seconds", type=float, default=30);p.add_argument("--prefix")
+    _workflow.add_arguments(commands)
     ns = parser.parse_args(argv)
     client = None
     try:
@@ -320,7 +371,8 @@ def main(argv=None):
             result = [{"port": p.device, "chip": next(name for name, pid in PIDS.items() if pid == p.pid), "description": p.description, "serial_number": p.serial_number} for p in ports(chip)]
         else:
             client = Client.connect(ns.port, ns.timeout, chip)
-            if ns.command == "ping":result = {"identity": client.rpc(1).decode(), "chip": client.chip}
+            if ns.command in _workflow.COMMANDS:result = _workflow.run_command(client,ns)
+            elif ns.command == "ping":result = {"identity": client.rpc(1).decode(), "chip": client.chip}
             elif ns.command == "status":result = client.status()
             elif ns.command == "caps":result = {"words": client.caps}
             elif ns.command == "stop":client.rpc(10);result = {"stop_accepted": True, "note": "ACK received; CDC may disappear before final restore; verify disk after reconnecting USB"}
@@ -328,7 +380,12 @@ def main(argv=None):
             elif ns.command == "read":
                 data=client.read(ns.address,ns.size);ns.output.parent.mkdir(parents=True,exist_ok=True);ns.output.write_bytes(data);result={"output":str(ns.output),"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest()}
             elif ns.command == "write":result = client.write(ns.address, ns.file.read_bytes() if ns.file else bytes.fromhex(ns.hex))
-            elif ns.command == "screenshot":result = client.screenshot(ns.output, native_orientation=ns.native_orientation)
+            elif ns.command == "screenshot":
+                options={"native_orientation":ns.native_orientation}
+                if ns.rotate is not None:options["rotation_degrees"]=ns.rotate
+                if ns.roi is not None:options["region"]=ns.roi
+                result=client.screenshot(ns.output,**options)
+                if ns.baseline:result["comparison"]=_workflow.screen_comparison(ns.output,ns.baseline)
             elif ns.command == "call":
                 if len(ns.args)>4:raise ValueError("call accepts at most four arguments")
                 args=ns.args+[0]*(4-len(ns.args));idx=("gui","fs","sys","mem","res").index(ns.table)
@@ -338,7 +395,7 @@ def main(argv=None):
             elif ns.action in ("cancel","reset"):
                 client.rpc(32 if ns.action=="cancel" else 34);result={"accepted":True}
             else:result=client.exec_run(ns.source,ns.directory,ns.opcode,bytes.fromhex(ns.args_hex),ns.budget_ticks,ns.wait_seconds,ns.prefix)
-        report={"ok":True,"result":result}
+        report={"ok":bool(result.get("ok",True)) if ns.command in ("session","run-test") else True,"result":result}
     except Exception as exc:
         report={"ok":False,"error":str(exc),"type":type(exc).__name__,"session_lost":bool(client and client.broken)}
     finally:

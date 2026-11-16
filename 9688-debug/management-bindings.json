@@ -1,0 +1,530 @@
+{
+  "schema": 1,
+  "feature_binding": "exact independent service and native GUI predicates",
+  "profiles": [
+    {
+      "id": "9688-jz4740",
+      "firmware_sha256": "7ec707b69a1f4fa7016856b2eba6900412d02d7daefc8b4d11654c63731abca0",
+      "fs_table": 2150219792,
+      "gui_table": 2150219936,
+      "foreground": 2152373116,
+      "post": 2148427200,
+      "reset_apps": 2147673232,
+      "scan_apps": 2147672592,
+      "scan_pattern": 2150135280,
+      "launch": 2147673784,
+      "desktop_handler": 2147665388,
+      "grid_handler": 2147653516,
+      "reset_selection": 2147673476,
+      "key_down": 16,
+      "key_up": 18,
+      "task_table": 2154805584,
+      "current_tcb": 2152372800,
+      "pool": 2152580920,
+      "critical_start": 2148350656,
+      "critical_end": 2148427704,
+      "sched_continuation": 2147516912,
+      "delay_continuation": 2147536684,
+      "idle_delay_return": 2148426248,
+      "queue_pend_continuation": 2147529456,
+      "raw_wait_return": 2148753148,
+      "message_idle_return": 2148422884,
+      "fs_guards": [
+        {
+          "address": 2150219792,
+          "size": 128,
+          "crc": 2171950795
+        },
+        {
+          "address": 2149031336,
+          "size": 128,
+          "crc": 814071839
+        },
+        {
+          "address": 2149071712,
+          "size": 128,
+          "crc": 4147601541
+        },
+        {
+          "address": 2149071792,
+          "size": 128,
+          "crc": 1136968246
+        },
+        {
+          "address": 2149072228,
+          "size": 128,
+          "crc": 1136968246
+        },
+        {
+          "address": 2149033184,
+          "size": 128,
+          "crc": 4274001228
+        },
+        {
+          "address": 2149072464,
+          "size": 128,
+          "crc": 1038439641
+        },
+        {
+          "address": 2149072692,
+          "size": 128,
+          "crc": 2530207494
+        },
+        {
+          "address": 2149034548,
+          "size": 128,
+          "crc": 314552865
+        },
+        {
+          "address": 2149035876,
+          "size": 128,
+          "crc": 1100096682
+        },
+        {
+          "address": 2149036492,
+          "size": 128,
+          "crc": 314552865
+        },
+        {
+          "address": 2149038192,
+          "size": 128,
+          "crc": 721032023
+        },
+        {
+          "address": 2149072908,
+          "size": 128,
+          "crc": 1611767819
+        },
+        {
+          "address": 2149073096,
+          "size": 128,
+          "crc": 1611767819
+        },
+        {
+          "address": 2149069584,
+          "size": 128,
+          "crc": 1726523785
+        },
+        {
+          "address": 2149073672,
+          "size": 128,
+          "crc": 2962973722
+        },
+        {
+          "address": 2149029932,
+          "size": 128,
+          "crc": 2929836625
+        }
+      ],
+      "gui_guards": [
+        {
+          "address": 2147529212,
+          "size": 384,
+          "crc": 3196773368
+        },
+        {
+          "address": 2148753020,
+          "size": 144,
+          "crc": 2964862783
+        },
+        {
+          "address": 2148422868,
+          "size": 24,
+          "crc": 1697377159
+        },
+        {
+          "address": 2148426208,
+          "size": 80,
+          "crc": 407378850
+        },
+        {
+          "address": 2147536540,
+          "size": 152,
+          "crc": 175122715
+        },
+        {
+          "address": 2148208152,
+          "size": 432,
+          "crc": 478621383
+        },
+        {
+          "address": 2148208608,
+          "size": 784,
+          "crc": 2877469767
+        },
+        {
+          "address": 2147514944,
+          "size": 240,
+          "crc": 1367127015
+        },
+        {
+          "address": 2147517332,
+          "size": 416,
+          "crc": 2047518173
+        },
+        {
+          "address": 2147531300,
+          "size": 276,
+          "crc": 2270849157
+        },
+        {
+          "address": 2147516720,
+          "size": 216,
+          "crc": 2299211514
+        },
+        {
+          "address": 2147516484,
+          "size": 236,
+          "crc": 934536382
+        },
+        {
+          "address": 2148384480,
+          "size": 420,
+          "crc": 3367050829
+        },
+        {
+          "address": 2147655696,
+          "size": 144,
+          "crc": 4161295101
+        },
+        {
+          "address": 2147653516,
+          "size": 256,
+          "crc": 2616712969
+        },
+        {
+          "address": 2147673476,
+          "size": 44,
+          "crc": 521476210
+        },
+        {
+          "address": 2150219936,
+          "size": 336,
+          "crc": 2011707277
+        },
+        {
+          "address": 2148427200,
+          "size": 248,
+          "crc": 3550174287
+        },
+        {
+          "address": 2148399356,
+          "size": 76,
+          "crc": 3370556839
+        },
+        {
+          "address": 2150242228,
+          "size": 112,
+          "crc": 3862217175
+        },
+        {
+          "address": 2148402432,
+          "size": 16,
+          "crc": 2141152685
+        },
+        {
+          "address": 2148357064,
+          "size": 804,
+          "crc": 3923152371
+        },
+        {
+          "address": 2147673232,
+          "size": 88,
+          "crc": 3422695841
+        },
+        {
+          "address": 2147672592,
+          "size": 640,
+          "crc": 369683894
+        },
+        {
+          "address": 2147673784,
+          "size": 712,
+          "crc": 946098301
+        },
+        {
+          "address": 2147665388,
+          "size": 256,
+          "crc": 2253004866
+        },
+        {
+          "address": 2147637244,
+          "size": 28,
+          "crc": 4279160023
+        },
+        {
+          "address": 2148431224,
+          "size": 160,
+          "crc": 82401039
+        }
+      ],
+      "native_reset_scan_calls": [
+        "0x80025804",
+        "0x80025810"
+      ],
+      "validation_scope": "original ROM table/call graph/structure checks, no physical-device acceptance"
+    },
+    {
+      "id": "9688-jz4730",
+      "firmware_sha256": "b18ce485a6ca6a8ea9ef5e3963d5970188ff7a2aeb4a6d4e58fe43625f49e514",
+      "fs_table": 2149962768,
+      "gui_table": 2149962912,
+      "foreground": 2152372312,
+      "post": 2148427280,
+      "reset_apps": 2147619920,
+      "scan_apps": 2147619280,
+      "scan_pattern": 2149960352,
+      "launch": 2147620472,
+      "desktop_handler": 2147612084,
+      "grid_handler": 2147600220,
+      "reset_selection": 2147620164,
+      "key_down": 16,
+      "key_up": 18,
+      "task_table": 2156590304,
+      "current_tcb": 2152371940,
+      "pool": 2152568632,
+      "critical_start": 2148350752,
+      "critical_end": 2148427784,
+      "sched_continuation": 2147530064,
+      "delay_continuation": 2147550924,
+      "idle_delay_return": 2148426328,
+      "queue_pend_continuation": 2147543696,
+      "raw_wait_return": 2148753052,
+      "message_idle_return": 2148422964,
+      "fs_guards": [
+        {
+          "address": 2149962768,
+          "size": 128,
+          "crc": 72595363
+        },
+        {
+          "address": 2149029432,
+          "size": 128,
+          "crc": 1007847771
+        },
+        {
+          "address": 2149069568,
+          "size": 128,
+          "crc": 1099649393
+        },
+        {
+          "address": 2149069648,
+          "size": 128,
+          "crc": 405773907
+        },
+        {
+          "address": 2149070084,
+          "size": 128,
+          "crc": 405773907
+        },
+        {
+          "address": 2149031280,
+          "size": 128,
+          "crc": 784104046
+        },
+        {
+          "address": 2149070320,
+          "size": 128,
+          "crc": 2446487717
+        },
+        {
+          "address": 2149070548,
+          "size": 128,
+          "crc": 4129246461
+        },
+        {
+          "address": 2149032644,
+          "size": 128,
+          "crc": 1312070642
+        },
+        {
+          "address": 2149033972,
+          "size": 128,
+          "crc": 1150603262
+        },
+        {
+          "address": 2149034588,
+          "size": 128,
+          "crc": 1312070642
+        },
+        {
+          "address": 2149036288,
+          "size": 128,
+          "crc": 425641456
+        },
+        {
+          "address": 2149070764,
+          "size": 128,
+          "crc": 1653429134
+        },
+        {
+          "address": 2149070952,
+          "size": 128,
+          "crc": 1653429134
+        },
+        {
+          "address": 2149067652,
+          "size": 128,
+          "crc": 2657572897
+        },
+        {
+          "address": 2149071528,
+          "size": 128,
+          "crc": 3880525677
+        },
+        {
+          "address": 2149122204,
+          "size": 128,
+          "crc": 1637421531
+        }
+      ],
+      "gui_guards": [
+        {
+          "address": 2147543452,
+          "size": 384,
+          "crc": 33443158
+        },
+        {
+          "address": 2148752924,
+          "size": 144,
+          "crc": 3617286797
+        },
+        {
+          "address": 2148422948,
+          "size": 24,
+          "crc": 3421674654
+        },
+        {
+          "address": 2148426288,
+          "size": 80,
+          "crc": 2103698939
+        },
+        {
+          "address": 2147550780,
+          "size": 152,
+          "crc": 242703899
+        },
+        {
+          "address": 2148207416,
+          "size": 432,
+          "crc": 103839475
+        },
+        {
+          "address": 2148207872,
+          "size": 784,
+          "crc": 3668892284
+        },
+        {
+          "address": 2147528096,
+          "size": 240,
+          "crc": 3077301344
+        },
+        {
+          "address": 2147530484,
+          "size": 416,
+          "crc": 3301255721
+        },
+        {
+          "address": 2147545540,
+          "size": 276,
+          "crc": 3865192188
+        },
+        {
+          "address": 2147529872,
+          "size": 216,
+          "crc": 2121888588
+        },
+        {
+          "address": 2147529636,
+          "size": 236,
+          "crc": 2497643109
+        },
+        {
+          "address": 2148384576,
+          "size": 420,
+          "crc": 1870949221
+        },
+        {
+          "address": 2147602400,
+          "size": 144,
+          "crc": 789913653
+        },
+        {
+          "address": 2147600220,
+          "size": 256,
+          "crc": 3473165374
+        },
+        {
+          "address": 2147620164,
+          "size": 44,
+          "crc": 1191864102
+        },
+        {
+          "address": 2149962912,
+          "size": 336,
+          "crc": 324211759
+        },
+        {
+          "address": 2148427280,
+          "size": 248,
+          "crc": 2556701547
+        },
+        {
+          "address": 2148399444,
+          "size": 76,
+          "crc": 1104770321
+        },
+        {
+          "address": 2150252036,
+          "size": 112,
+          "crc": 3961521723
+        },
+        {
+          "address": 2148402520,
+          "size": 16,
+          "crc": 297177935
+        },
+        {
+          "address": 2148357160,
+          "size": 804,
+          "crc": 2502267748
+        },
+        {
+          "address": 2147619920,
+          "size": 88,
+          "crc": 4129631483
+        },
+        {
+          "address": 2147619280,
+          "size": 640,
+          "crc": 4284648303
+        },
+        {
+          "address": 2147620472,
+          "size": 712,
+          "crc": 856372206
+        },
+        {
+          "address": 2147612084,
+          "size": 256,
+          "crc": 1596370512
+        },
+        {
+          "address": 2147584484,
+          "size": 28,
+          "crc": 1616891413
+        },
+        {
+          "address": 2148431304,
+          "size": 160,
+          "crc": 3254079018
+        }
+      ],
+      "native_reset_scan_calls": [
+        "0x800189ec",
+        "0x800189f8"
+      ],
+      "validation_scope": "original ROM table/call graph/structure checks, no physical-device acceptance"
+    }
+  ]
+}

@@ -17,6 +17,7 @@ import struct
 import subprocess
 import sys
 import zlib
+import runpy
 from pathlib import Path
 
 SOURCE = Path(__file__).resolve().parent
@@ -48,6 +49,7 @@ KNOWN_RUNTIMES = {
 if not (SDK_INCLUDE / "bda_dialogs.h").is_file():
     raise RuntimeError("SDK submodule is missing; run git submodule update --init sdk")
 sys.path.insert(0, str(SDK_ROOT))
+DISCOVERY_GENERATOR = runpy.run_path(str(SOURCE / "discovery_gen.py"))
 LINK_BASE = 0x81000000
 ENTRY_VA = 0x81C00020
 MAX_MEMORY = 0x200000
@@ -101,7 +103,7 @@ def resident_sources_for_soc(soc: str) -> list[Path]:
     if soc not in SOC_PROFILES:
         raise ValueError(f"unsupported 9688 SoC: {soc}")
     usb = "usb_jz4730.c" if soc == "JZ4730" else "usb.c"
-    sources = [SOURCE / name for name in ("resident.c", "firmware.c", usb, "protocol.c", "screen.c")]
+    sources = [SOURCE / name for name in ("resident.c", "firmware.c", usb, "protocol.c", "screen.c", "management.c")]
     if (SOURCE / "exec.c").exists():
         sources.append(SOURCE / "exec.c")
     return sources
@@ -161,12 +163,12 @@ def profile_header(profile: dict) -> str:
         if not length or length > 0x100000 or address + length > 0x100000000:
             raise ValueError("invalid notice guard range")
         lines.append(f"    {{0x{address:08x}u,0x{length:x}u,0x{checksum:08x}u}},")
-    lines += ["};", "#endif", ""]
+    lines += ["};", "#endif", DISCOVERY_GENERATOR["binding_header"]([profile]), ""]
     return "\n".join(lines)
 
 
 def launcher_profile_header(profiles: list[dict], extra_notice_profiles: list[dict] | None = None) -> str:
-    """Runtime-only bindings; each embedded resident keeps its static profile."""
+    """Checked launcher defaults and the shared runtime discovery binding layout."""
     if not profiles or len({profile_soc(profile) for profile in profiles}) != len(profiles):
         raise ValueError("launcher needs distinct checked SoC profiles")
     names = sorted({name for profile in profiles for name in profile["macros"]})
@@ -223,7 +225,7 @@ def launcher_profile_header(profiles: list[dict], extra_notice_profiles: list[di
     lines += [f"#define {name} (rd_selected_profile->{name.lower()})" for name in names]
     lines += ["#define RD_FW_RUNTIME_BASE FW_RUNTIME_BASE", "#define RD_FW_SDRAM_START FW_SDRAM_START",
               "#define RD_FW_SDRAM_END FW_SDRAM_END", "#endif", ""]
-    return "\n".join(lines)
+    return "\n".join(lines) + DISCOVERY_GENERATOR["binding_header"](profiles)
 
 
 def verify_firmware(path: Path, profile: dict) -> dict:
@@ -563,10 +565,11 @@ def build_variant(profile: dict, profile_path: Path, output: Path, gcc: Path, ob
     generated = profile_header(profile)
     firmware_verification = verify_firmware(firmware_path, profile) if firmware_path else None
     (output / "profile_generated.h").write_text(generated, encoding="ascii")
+    (output / "discovery_generated.h").write_text(DISCOVERY_GENERATOR["c_header"]([profile]), encoding="ascii")
     compiler = run([gcc, "--version"]).splitlines()[0]
     resident_sources = resident_sources_for_soc(soc)
-    inputs = sorted(set(resident_sources + list(SOURCE.glob("*.h")) + list(SOURCE.glob("*.ld")) +
-                        [SOURCE / "launcher.c", Path(__file__), profile_path,
+    inputs = sorted(set(resident_sources + list(SOURCE.glob("*.h")) + list(SOURCE.glob("*.ld")) + list(SOURCE.glob("*.json")) +
+                        [SOURCE / "launcher.c", SOURCE / "discovery_gen.py", Path(__file__), profile_path,
                          *(SDK_ROOT / "bda_packer" / name for name in ("__init__.py", "build.py", "header.py", "vx_icon.py")),
                          *(SDK_INCLUDE / name for name in ("bda_types.h", "bda_dialogs.h", "bda_memory.h", "bda/detail/runtime.h"))]))
     def source_label(path: Path) -> str:
@@ -671,6 +674,7 @@ def build_universal(output: Path, gcc: Path, objcopy: Path,
         components.append(component)
     profiles = [component["profile"] for component in components]
     (output / "launcher_profile_generated.h").write_text(launcher_profile_header(profiles, extra_notice_profiles), encoding="ascii")
+    (output / "discovery_generated.h").write_text(DISCOVERY_GENERATOR["c_header"](profiles), encoding="ascii")
     (output / "resident_image.h").write_text(universal_image_header(components), encoding="ascii")
     source_hashes = {name: digest for component in components for name, digest in component["report"]["source_sha256"].items()}
     source_hashes[LEGACY_NOTICE_PROFILE.relative_to(ROOT).as_posix()] = hashlib.sha256(LEGACY_NOTICE_PROFILE.read_bytes()).hexdigest()

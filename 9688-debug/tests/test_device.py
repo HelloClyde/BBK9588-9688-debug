@@ -282,6 +282,7 @@ class DeviceTests(unittest.TestCase):
         model = USBModel(start=False)
         raw = firmware_bytes(model)
         model.put(model.macros["FW_SDRAM_START"], raw)
+        model.put(model.macros["FW_RUNTIME_BASE"]+4,struct.pack("<5I",*(model.macros[n] for n in ("FW_GUI_TABLE","FW_FS_TABLE","FW_SYS_TABLE","FW_MEM_TABLE","FW_RES_TABLE"))))
         relocation = json.loads((model.build / "relocations.json").read_text(encoding="utf-8"))
         image = relocate((model.build / "resident.bin").read_bytes(), relocation["records"], relocation["base"], model.base)
         offset = model.symbols["fw_matches"] - model.base
@@ -323,6 +324,7 @@ class DeviceTests(unittest.TestCase):
         model = USBModel(start=False)
         raw = firmware_bytes(model)
         model.put(model.macros["FW_SDRAM_START"], raw)
+        model.put(model.macros["FW_RUNTIME_BASE"]+4,struct.pack("<5I",*(model.macros[n] for n in ("FW_GUI_TABLE","FW_FS_TABLE","FW_SYS_TABLE","FW_MEM_TABLE","FW_RES_TABLE"))))
         model.put(model.report["entry_va"], (model.build / "launcher.bin").read_bytes())
         model.symbols = model.report["launcher_symbols"]
         # Preserve the checked native GUI slot and code; model only the
@@ -332,6 +334,117 @@ class DeviceTests(unittest.TestCase):
         model.put(0x80702000 + 0x35, b"\x06")
         self.assertEqual(model.call("bda_main"), 5)
         self.assertEqual(model.word(model.macros["FW_TASK_TABLE"] + 6 * 4), 0x80702000)
+
+
+
+class ClockGateTests(unittest.TestCase):
+    """Port the proven 9588 stop-clock regression to both 9688 controllers.
+
+    Count actual modeled register transactions, including independent direct
+    entry points and the resident worker's stop path with pending TX data.
+    """
+    def model(self):
+        from unicorn import UC_HOOK_MEM_WRITE
+        model=USBModel()
+        model.gated_udc_writes=0
+        original=model.usb_write
+        def observe(uc,access,address,size,value,data):
+            if model.word(model.macros["FW_CPM_CLKGR"]) & model.macros["FW_CPM_USB_GATE_MASK"]:
+                model.gated_udc_writes+=1
+            return original(uc,access,address,size,value,data)
+        if "jz4730" in model.report["profile"].lower():
+            # The FIFO MMIO callback resolves the bound method dynamically;
+            # preserve its workaround for Unicorn's MMIO-in-delay-slot bug.
+            model.usb_write=observe
+        else:
+            model.u.hook_del(model.udc_write_hook)
+            base=model.macros["FW_UDC_BASE"] & 0x1fffffff
+            model.udc_write_hook=model.u.hook_add(UC_HOOK_MEM_WRITE,observe,begin=base,end=base+4095)
+        return model
+
+    def test_transport_service_detects_clock_loss_without_any_gated_udc_access(self):
+        model=self.model()
+        clock=model.macros["FW_CPM_CLKGR"]
+        model.put(clock,struct.pack("<I",model.word(clock)|model.macros["FW_CPM_USB_GATE_MASK"]))
+        # Includes the frame read before transport_poll, fault snapshots,
+        # and real stop/cancel propagation through the compiled service.
+        model.call("transport_service")
+        self.assertEqual(model.word(model.symbols["usb"]+216),1)
+        self.assertEqual(model.word(model.base+28),1)
+        self.assertEqual((model.gated_udc_reads,model.gated_udc_writes),(0,0))
+
+    def test_gated_frame_idle_diagnostics_and_close_are_safe(self):
+        # Fresh ownership for each entry matters: a fault raised by an earlier
+        # API must not hide an unsafe direct call in a later one.
+        for operation in ("debug_usb_frame","debug_usb_tx_idle","debug_usb_read","debug_usb_write",
+                          "debug_usb_diagnostics","debug_usb_close"):
+            with self.subTest(operation=operation):
+                model=self.model()
+                scratch=model.macros["FW_RUNTIME_BASE"]+0x8000
+                usb=model.symbols["usb"]
+                model.put(scratch,b"x")
+                self.assertEqual(model.call("debug_usb_write",usb,scratch,1),1)
+                clock=model.macros["FW_CPM_CLKGR"]
+                model.put(clock,struct.pack("<I",model.word(clock)|model.macros["FW_CPM_USB_GATE_MASK"]))
+                if operation=="debug_usb_frame":
+                    self.assertEqual(model.call(operation),0)
+                elif operation=="debug_usb_tx_idle":
+                    self.assertEqual(model.call(operation,usb),1)
+                elif operation in ("debug_usb_read","debug_usb_write"):
+                    self.assertEqual(model.call(operation,usb,scratch,1),0)
+                elif operation=="debug_usb_diagnostics":
+                    model.call(operation,usb,scratch)
+                else:
+                    model.call(operation,usb)
+                self.assertEqual((model.gated_udc_reads,model.gated_udc_writes),(0,0))
+
+    def test_worker_stop_with_pending_tx_cleans_up_after_clock_loss(self):
+        from unicorn import UC_HOOK_CODE
+        from unicorn.mips_const import (UC_MIPS_REG_A0,UC_MIPS_REG_CP0_STATUS,
+                                       UC_MIPS_REG_SP,UC_MIPS_REG_RA)
+        for pending_protocol in (False,True):
+            with self.subTest(pending_protocol=pending_protocol):
+                model=self.model()
+                scratch=model.macros["FW_RUNTIME_BASE"]+0x8000
+                model.put(scratch,b"x")
+                self.assertEqual(model.call("debug_usb_write",model.symbols["usb"],scratch,1),1)
+                if pending_protocol:
+                    model.put(model.symbols["protocol"]+1060,struct.pack("<II",64,64))
+                clock=model.macros["FW_CPM_CLKGR"]
+                model.put(clock,struct.pack("<I",model.word(clock)|model.macros["FW_CPM_USB_GATE_MASK"]))
+                model.put(model.base+28,struct.pack("<I",1))  # Request stop before worker enters service.
+                reached=[]
+                def stopped(uc,address,size,_):
+                    if model.word(model.base+24)==3:
+                        reached.append(address)
+                        uc.emu_stop()
+                model.u.hook_add(UC_HOOK_CODE,stopped,begin=model.symbols["fw_delay"],end=model.symbols["fw_delay"])
+                stack=model.macros["FW_RUNTIME_BASE"]-0x20000
+                model.u.reg_write(UC_MIPS_REG_CP0_STATUS,0x10000000)
+                model.u.reg_write(UC_MIPS_REG_SP,stack)
+                model.u.reg_write(UC_MIPS_REG_RA,stack+0x1000)
+                model.u.reg_write(UC_MIPS_REG_A0,model.base)
+                model.u.emu_start(model.symbols["resident_worker"],stack+0x1000,count=10000000)
+                self.assertTrue(reached,"worker must finish bounded shutdown")
+                self.assertEqual(model.word(model.base+24),3)
+                self.assertNotEqual(model.word(model.base+32),0)
+                self.assertEqual((model.gated_udc_reads,model.gated_udc_writes),(0,0))
+
+    def test_close_reenables_the_clock_after_the_disconnect_wait(self):
+        from unicorn import UC_HOOK_CODE
+        model=self.model();clock=model.macros["FW_CPM_CLKGR"];mask=model.macros["FW_CPM_USB_GATE_MASK"]
+        usb=model.symbols["usb"];saved_gate=model.word(usb);saved_phy=model.word(usb+4)
+        delays=[]
+        def other_native_task_gates(uc,address,size,data):
+            model.put(clock,struct.pack("<I",model.word(clock)|mask));delays.append(address)
+        model.u.hook_add(UC_HOOK_CODE,other_native_task_gates,begin=model.symbols["fw_delay"],end=model.symbols["fw_delay"])
+        model.put(clock,struct.pack("<I",model.word(clock)|mask))
+        model.call("debug_usb_close",usb)
+        self.assertTrue(delays)
+        self.assertEqual((model.gated_udc_reads,model.gated_udc_writes),(0,0))
+        self.assertEqual(model.word(clock)&mask,saved_gate&mask)
+        phy=model.macros["FW_CPM_USB_PHY_MASK"]
+        self.assertEqual(model.word(model.macros["FW_CPM_OPCR"])&phy,saved_phy&phy)
 
 
 if __name__ == "__main__":

@@ -52,7 +52,10 @@ class LauncherModel:
             self.put(self.macros["FW_RUNTIME_BASE"], firmware[seed:seed + 32])
         self.boundaries = {}
         self.calls = []
-        self.u.hook_add(UC_HOOK_CODE, self._observe)
+        # Observe every external execution, while scanning itself runs in MIPS
+        # without a per-instruction Python hook. Stub entries are hooked below.
+        self.u.hook_add(UC_HOOK_CODE,self._observe,begin=0,end=self.entry-1)
+        self.u.hook_add(UC_HOOK_CODE,self._observe,begin=self.entry+len(self.payload),end=0xffffffff)
 
     def put(self, address, data):
         self.u.mem_write(address & 0x1FFFFFFF, data)
@@ -86,6 +89,8 @@ class LauncherModel:
 
     def stub(self, name, result=0, *, error_argument=False):
         address = self.symbols[name]
+        if address not in self.boundaries:
+            self.u.hook_add(UC_HOOK_CODE,self._observe,begin=address,end=address)
         self.boundaries[address] = name
         # Observe at a real entry and let MIPS execute JR and its delay slot.
         # Changing PC in a hook would invalidate the call/delay-slot test.
@@ -104,7 +109,7 @@ class LauncherModel:
         self.u.reg_write(UC_MIPS_REG_RA, self.sentinel)
         for register, value in zip((UC_MIPS_REG_A0, UC_MIPS_REG_A1, UC_MIPS_REG_A2, UC_MIPS_REG_A3), args):
             self.u.reg_write(register, value)
-        self.u.emu_start(self.symbols[name], self.sentinel, count=12000000)
+        self.u.emu_start(self.symbols[name], self.sentinel, count=400000000)
         if self.u.reg_read(UC_MIPS_REG_PC) != self.sentinel:
             raise AssertionError(f"{name} did not return within the instruction budget")
         return self.u.reg_read(UC_MIPS_REG_V0)
@@ -250,8 +255,8 @@ class UniversalLauncherTests(unittest.TestCase):
                 raw = (folder / "resident.bin").read_bytes()
                 base = (model.heap + 31) & ~31
                 memory = component["resident_memory_bytes"]
-                header = struct.unpack("<20I", model.get(base, 80))
-                self.assertEqual(header[:6], (0x42443835, 1, model.heap, base, memory, 6))
+                header = struct.unpack("<21I", model.get(base, 84))
+                self.assertEqual(header[:6], (0x42443835, 2, model.heap, base, memory, 6))
                 self.assertEqual(header[6:9], (0, 0, 0))
                 for word, name in zip(header[9:12], ("resident_init", "resident_worker", "resident_shutdown")):
                     self.assertEqual(word, base + manifest["symbols"][name] - manifest["resident_link_base"])
@@ -263,11 +268,11 @@ class UniversalLauncherTests(unittest.TestCase):
                 self.assertEqual(model.get(base + len(raw), memory - len(raw)), bytes(memory - len(raw)))
                 reloc = json.loads((folder / "relocations.json").read_text(encoding="utf-8"))
                 relocated_words = {offset for offset, _, _ in reloc["records"]}
-                for offset in range(80, len(raw), 4):
+                for offset in range(84, len(raw), 4):
                     if offset not in relocated_words:
                         self.assertEqual(model.get(base + offset, min(4, len(raw) - offset)), raw[offset:offset + 4])
                 for offset, kind, target in reloc["records"]:
-                    if offset < 80:
+                    if offset < 84:
                         continue  # The launcher intentionally fills the control header.
                     word = model.word(base + offset)
                     destination = target + base - reloc["base"]

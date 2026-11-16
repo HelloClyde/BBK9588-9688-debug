@@ -67,7 +67,8 @@ static void unlock(uint32_t old)
 {__asm__ volatile("mtc0 %0,$12\n\tnop\n\tnop\n\tnop"::"r"(old):"memory");}
 static unsigned le16(const uint8_t *p){return p[0]|((unsigned)p[1]<<8);}
 int debug_usb_cable_connected(void){return !!(R32(G)&CABLE);}
-unsigned debug_usb_frame(void){return (R32(UDSR)>>18)&0x7ffu;}
+static int clock_active(void){return !(R32(FW_CPM_CLKGR)&FW_CPM_USB_GATE_MASK);}
+unsigned debug_usb_frame(void){return clock_active() ? (R32(UDSR)>>18)&0x7ffu : 0u;}
 
 static void snapshot(const debug_usb *u,uint32_t *v,unsigned events,unsigned reason)
 {
@@ -281,12 +282,14 @@ void debug_usb_poll(debug_usb *u)
 int debug_usb_read(debug_usb *u,uint8_t *data,unsigned capacity)
 {
     if(!u || !u->owned || u->ownership_fault || !u->configured)return 0;
+    if(!clock_active()){fault(u,128u,0);return 0;}
     if(u->soc_rx_length>capacity)return -1;
     unsigned n=u->soc_rx_length;for(unsigned i=0;i<n;i++)data[i]=u->soc_rx[i];u->soc_rx_length=0;return (int)n;
 }
 int debug_usb_tx_idle(debug_usb *u)
 {
-    if(!u || !u->owned)return 1;
+    if(!u || !u->owned || u->ownership_fault)return 1;
+    if(!clock_active()){fault(u,128u,0);return 1;}
     if(u->soc_tx_pending && ((R32(UIPR)&4u) || (R32(ISR(2))&IN_READY))){
         R32(ISR(2))=0;R32(UIPR)=4;u->soc_tx_pending=0;
     }
@@ -294,7 +297,9 @@ int debug_usb_tx_idle(debug_usb *u)
 }
 int debug_usb_write(debug_usb *u,const uint8_t *data,unsigned length)
 {
-    if(!u || !u->owned || u->ownership_fault || !u->configured || length>64u || !debug_usb_tx_idle(u))return 0;
+    if(!u || !u->owned || u->ownership_fault || !u->configured || length>64u)return 0;
+    if(!clock_active()){fault(u,128u,0);return 0;}
+    if(!debug_usb_tx_idle(u) || u->ownership_fault)return 0;
     send_packet(2,data,length);u->soc_tx_pending=1;++u->tx_packets;return 1;
 }
 void debug_usb_close(debug_usb *u)
@@ -306,6 +311,7 @@ void debug_usb_close(debug_usb *u)
     /* Clock ownership loss is one shutdown trigger. Re-enable our module
      * clock for bounded register cleanup, then restore the original bit. */
     R32(FW_CPM_CLKGR)&=~FW_CPM_USB_GATE_MASK;
+    R32(FW_CPM_OPCR)&=~FW_CPM_USB_PHY_MASK;
     R32(UDIMR)=DEVICE_EVENTS;R32(UIMR)=0xffffffffu;
     for(unsigned ep=0;ep<5;ep++)flush_in(ep,R32(ICR(ep))&0x30u);
     unsigned out=R32(UIPR)&0x00e10000u;

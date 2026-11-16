@@ -42,6 +42,9 @@ static int runtime_tables_match(void)
         R32(FW_RUNTIME_BASE+20u)==FW_RES_TABLE;
 }
 #endif
+
+#include "discovery_impl.h"
+
 uint32_t fw_selected_soc(void)
 {
 #ifdef RD_UNIVERSAL_LAUNCHER
@@ -53,6 +56,7 @@ uint32_t fw_selected_soc(void)
 uint32_t fw_match_error(void){return match_error;}
 int fw_notice_safe(void)
 {
+    if(discovery_mode==2u)return 1;
     /* This test is independent of the private RTOS/USB guards. An exact
      * exported message-box binding may still report a failed private guard.
      * An unknown GUI is never invoked merely to display an error. */
@@ -77,6 +81,8 @@ int fw_notice_safe(void)
 }
 int fw_matches(void)
 {
+    discovery_mode=0;discovery_index=0;discovery_scanned=0;discovery_error=0;discovery_matched=0;discovery_refs=0;
+    for(unsigned i=0;i<RD_DISC_BIND_COUNT;i++)rd_binding_values[i]=rd_disc_profiles[0].values[i];
 #ifdef RD_UNIVERSAL_LAUNCHER
     rd_selected_profile=0;
     match_error=0xff00u;
@@ -99,21 +105,25 @@ int fw_matches(void)
         }
         rd_selected_profile=p;
     }
-    if(rd_selected_profile){match_error=0;return 1;}
+    if(rd_selected_profile){
+        for(unsigned i=0;i<RD_LAUNCHER_PROFILE_COUNT;i++)if(rd_selected_profile==&rd_launcher_profiles[i])disc_commit(i,1);
+        match_error=0;return 1;
+    }
+    if(disc_discover()){rd_selected_profile=&rd_launcher_profiles[discovery_index];match_error=0;return 1;}
     return 0;
 #else
     /* ROM identity does not prove that the BDA loader's live imports are
      * intact. Reject before using any table or calling private services. */
     if(!runtime_tables_match()){
         match_error=(fw_selected_soc()<<16)|0xff01u;
-        return 0;
+        if(disc_discover()){match_error=0;return 1;}return 0;
     }
     unsigned failed=check_guards(rd_fw_guards,RD_FW_GUARDS_COUNT);
     match_error=failed ? (fw_selected_soc()<<16)|failed : 0;
-    if(failed)return 0;
+    if(failed){if(disc_discover()){match_error=0;return 1;}return 0;}
     failed=check_guards(rd_notice_guards,RD_NOTICE_GUARDS_COUNT);
-    if(failed){match_error=(fw_selected_soc()<<16)|0x8000u|failed;return 0;}
-    return 1;
+    if(failed){match_error=(fw_selected_soc()<<16)|0x8000u|failed;if(disc_discover()){match_error=0;return 1;}return 0;}
+    disc_commit(0,1);return 1;
 #endif
 }
 uint32_t fw_tick(void)

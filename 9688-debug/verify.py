@@ -45,7 +45,7 @@ def main():
     checked = verify(artifact.read_bytes())
     if (not checked["checksum_ok"] or checked["category"] != 9 or
             checked["file_size_minus_4"] != artifact.stat().st_size - 4 or
-            checked["title"] != report.get("menu_title", "9688调试")):
+            checked["title"] != report.get("menu_title", "9688璋冭瘯")):
         raise ValueError("BDA header verification failed")
     spec = importlib.util.spec_from_file_location("debug9688_verify_build", SOURCE / "build.py")
     builder = importlib.util.module_from_spec(spec)
@@ -81,7 +81,7 @@ def main():
         else:
             environment.pop("BBK9688_FIRMWARE", None)
         usb_test = "test_usb_jz4730" if chip == "jz4730" else "test_usb"
-        modules = ["test_build", "test_client", "test_device", "test_runtime", "test_verify", usb_test]
+        modules = ["test_build", "test_client", "test_device", "test_runtime", "test_verify", usb_test, "test_discovery", "test_management", "test_workflow_client", "test_workflow_device"]
         suites.append(run_suite(modules, environment, folder, "verify-" + chip + "-tests.log"))
     if universal:
         suites.append(run_suite(["test_universal"], environment, folder, "verify-universal-tests.log"))
